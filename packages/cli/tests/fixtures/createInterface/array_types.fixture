@@ -1,0 +1,28 @@
+title: Works with enum types
+name: ObjectInterface
+spec:
+  type: object
+  properties:
+    str:
+      type: array
+      items:
+        type: string
+    num:
+      type: array
+      items:
+        type: number
+    enum:
+      type: array
+      items:
+        type: string
+        enum:
+          - VALUE_1
+          - VALUE_2
+          - VALUE_3
+
+---
+export interface ObjectInterface {
+  enum?: Array<"VALUE_1" | "VALUE_2" | "VALUE_3">;
+  num?: number[];
+  str?: string[];
+}

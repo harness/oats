@@ -1,0 +1,13 @@
+title: Works with object types
+name: ObjectInterface
+spec:
+  type: object
+  properties:
+    key:
+      type: object
+---
+export interface ObjectInterface {
+  key?: {
+  [key: string]: any;
+};
+}

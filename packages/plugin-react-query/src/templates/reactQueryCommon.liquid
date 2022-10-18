@@ -1,0 +1,57 @@
+{% assign has_path_params = pathParams.props.length > 0 %}
+{% assign has_query_params = queryParams.props.length > 0 %}
+
+{% if has_path_params %}
+{% render 'interface.liquid', name: pathParams.name, props: pathParams.props %}
+{% endif %}
+
+{% if has_query_params %}
+{% render 'interface.liquid', name: queryParams.name, props: queryParams.props %}
+{% endif %}
+
+{% if bodyCode %}
+{{bodyCode}}
+{% endif %}
+
+export type {{okResponseName}} = {{okResponseCode}};
+
+export type {{errorResponseName}} = {{errorResponseCode}};
+
+export interface {{fetcherPropsName}} extends
+{% if has_path_params %}
+  {{pathParams.name}},
+{% endif %}
+Omit<FetcherOptions<
+  {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
+  {% if bodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+>, 'url'> {
+  {% if has_query_params -%}
+  queryParams: {{queryParams.name}};
+  {%- endif %}
+  {% if bodyCode %}
+  body: {{requestBodyName}};
+  {%- endif %}
+}
+
+export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
+   const {
+  {% if has_path_params -%}
+    {% for prop in pathParams.props -%}
+    {{prop.key}},
+    {%- endfor %}
+  {%- endif -%}
+  ...rest
+  } = props;
+
+  return fetcher<
+    {{okResponseName}},
+    {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
+    {% if bodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+  >({
+    url: `{{route | path_to_template}}`,
+    method: {{verb | upcase | json}},
+    ...rest
+  })
+}
+
+{% render 'comments.liquid', schema: operation %}

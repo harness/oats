@@ -1,0 +1,21 @@
+{
+  "name": "@harnessio/oats-examples",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "private": "true",
+  "scripts": {
+    "build": "oa2ts import --clean",
+    "postbuild": "exit 0 && tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "@harnessio/oats-cli": "^0.0.1",
+    "@harnessio/oats-plugin-react-query": "^0.0.1",
+    "@tanstack/react-query": "^4.12.0",
+    "react": "^18.2.0",
+    "typescript": "^4.8.4"
+  }
+}

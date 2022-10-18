@@ -1,0 +1,22 @@
+export function {{hookName}}(props: {{fetcherPropsName}}, options: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>) {
+
+
+  return useQuery<{{okResponseName}}, {{errorResponseName}}>(
+    [
+      {{operation.operationId | json}}
+      {% if has_path_params -%}
+      {% for prop in pathParams.props -%}
+      , props.{{prop.key}}
+      {%- endfor %}
+    {%- endif -%}
+    {% if has_query_params -%}
+    , props.queryParams
+    {%- endif -%}
+    {% if bodyCode %}
+    , props.body
+    {%- endif %}
+    ],
+    ({ signal }) => {{fetcherName}}({ ...props, signal }),
+    options
+  );
+}

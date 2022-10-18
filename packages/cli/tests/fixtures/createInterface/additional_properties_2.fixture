@@ -1,0 +1,9 @@
+title: Works with type and empty additionalProperties as {}
+name: ObjectInterface
+spec:
+  type: object
+  additionalProperties: {}
+---
+export interface ObjectInterface {
+  [key: string]: any;
+}

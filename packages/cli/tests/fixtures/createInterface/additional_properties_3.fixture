@@ -1,0 +1,8 @@
+title: Works with type and empty additionalProperties as false
+name: ObjectInterface
+spec:
+  type: object
+  additionalProperties: false
+---
+export interface ObjectInterface {
+}

@@ -1,0 +1,10 @@
+title: Works with type and empty additionalProperties as number
+name: ObjectInterface
+spec:
+  type: object
+  additionalProperties:
+    type: number
+---
+export interface ObjectInterface {
+  [key: string]: number;
+}

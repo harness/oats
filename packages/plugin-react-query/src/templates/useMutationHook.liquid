@@ -1,0 +1,6 @@
+export function {{hookName}}(
+  props: {{fetcherPropsName}},
+  options: Omit<UseMutationOptions<{{okResponseName}}, {{errorResponseName}}>, 'mutationKey' | 'mutationFn'>
+) {
+  return useMutation<{{okResponseName}}, {{errorResponseName}}>(() => {{fetcherName}}(props), options)
+}

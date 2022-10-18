@@ -1,0 +1,6 @@
+title: Works with empty object
+name: ObjectInterface
+spec: {}
+---
+export interface ObjectInterface {
+}

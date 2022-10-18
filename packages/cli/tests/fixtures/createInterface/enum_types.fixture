@@ -1,0 +1,15 @@
+title: Works with enum types
+name: ObjectInterface
+spec:
+  type: object
+  properties:
+    enum:
+      type: string
+      enum:
+        - VALUE_1
+        - VALUE_2
+        - VALUE_3
+---
+export interface ObjectInterface {
+  enum?: "VALUE_1" | "VALUE_2" | "VALUE_3";
+}

@@ -1,0 +1,57 @@
+{
+  "name": "@harnessio/oats-cli",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harness/oats.git",
+    "directory": "packages/cli"
+  },
+  "bin": {
+    "oa2ts": "./bin/oats.js"
+  },
+  "exports": {
+    "./config": "./dist/config.js",
+    "./plugin": "./dist/plugin.js",
+    "./nameHelpers": "./dist/nameHelpers.js",
+    "./pathHelpers": "./dist/pathHelpers.js",
+    "./codegen": "./dist/codegen.js",
+    "./helpers": "./dist/helpers.js"
+  },
+  "imports": {
+    "#@harnessio/oats-cli/config": "./dist/config.js",
+    "#@harnessio/oats-cli/plugin": "./dist/plugin.js"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc --outDir dist && cp -R src/templates dist/"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^4.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.1.2",
+    "change-case": "^4.1.2",
+    "esbuild": "^0.15.11",
+    "js-yaml": "^4.1.0",
+    "liquidjs": "^9.42.0",
+    "lodash-es": "^4.17.21",
+    "node-fetch": "^3.2.10",
+    "openapi3-ts": "^3.1.1",
+    "prettier": "^2.2.1",
+    "swagger2openapi": "^7.0.5",
+    "yargs": "^17.6.0",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.6",
+    "@types/prettier": "^2.7.1",
+    "@types/yargs": "^17.0.13",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.8.4"
+  }
+}

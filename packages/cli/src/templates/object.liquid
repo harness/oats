@@ -1,0 +1,6 @@
+{
+  {%- for prop in props %}
+  {%- if prop.comment %}{{prop.comment}}{% endif -%}
+  {{ prop.key | json }}{% unless prop.required %}?{% endunless %}: {{prop.value}};
+  {%- endfor %}
+}

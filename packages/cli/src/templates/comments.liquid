@@ -1,0 +1,22 @@
+{% assign has_data = schema.summary or schema.description or schema.format or schema.default or schema.example or schema.deprecated %}
+{%- if has_data %}
+/**
+  {%- if schema.description %}
+  {{schema.description | js_comment: 3}}
+  {%- elsif schema.summary %}
+  {{schema.summary | js_comment: 3}}
+  {%- endif %}
+  {%- if schema.format %}
+   * @format {{schema.format}}
+  {%- endif %}
+  {%- if schema.default %}
+   * @default {{schema.default | json}}
+  {%- endif %}
+  {%- if schema.example %}
+   * @example {{schema.example | json}}
+  {%- endif %}
+  {%- if schema.deprecated %}
+   * @deprecated
+  {%- endif %}
+  */
+{%- endif %}
