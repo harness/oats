@@ -11,6 +11,9 @@
   "bin": {
     "oa2ts": "./bin/oats.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     "./config": "./dist/config.js",
     "./plugin": "./dist/plugin.js",
