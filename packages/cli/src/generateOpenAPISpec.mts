@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { OpenAPIObject } from 'openapi3-ts';
 
-import type { PluginReturn, Plugin } from './plugin.mjs';
+import type { PluginReturn, Plugin, CodeOutput } from './plugin.mjs';
 import { getPluginReturnSchema } from './plugin.mjs';
 import { logInfo } from './helpers.mjs';
 import { Codegen } from './codegen.mjs';
@@ -14,18 +14,18 @@ export async function generateOpenAPISpec(
 	spec: OpenAPIObject,
 	plugins: Plugin[] = [],
 ): Promise<PluginReturn> {
-	const allData: PluginReturn = { files: [], indexInclude: '' };
+	const files: CodeOutput[] = [];
+	const indexInclude = new Set<string>();
 	const templatePaths = plugins.map((p) => p.templatesPath).filter((p) => p) as string[];
 	const codegen = new Codegen([path.resolve(DIR_NAME, 'templates'), ...templatePaths]);
 
 	if (spec.components?.schemas) {
 		logInfo('Generating schema definitions');
 		const schemaDefs = codegen.createSchemaDefinitions(spec.components.schemas);
-		allData.files.push(...schemaDefs.files);
+		files.push(...schemaDefs.files);
 
 		if (schemaDefs.indexInclude) {
-			allData.indexInclude += schemaDefs.indexInclude;
-			allData.indexInclude += '\n';
+			indexInclude.add(schemaDefs.indexInclude);
 		}
 	}
 
@@ -33,11 +33,10 @@ export async function generateOpenAPISpec(
 		logInfo('Generating request body definitions');
 		const requestBodyDefs = codegen.createRequestBodyDefinitions(spec.components.requestBodies);
 
-		allData.files.push(...requestBodyDefs.files);
+		files.push(...requestBodyDefs.files);
 
 		if (requestBodyDefs.indexInclude) {
-			allData.indexInclude += requestBodyDefs.indexInclude;
-			allData.indexInclude += '\n';
+			indexInclude.add(requestBodyDefs.indexInclude);
 		}
 	}
 
@@ -49,14 +48,13 @@ export async function generateOpenAPISpec(
 			// validate plugin data
 			await getPluginReturnSchema().validate(pluginData);
 
-			allData.files.push(...pluginData.files);
+			files.push(...pluginData.files);
 
 			if (pluginData.indexInclude) {
-				allData.indexInclude += pluginData.indexInclude;
-				allData.indexInclude += '\n';
+				indexInclude.add(pluginData.indexInclude);
 			}
 		}
 	}
 
-	return allData;
+	return { files, indexInclude: [...indexInclude].join('\n') };
 }

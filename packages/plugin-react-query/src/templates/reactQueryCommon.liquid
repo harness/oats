@@ -9,6 +9,10 @@
 {% render 'interface.liquid', name: queryParams.name, props: queryParams.props %}
 {% endif %}
 
+{% if requestBodyCode %}
+export type {{requestBodyName}} = {{requestBodyCode}};
+{% endif %}
+
 {% if bodyCode %}
 {{bodyCode}}
 {% endif %}
@@ -23,12 +27,12 @@ export interface {{fetcherPropsName}} extends
 {% endif %}
 Omit<FetcherOptions<
   {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
-  {% if bodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+  {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
 >, 'url'> {
   {% if has_query_params -%}
   queryParams: {{queryParams.name}};
   {%- endif %}
-  {% if bodyCode %}
+  {%- if requestBodyCode %}
   body: {{requestBodyName}};
   {%- endif %}
 }
@@ -46,7 +50,7 @@ export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okRespon
   return fetcher<
     {{okResponseName}},
     {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
-    {% if bodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+    {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
   >({
     url: `{{route | path_to_template}}`,
     method: {{verb | upcase | json}},

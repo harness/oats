@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 0.0.6
+
+### Patch Changes
+
+- Fixed minor generation bugs
+- Updated dependencies
+  - @harnessio/oats-cli@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
