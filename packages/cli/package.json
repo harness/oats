@@ -9,7 +9,7 @@
     "directory": "packages/cli"
   },
   "bin": {
-    "oa2ts": "./bin/oats.js"
+    "oats": "./bin/oats.js"
   },
   "publishConfig": {
     "access": "public"
