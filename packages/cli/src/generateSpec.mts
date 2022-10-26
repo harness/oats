@@ -105,37 +105,39 @@ export async function generateSpec(argv: CLIConfig): Promise<void> {
 				entryPoints: { [builtConfig]: configFilePath },
 				target: 'node16',
 				outdir: cwd,
+				outExtension: { '.js': '.mjs' },
 			});
+
+			logInfo(`Loading built config file: ${builtConfigPath}`);
+			const { default: config } = (await import(builtConfigPath)) as { default: Config };
+
+			logInfo(`Unlinking built config file: ${builtConfigPath}`);
+			await fs.promises.unlink(builtConfigPath);
+
+			logInfo(`Validating config`);
+			await getConfigSchema().validate(config);
+
+			const services = argv.service.length > 0 ? argv.service : Object.keys(config.services);
+
+			for (const service of services) {
+				logInfo(`Generating spec for: "${service}"`);
+				const serviceConfig = config.services[service];
+
+				if (!serviceConfig) {
+					throw new Error(`Cound not find ${service}`);
+				}
+
+				// apply global plugins if local plugins are not present
+				if (config.plugins && !serviceConfig.plugins) {
+					serviceConfig.plugins = config.plugins;
+				}
+
+				const data = await generateSpecFromFileOrUrl(serviceConfig);
+				await writeData(data, { output: serviceConfig.output, clean: argv.clean }, prettierConfig);
+			}
 		} catch (e) {
 			await fs.promises.unlink(builtConfigPath);
 			throw e;
-		}
-
-		logInfo(`Loading built config file: ${builtConfigPath}`);
-		const { default: config } = (await import(builtConfigPath)) as { default: Config };
-		logInfo(`Unlinking built config file: ${builtConfigPath}`);
-		await fs.promises.unlink(builtConfigPath);
-
-		logInfo(`Validating config`);
-		await getConfigSchema().validate(config);
-
-		const services = argv.service.length > 0 ? argv.service : Object.keys(config.services);
-
-		for (const service of services) {
-			logInfo(`Generating spec for: "${service}"`);
-			const serviceConfig = config.services[service];
-
-			if (!serviceConfig) {
-				throw new Error(`Cound not find ${service}`);
-			}
-
-			// apply global plugins if local plugins are not present
-			if (config.plugins && !serviceConfig.plugins) {
-				serviceConfig.plugins = config.plugins;
-			}
-
-			const data = await generateSpecFromFileOrUrl(serviceConfig);
-			await writeData(data, { output: serviceConfig.output, clean: argv.clean }, prettierConfig);
 		}
 	} else {
 		const data = await generateSpecFromFileOrUrl(argv);
