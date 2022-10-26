@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 0.0.5
+
+### Patch Changes
+
+- Update publish config for backword compatability
+- Updated dependencies
+  - @harnessio/oats-cli@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes

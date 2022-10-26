@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 0.0.5
+
+### Patch Changes
+
+- Update publish config for backword compatability
+
 ## 0.0.4
 
 ### Patch Changes
