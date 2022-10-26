@@ -12,9 +12,9 @@
     "access": "public"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./config": "./dist/config.js",
-    "./custom-fetcher": "./dist/custom-fetcher.js"
+    ".": "./dist/index.mjs",
+    "./config": "./dist/config.mjs",
+    "./custom-fetcher": "./dist/custom-fetcher.mjs"
   },
   "scripts": {
     "prebuild": "rimraf dist",

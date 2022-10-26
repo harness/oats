@@ -2,8 +2,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Plugin } from '@harnessio/oats-cli/plugin';
 
-import type { Config } from './config.js';
-import { generateReactQueryHooks } from './generateReactQueryHooks.js';
+import type { Config } from './config.mjs';
+import { generateReactQueryHooks } from './generateReactQueryHooks.mjs';
 
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url));
 

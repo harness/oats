@@ -8,7 +8,7 @@ import { camelCase } from 'change-case';
 import type { PluginReturn, CodeOutput, Plugin } from '@harnessio/oats-cli/plugin';
 import { processPaths } from '@harnessio/oats-cli/pathHelpers';
 import type { Codegen, ObjectProps } from '@harnessio/oats-cli/codegen';
-import type { Config } from './config.js';
+import type { Config } from './config.mjs';
 import {
 	getNameForErrorResponse,
 	getNameForRequestBody,
