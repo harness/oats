@@ -16,6 +16,7 @@
     "fmt": "prettier --write packages/*/src/**/*.ts"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.25.0",
     "@types/js-yaml": "^4.0.1",
     "@types/node": "^18.11.0",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
