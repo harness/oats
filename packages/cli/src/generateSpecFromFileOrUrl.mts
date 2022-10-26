@@ -5,10 +5,10 @@ import fetch from 'node-fetch';
 import type { OpenAPIObject } from 'openapi3-ts';
 import yaml from 'js-yaml';
 
-import { generateOpenAPISpec } from './generateOpenAPISpec.js';
-import { convertToOpenAPI, logInfo } from './helpers.js';
-import type { ServiceConfig } from './config.js';
-import type { PluginReturn } from './plugin.js';
+import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
+import { convertToOpenAPI, logInfo } from './helpers.mjs';
+import type { ServiceConfig } from './config.mjs';
+import type { PluginReturn } from './plugin.mjs';
 
 /**
  * Loads spec file/url and creates code from the spec

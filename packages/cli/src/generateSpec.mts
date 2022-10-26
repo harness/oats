@@ -5,11 +5,11 @@ import * as esbuild from 'esbuild';
 import prettier from 'prettier';
 import ts from 'typescript';
 
-import type { CLIConfig, Config } from './config.js';
-import type { PluginReturn } from './plugin.js';
-import { getConfigSchema } from './config.js';
-import { generateSpecFromFileOrUrl } from './generateSpecFromFileOrUrl.js';
-import { logError, logInfo } from './helpers.js';
+import type { CLIConfig, Config } from './config.mjs';
+import type { PluginReturn } from './plugin.mjs';
+import { getConfigSchema } from './config.mjs';
+import { generateSpecFromFileOrUrl } from './generateSpecFromFileOrUrl.mjs';
+import { logError, logInfo } from './helpers.mjs';
 
 async function writeData(
 	data: PluginReturn,
@@ -97,7 +97,7 @@ export async function generateSpec(argv: CLIConfig): Promise<void> {
 		const configFilePath = path.resolve(cwd, argv.config);
 		logInfo(`Resolve config file to: ${configFilePath}`);
 		const builtConfig = `oats.config.${new Date().getTime()}`;
-		const builtConfigPath = path.resolve(cwd, `${builtConfig}.js`);
+		const builtConfigPath = path.resolve(cwd, `${builtConfig}.mjs`);
 
 		try {
 			logInfo(`Building config file: ${argv.config}`);

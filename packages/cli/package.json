@@ -9,22 +9,22 @@
     "directory": "packages/cli"
   },
   "bin": {
-    "oats": "./bin/oats.js"
+    "oats": "./bin/oats.mjs"
   },
   "publishConfig": {
     "access": "public"
   },
   "exports": {
-    "./config": "./dist/config.js",
-    "./plugin": "./dist/plugin.js",
-    "./nameHelpers": "./dist/nameHelpers.js",
-    "./pathHelpers": "./dist/pathHelpers.js",
-    "./codegen": "./dist/codegen.js",
-    "./helpers": "./dist/helpers.js"
+    "./config": "./dist/config.mjs",
+    "./plugin": "./dist/plugin.mjs",
+    "./nameHelpers": "./dist/nameHelpers.mjs",
+    "./pathHelpers": "./dist/pathHelpers.mjs",
+    "./codegen": "./dist/codegen.mjs",
+    "./helpers": "./dist/helpers.mjs"
   },
   "imports": {
-    "#@harnessio/oats-cli/config": "./dist/config.js",
-    "#@harnessio/oats-cli/plugin": "./dist/plugin.js"
+    "#@harnessio/oats-cli/config": "./dist/config.mjs",
+    "#@harnessio/oats-cli/plugin": "./dist/plugin.mjs"
   },
   "scripts": {
     "prebuild": "rimraf dist",

@@ -5,7 +5,7 @@ import type {
 	PathItemObject,
 	OperationObject,
 } from 'openapi3-ts';
-import { isReferenceObject } from './helpers.js';
+import { isReferenceObject } from './helpers.mjs';
 
 const ALLOWED_VERBS: Array<keyof PathItemObject> = ['get', 'post', 'put', 'delete', 'patch'];
 

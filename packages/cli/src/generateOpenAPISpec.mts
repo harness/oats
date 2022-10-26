@@ -3,10 +3,10 @@ import { fileURLToPath } from 'node:url';
 
 import type { OpenAPIObject } from 'openapi3-ts';
 
-import type { PluginReturn, Plugin } from './plugin.js';
-import { getPluginReturnSchema } from './plugin.js';
-import { logInfo } from './helpers.js';
-import { Codegen } from './codegen.js';
+import type { PluginReturn, Plugin } from './plugin.mjs';
+import { getPluginReturnSchema } from './plugin.mjs';
+import { logInfo } from './helpers.mjs';
+import { Codegen } from './codegen.mjs';
 
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url));
 

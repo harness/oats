@@ -1,7 +1,7 @@
 import type { OpenAPIObject } from 'openapi3-ts';
 import * as Yup from 'yup';
 
-import { getPluginSchema, type Plugin } from './plugin.js';
+import { getPluginSchema, type Plugin } from './plugin.mjs';
 
 export interface CLIConfig {
 	output: string;

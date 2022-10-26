@@ -1,7 +1,7 @@
 import type { OpenAPIObject } from 'openapi3-ts';
 import * as Yup from 'yup';
 
-import type { Codegen } from './codegen.js';
+import type { Codegen } from './codegen.mjs';
 
 export const getCodeOutputSchema = (): Yup.AnyObjectSchema =>
 	Yup.object({

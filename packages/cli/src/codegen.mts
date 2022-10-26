@@ -9,14 +9,14 @@ import type {
 import { Liquid } from 'liquidjs';
 import { has, isPlainObject, isEmpty, uniq } from 'lodash-es';
 
-import type { PluginReturn, CodeOutput } from './plugin.js';
+import type { PluginReturn, CodeOutput } from './plugin.mjs';
 import {
 	getNameForType,
 	getNameForResponse,
 	getNameForRequestBody,
 	getNameForParameter,
-} from './nameHelpers.js';
-import { isReferenceObject } from './helpers.js';
+} from './nameHelpers.mjs';
+import { isReferenceObject } from './helpers.mjs';
 
 export interface CodeWithImports {
 	code: string;

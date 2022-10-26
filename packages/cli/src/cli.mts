@@ -1,9 +1,9 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { generateSpec } from './generateSpec.js';
-import type { CLIConfig } from './config.js';
-import { logError } from './helpers.js';
+import { generateSpec } from './generateSpec.mjs';
+import type { CLIConfig } from './config.mjs';
+import { logError } from './helpers.mjs';
 
 const NAME = 'oats';
 
