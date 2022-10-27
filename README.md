@@ -17,6 +17,12 @@ Checkout the individual packages for documentation.
 
 You can also check the [examples](./examples/) folder for usage.
 
-# License
+## Development
+
+This repo uses [pnpm](https://pnpm.io/) as a package manager and [changesets](https://github.com/changesets/changesets) for versioning.
+
+Check out the [development docs](./docs/development.md) for more info.
+
+## License
 
 MIT.

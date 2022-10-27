@@ -6,19 +6,23 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { UserArrayRequestBody } from '../requestBodies/UserArrayRequestBody';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type CreateUsersWithListInputResponse = unknown;
+export type CreateUsersWithListInputRequestBody = UserArrayRequestBody;
 
-export type CreateUsersWithListInputError = unknown;
+export type CreateUsersWithListInputOkResponse = unknown;
+
+export type CreateUsersWithListInputErrorResponse = unknown;
 
 export interface CreateUsersWithListInputProps
-	extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
+	extends Omit<FetcherOptions<unknown, CreateUsersWithListInputRequestBody>, 'url'> {
+	body: CreateUsersWithListInputRequestBody;
+}
 
 export function createUsersWithListInput(
 	props: CreateUsersWithListInputProps,
-): Promise<CreateUsersWithListInputResponse> {
+): Promise<CreateUsersWithListInputOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<CreateUsersWithListInputResponse, unknown, unknown>({
+	return fetcher<CreateUsersWithListInputOkResponse, unknown, CreateUsersWithListInputRequestBody>({
 		url: `/user/createWithList`,
 		method: 'POST',
 		...rest,
@@ -31,11 +35,11 @@ export function createUsersWithListInput(
 export function useCreateUsersWithListInputMutation(
 	props: CreateUsersWithListInputProps,
 	options: Omit<
-		UseMutationOptions<CreateUsersWithListInputResponse, CreateUsersWithListInputError>,
+		UseMutationOptions<CreateUsersWithListInputOkResponse, CreateUsersWithListInputErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUsersWithListInputResponse, CreateUsersWithListInputError>(
+	return useMutation<CreateUsersWithListInputOkResponse, CreateUsersWithListInputErrorResponse>(
 		() => createUsersWithListInput(props),
 		options,
 	);

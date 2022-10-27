@@ -10,9 +10,11 @@ import type { PluginReturn } from './plugin.mjs';
 import { getConfigSchema } from './config.mjs';
 import { generateSpecFromFileOrUrl } from './generateSpecFromFileOrUrl.mjs';
 import { logError, logInfo } from './helpers.mjs';
+import { identity, mapValues, sortBy, uniq } from 'lodash-es';
+import type { Codegen } from 'codegen.mjs';
 
 async function writeData(
-	data: PluginReturn,
+	data: PluginReturn & { codegen: Codegen },
 	options: Pick<CLIConfig, 'clean' | 'output'>,
 	prettierOptions: prettier.Options | null,
 ): Promise<void> {
@@ -59,12 +61,19 @@ async function writeData(
 		}
 	}
 
-	if (data.indexInclude) {
+	if (data.indexIncludes) {
 		logInfo(`Prettifying file: index.ts`);
-		const formattedCode = prettier.format(data.indexInclude, {
-			...(prettierOptions || {}),
-			parser: 'typescript',
-		});
+		const uniqueIncludes = mapValues(data.indexIncludes, (val) => ({
+			types: sortBy(uniq(val.types), identity),
+			exports: sortBy(uniq(val.exports), identity),
+		}));
+		const formattedCode = prettier.format(
+			data.codegen.renderTemplate('indexIncludes', { includes: uniqueIncludes }),
+			{
+				...(prettierOptions || {}),
+				parser: 'typescript',
+			},
+		);
 
 		logInfo(`Writing file: index.ts`);
 		await fs.promises.writeFile(path.resolve(output, 'index.ts'), formattedCode, 'utf8');
@@ -98,6 +107,7 @@ export async function generateSpec(argv: CLIConfig): Promise<void> {
 		logInfo(`Resolve config file to: ${configFilePath}`);
 		const builtConfig = `oats.config.${new Date().getTime()}`;
 		const builtConfigPath = path.resolve(cwd, `${builtConfig}.mjs`);
+		let configFileDeleted = false;
 
 		try {
 			logInfo(`Building config file: ${argv.config}`);
@@ -111,8 +121,9 @@ export async function generateSpec(argv: CLIConfig): Promise<void> {
 			logInfo(`Loading built config file: ${builtConfigPath}`);
 			const { default: config } = (await import(builtConfigPath)) as { default: Config };
 
-			logInfo(`Unlinking built config file: ${builtConfigPath}`);
+			logInfo(`Deleting transpiled config file: ${builtConfigPath}`);
 			await fs.promises.unlink(builtConfigPath);
+			configFileDeleted = true;
 
 			logInfo(`Validating config`);
 			await getConfigSchema().validate(config);
@@ -136,7 +147,11 @@ export async function generateSpec(argv: CLIConfig): Promise<void> {
 				await writeData(data, { output: serviceConfig.output, clean: argv.clean }, prettierConfig);
 			}
 		} catch (e) {
-			await fs.promises.unlink(builtConfigPath);
+			logInfo(`Deleting transpiled config file due to error: ${builtConfigPath}`);
+
+			if (!configFileDeleted) {
+				await fs.promises.unlink(builtConfigPath);
+			}
 			throw e;
 		}
 	} else {

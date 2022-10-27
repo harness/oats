@@ -10,18 +10,22 @@ export interface UseUpdateUserMutationPathParams {
 	username: string;
 }
 
-export type UpdateUserResponse = unknown;
+export type UpdateUserRequestBody = User;
 
-export type UpdateUserError = unknown;
+export type UpdateUserOkResponse = unknown;
+
+export type UpdateUserErrorResponse = unknown;
 
 export interface UpdateUserProps
 	extends UseUpdateUserMutationPathParams,
-		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
+		Omit<FetcherOptions<unknown, UpdateUserRequestBody>, 'url'> {
+	body: UpdateUserRequestBody;
+}
 
-export function updateUser(props: UpdateUserProps): Promise<UpdateUserResponse> {
+export function updateUser(props: UpdateUserProps): Promise<UpdateUserOkResponse> {
 	const { username, ...rest } = props;
 
-	return fetcher<UpdateUserResponse, unknown, unknown>({
+	return fetcher<UpdateUserOkResponse, unknown, UpdateUserRequestBody>({
 		url: `/user/${username}`,
 		method: 'PUT',
 		...rest,
@@ -34,9 +38,12 @@ export function updateUser(props: UpdateUserProps): Promise<UpdateUserResponse> 
 export function useUpdateUserMutation(
 	props: UpdateUserProps,
 	options: Omit<
-		UseMutationOptions<UpdateUserResponse, UpdateUserError>,
+		UseMutationOptions<UpdateUserOkResponse, UpdateUserErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdateUserResponse, UpdateUserError>(() => updateUser(props), options);
+	return useMutation<UpdateUserOkResponse, UpdateUserErrorResponse>(
+		() => updateUser(props),
+		options,
+	);
 }

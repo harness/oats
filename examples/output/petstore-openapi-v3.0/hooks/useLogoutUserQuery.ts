@@ -5,16 +5,16 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type LogoutUserResponse = unknown;
+export type LogoutUserOkResponse = unknown;
 
-export type LogoutUserError = unknown;
+export type LogoutUserErrorResponse = unknown;
 
 export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function logoutUser(props: LogoutUserProps): Promise<LogoutUserResponse> {
+export function logoutUser(props: LogoutUserProps): Promise<LogoutUserOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<LogoutUserResponse, unknown, unknown>({
+	return fetcher<LogoutUserOkResponse, unknown, unknown>({
 		url: `/user/logout`,
 		method: 'GET',
 		...rest,
@@ -26,9 +26,12 @@ export function logoutUser(props: LogoutUserProps): Promise<LogoutUserResponse> 
  */
 export function useLogoutUserQuery(
 	props: LogoutUserProps,
-	options: Omit<UseQueryOptions<LogoutUserResponse, LogoutUserError>, 'queryKey' | 'queryFn'>,
+	options: Omit<
+		UseQueryOptions<LogoutUserOkResponse, LogoutUserErrorResponse>,
+		'queryKey' | 'queryFn'
+	>,
 ) {
-	return useQuery<LogoutUserResponse, LogoutUserError>(
+	return useQuery<LogoutUserOkResponse, LogoutUserErrorResponse>(
 		['logoutUser'],
 		({ signal }) => logoutUser({ ...props, signal }),
 		options,

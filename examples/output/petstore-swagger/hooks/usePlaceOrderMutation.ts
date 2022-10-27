@@ -6,16 +6,21 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { Order } from '../schemas/Order';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type PlaceOrderResponse = Order;
+export type PlaceOrderRequestBody = Order;
 
-export type PlaceOrderError = unknown;
+export type PlaceOrderOkResponse = Order;
 
-export interface PlaceOrderProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
+export type PlaceOrderErrorResponse = unknown;
 
-export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderResponse> {
+export interface PlaceOrderProps
+	extends Omit<FetcherOptions<unknown, PlaceOrderRequestBody>, 'url'> {
+	body: PlaceOrderRequestBody;
+}
+
+export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<PlaceOrderResponse, unknown, unknown>({
+	return fetcher<PlaceOrderOkResponse, unknown, PlaceOrderRequestBody>({
 		url: `/store/order`,
 		method: 'POST',
 		...rest,
@@ -28,9 +33,12 @@ export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderResponse> 
 export function usePlaceOrderMutation(
 	props: PlaceOrderProps,
 	options: Omit<
-		UseMutationOptions<PlaceOrderResponse, PlaceOrderError>,
+		UseMutationOptions<PlaceOrderOkResponse, PlaceOrderErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<PlaceOrderResponse, PlaceOrderError>(() => placeOrder(props), options);
+	return useMutation<PlaceOrderOkResponse, PlaceOrderErrorResponse>(
+		() => placeOrder(props),
+		options,
+	);
 }

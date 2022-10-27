@@ -10,19 +10,19 @@ export interface UseFindPetsByTagsQueryQueryParams {
 	tags: string[];
 }
 
-export type FindPetsByTagsResponse = Pet[];
+export type FindPetsByTagsOkResponse = Pet[];
 
-export type FindPetsByTagsError = unknown;
+export type FindPetsByTagsErrorResponse = unknown;
 
 export interface FindPetsByTagsProps
 	extends Omit<FetcherOptions<UseFindPetsByTagsQueryQueryParams, unknown>, 'url'> {
 	queryParams: UseFindPetsByTagsQueryQueryParams;
 }
 
-export function findPetsByTags(props: FindPetsByTagsProps): Promise<FindPetsByTagsResponse> {
+export function findPetsByTags(props: FindPetsByTagsProps): Promise<FindPetsByTagsOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<FindPetsByTagsResponse, UseFindPetsByTagsQueryQueryParams, unknown>({
+	return fetcher<FindPetsByTagsOkResponse, UseFindPetsByTagsQueryQueryParams, unknown>({
 		url: `/pet/findByTags`,
 		method: 'GET',
 		...rest,
@@ -36,11 +36,11 @@ export function findPetsByTags(props: FindPetsByTagsProps): Promise<FindPetsByTa
 export function useFindPetsByTagsQuery(
 	props: FindPetsByTagsProps,
 	options: Omit<
-		UseQueryOptions<FindPetsByTagsResponse, FindPetsByTagsError>,
+		UseQueryOptions<FindPetsByTagsOkResponse, FindPetsByTagsErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<FindPetsByTagsResponse, FindPetsByTagsError>(
+	return useQuery<FindPetsByTagsOkResponse, FindPetsByTagsErrorResponse>(
 		['findPetsByTags'],
 		({ signal }) => findPetsByTags({ ...props, signal }),
 		options,

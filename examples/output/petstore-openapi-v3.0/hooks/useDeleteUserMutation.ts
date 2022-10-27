@@ -9,18 +9,18 @@ export interface UseDeleteUserMutationPathParams {
 	username: string;
 }
 
-export type DeleteUserResponse = unknown;
+export type DeleteUserOkResponse = unknown;
 
-export type DeleteUserError = unknown;
+export type DeleteUserErrorResponse = unknown;
 
 export interface DeleteUserProps
 	extends UseDeleteUserMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function deleteUser(props: DeleteUserProps): Promise<DeleteUserResponse> {
+export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse> {
 	const { username, ...rest } = props;
 
-	return fetcher<DeleteUserResponse, unknown, unknown>({
+	return fetcher<DeleteUserOkResponse, unknown, unknown>({
 		url: `/user/${username}`,
 		method: 'DELETE',
 		...rest,
@@ -33,9 +33,12 @@ export function deleteUser(props: DeleteUserProps): Promise<DeleteUserResponse> 
 export function useDeleteUserMutation(
 	props: DeleteUserProps,
 	options: Omit<
-		UseMutationOptions<DeleteUserResponse, DeleteUserError>,
+		UseMutationOptions<DeleteUserOkResponse, DeleteUserErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeleteUserResponse, DeleteUserError>(() => deleteUser(props), options);
+	return useMutation<DeleteUserOkResponse, DeleteUserErrorResponse>(
+		() => deleteUser(props),
+		options,
+	);
 }

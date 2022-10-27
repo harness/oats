@@ -5,7 +5,7 @@
   "type": "module",
   "private": "true",
   "scripts": {
-    "build": "oa2ts import --clean",
+    "build": "oats import --clean",
     "postbuild": "exit 0 && tsc --noEmit"
   },
   "engines": {

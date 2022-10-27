@@ -13,18 +13,18 @@ export interface UseGetPetByIdQueryPathParams {
 	petId: number;
 }
 
-export type GetPetByIdResponse = Pet;
+export type GetPetByIdOkResponse = Pet;
 
-export type GetPetByIdError = unknown;
+export type GetPetByIdErrorResponse = unknown;
 
 export interface GetPetByIdProps
 	extends UseGetPetByIdQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdResponse> {
+export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<GetPetByIdResponse, unknown, unknown>({
+	return fetcher<GetPetByIdOkResponse, unknown, unknown>({
 		url: `/pet/${petId}`,
 		method: 'GET',
 		...rest,
@@ -36,9 +36,12 @@ export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdResponse> 
  */
 export function useGetPetByIdQuery(
 	props: GetPetByIdProps,
-	options: Omit<UseQueryOptions<GetPetByIdResponse, GetPetByIdError>, 'queryKey' | 'queryFn'>,
+	options: Omit<
+		UseQueryOptions<GetPetByIdOkResponse, GetPetByIdErrorResponse>,
+		'queryKey' | 'queryFn'
+	>,
 ) {
-	return useQuery<GetPetByIdResponse, GetPetByIdError>(
+	return useQuery<GetPetByIdOkResponse, GetPetByIdErrorResponse>(
 		['getPetById'],
 		({ signal }) => getPetById({ ...props, signal }),
 		options,

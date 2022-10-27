@@ -12,18 +12,18 @@ export interface UseDeletePetMutationPathParams {
 	petId: number;
 }
 
-export type DeletePetResponse = unknown;
+export type DeletePetOkResponse = unknown;
 
-export type DeletePetError = unknown;
+export type DeletePetErrorResponse = unknown;
 
 export interface DeletePetProps
 	extends UseDeletePetMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function deletePet(props: DeletePetProps): Promise<DeletePetResponse> {
+export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<DeletePetResponse, unknown, unknown>({
+	return fetcher<DeletePetOkResponse, unknown, unknown>({
 		url: `/pet/${petId}`,
 		method: 'DELETE',
 		...rest,
@@ -36,9 +36,9 @@ export function deletePet(props: DeletePetProps): Promise<DeletePetResponse> {
 export function useDeletePetMutation(
 	props: DeletePetProps,
 	options: Omit<
-		UseMutationOptions<DeletePetResponse, DeletePetError>,
+		UseMutationOptions<DeletePetOkResponse, DeletePetErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeletePetResponse, DeletePetError>(() => deletePet(props), options);
+	return useMutation<DeletePetOkResponse, DeletePetErrorResponse>(() => deletePet(props), options);
 }

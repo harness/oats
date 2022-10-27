@@ -6,19 +6,27 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { UserArrayRequestBody } from '../requestBodies/UserArrayRequestBody';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type CreateUsersWithArrayInputResponse = unknown;
+export type CreateUsersWithArrayInputRequestBody = UserArrayRequestBody;
 
-export type CreateUsersWithArrayInputError = unknown;
+export type CreateUsersWithArrayInputOkResponse = unknown;
+
+export type CreateUsersWithArrayInputErrorResponse = unknown;
 
 export interface CreateUsersWithArrayInputProps
-	extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
+	extends Omit<FetcherOptions<unknown, CreateUsersWithArrayInputRequestBody>, 'url'> {
+	body: CreateUsersWithArrayInputRequestBody;
+}
 
 export function createUsersWithArrayInput(
 	props: CreateUsersWithArrayInputProps,
-): Promise<CreateUsersWithArrayInputResponse> {
+): Promise<CreateUsersWithArrayInputOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<CreateUsersWithArrayInputResponse, unknown, unknown>({
+	return fetcher<
+		CreateUsersWithArrayInputOkResponse,
+		unknown,
+		CreateUsersWithArrayInputRequestBody
+	>({
 		url: `/user/createWithArray`,
 		method: 'POST',
 		...rest,
@@ -31,11 +39,11 @@ export function createUsersWithArrayInput(
 export function useCreateUsersWithArrayInputMutation(
 	props: CreateUsersWithArrayInputProps,
 	options: Omit<
-		UseMutationOptions<CreateUsersWithArrayInputResponse, CreateUsersWithArrayInputError>,
+		UseMutationOptions<CreateUsersWithArrayInputOkResponse, CreateUsersWithArrayInputErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUsersWithArrayInputResponse, CreateUsersWithArrayInputError>(
+	return useMutation<CreateUsersWithArrayInputOkResponse, CreateUsersWithArrayInputErrorResponse>(
 		() => createUsersWithArrayInput(props),
 		options,
 	);

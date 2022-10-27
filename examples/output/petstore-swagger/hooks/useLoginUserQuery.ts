@@ -10,19 +10,19 @@ export interface UseLoginUserQueryQueryParams {
 	password: string;
 }
 
-export type LoginUserResponse = string;
+export type LoginUserOkResponse = string;
 
-export type LoginUserError = unknown;
+export type LoginUserErrorResponse = unknown;
 
 export interface LoginUserProps
 	extends Omit<FetcherOptions<UseLoginUserQueryQueryParams, unknown>, 'url'> {
 	queryParams: UseLoginUserQueryQueryParams;
 }
 
-export function loginUser(props: LoginUserProps): Promise<LoginUserResponse> {
+export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<LoginUserResponse, UseLoginUserQueryQueryParams, unknown>({
+	return fetcher<LoginUserOkResponse, UseLoginUserQueryQueryParams, unknown>({
 		url: `/user/login`,
 		method: 'GET',
 		...rest,
@@ -34,9 +34,12 @@ export function loginUser(props: LoginUserProps): Promise<LoginUserResponse> {
  */
 export function useLoginUserQuery(
 	props: LoginUserProps,
-	options: Omit<UseQueryOptions<LoginUserResponse, LoginUserError>, 'queryKey' | 'queryFn'>,
+	options: Omit<
+		UseQueryOptions<LoginUserOkResponse, LoginUserErrorResponse>,
+		'queryKey' | 'queryFn'
+	>,
 ) {
-	return useQuery<LoginUserResponse, LoginUserError>(
+	return useQuery<LoginUserOkResponse, LoginUserErrorResponse>(
 		['loginUser'],
 		({ signal }) => loginUser({ ...props, signal }),
 		options,

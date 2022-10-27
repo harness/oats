@@ -36,9 +36,14 @@ export interface CodeOutput {
 	file: string;
 }
 
+export interface PluginExports {
+	types: string[];
+	exports: string[];
+}
+
 export interface PluginReturn {
 	files: CodeOutput[];
-	indexInclude?: string;
+	indexIncludes?: Record<string, PluginExports>;
 }
 
 export interface Plugin {

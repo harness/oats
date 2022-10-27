@@ -17,9 +17,9 @@ export interface UseUpdatePetWithFormMutationQueryParams {
 	status?: string;
 }
 
-export type UpdatePetWithFormResponse = unknown;
+export type UpdatePetWithFormOkResponse = unknown;
 
-export type UpdatePetWithFormError = unknown;
+export type UpdatePetWithFormErrorResponse = unknown;
 
 export interface UpdatePetWithFormProps
 	extends UseUpdatePetWithFormMutationPathParams,
@@ -29,10 +29,10 @@ export interface UpdatePetWithFormProps
 
 export function updatePetWithForm(
 	props: UpdatePetWithFormProps,
-): Promise<UpdatePetWithFormResponse> {
+): Promise<UpdatePetWithFormOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<UpdatePetWithFormResponse, UseUpdatePetWithFormMutationQueryParams, unknown>({
+	return fetcher<UpdatePetWithFormOkResponse, UseUpdatePetWithFormMutationQueryParams, unknown>({
 		url: `/pet/${petId}`,
 		method: 'POST',
 		...rest,
@@ -45,11 +45,11 @@ export function updatePetWithForm(
 export function useUpdatePetWithFormMutation(
 	props: UpdatePetWithFormProps,
 	options: Omit<
-		UseMutationOptions<UpdatePetWithFormResponse, UpdatePetWithFormError>,
+		UseMutationOptions<UpdatePetWithFormOkResponse, UpdatePetWithFormErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdatePetWithFormResponse, UpdatePetWithFormError>(
+	return useMutation<UpdatePetWithFormOkResponse, UpdatePetWithFormErrorResponse>(
 		() => updatePetWithForm(props),
 		options,
 	);

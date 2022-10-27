@@ -5,14 +5,14 @@ import type {
 	ParameterObject,
 } from 'openapi3-ts';
 import { camelCase } from 'change-case';
-import type { PluginReturn, CodeOutput, Plugin } from '@harnessio/oats-cli/plugin';
+import type { PluginReturn, CodeOutput, Plugin, PluginExports } from '@harnessio/oats-cli/plugin';
 import { processPaths } from '@harnessio/oats-cli/pathHelpers';
 import type { Codegen, ObjectProps } from '@harnessio/oats-cli/codegen';
 import type { Config } from './config.mjs';
 import {
 	getNameForErrorResponse,
 	getNameForRequestBody,
-	getNameForResponse,
+	getNameForOkResponse,
 	getNameForType,
 } from '@harnessio/oats-cli/nameHelpers';
 
@@ -55,7 +55,7 @@ declare module '@harnessio/oats-cli/codegen' {
 export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 	return async (spec: OpenAPIObject, codegen: Codegen): Promise<PluginReturn> => {
 		const files: CodeOutput[] = [];
-		const includes: string[] = [];
+		const indexIncludes: Record<string, PluginExports> = {};
 
 		processPaths(spec, (route, verb, operation, params) => {
 			// check for operationId
@@ -74,7 +74,7 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 			const fetcherName = `${camelCase(operation.operationId)}`;
 			const fetcherPropsName = `${typeName}Props`;
 			const requestBodyName = getNameForRequestBody(operation.operationId);
-			const okResponseName = getNameForResponse(operation.operationId);
+			const okResponseName = getNameForOkResponse(operation.operationId);
 			const errorResponseName = getNameForErrorResponse(operation.operationId);
 			const okResponseCode = codegen.getOkResponses(operation.responses);
 			const errorResponseCode = codegen.getErrorResponses(operation.responses);
@@ -153,10 +153,10 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 				exportedTypes.push(requestBodyName);
 			}
 
-			includes.push(`export { ${hookName}, ${fetcherName} } from './hooks/${hookName}';`);
+			indexIncludes[`./hooks/${hookName}`] = { exports: [hookName, fetcherName], types: [] };
 
 			if (exportedTypes.length > 0) {
-				includes.push(`export type { ${exportedTypes.join(', ')} } from './hooks/${hookName}'`);
+				indexIncludes[`./hooks/${hookName}`].types.push(...exportedTypes);
 			}
 
 			if (useUseQuery) {
@@ -190,6 +190,6 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 			});
 		});
 
-		return { files, indexInclude: includes.join('\n') };
+		return { files, indexIncludes };
 	};
 }

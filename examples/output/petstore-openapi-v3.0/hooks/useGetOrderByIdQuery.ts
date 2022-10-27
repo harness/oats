@@ -13,18 +13,18 @@ export interface UseGetOrderByIdQueryPathParams {
 	orderId: number;
 }
 
-export type GetOrderByIdResponse = Order;
+export type GetOrderByIdOkResponse = Order;
 
-export type GetOrderByIdError = unknown;
+export type GetOrderByIdErrorResponse = unknown;
 
 export interface GetOrderByIdProps
 	extends UseGetOrderByIdQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdResponse> {
+export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkResponse> {
 	const { orderId, ...rest } = props;
 
-	return fetcher<GetOrderByIdResponse, unknown, unknown>({
+	return fetcher<GetOrderByIdOkResponse, unknown, unknown>({
 		url: `/store/order/${orderId}`,
 		method: 'GET',
 		...rest,
@@ -36,9 +36,12 @@ export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdResp
  */
 export function useGetOrderByIdQuery(
 	props: GetOrderByIdProps,
-	options: Omit<UseQueryOptions<GetOrderByIdResponse, GetOrderByIdError>, 'queryKey' | 'queryFn'>,
+	options: Omit<
+		UseQueryOptions<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>,
+		'queryKey' | 'queryFn'
+	>,
 ) {
-	return useQuery<GetOrderByIdResponse, GetOrderByIdError>(
+	return useQuery<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>(
 		['getOrderById'],
 		({ signal }) => getOrderById({ ...props, signal }),
 		options,

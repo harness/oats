@@ -13,19 +13,21 @@ export interface UseFindPetsByStatusQueryQueryParams {
 	status?: 'available' | 'pending' | 'sold';
 }
 
-export type FindPetsByStatusResponse = Pet[];
+export type FindPetsByStatusOkResponse = Pet[];
 
-export type FindPetsByStatusError = unknown;
+export type FindPetsByStatusErrorResponse = unknown;
 
 export interface FindPetsByStatusProps
 	extends Omit<FetcherOptions<UseFindPetsByStatusQueryQueryParams, unknown>, 'url'> {
 	queryParams: UseFindPetsByStatusQueryQueryParams;
 }
 
-export function findPetsByStatus(props: FindPetsByStatusProps): Promise<FindPetsByStatusResponse> {
+export function findPetsByStatus(
+	props: FindPetsByStatusProps,
+): Promise<FindPetsByStatusOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<FindPetsByStatusResponse, UseFindPetsByStatusQueryQueryParams, unknown>({
+	return fetcher<FindPetsByStatusOkResponse, UseFindPetsByStatusQueryQueryParams, unknown>({
 		url: `/pet/findByStatus`,
 		method: 'GET',
 		...rest,
@@ -38,11 +40,11 @@ export function findPetsByStatus(props: FindPetsByStatusProps): Promise<FindPets
 export function useFindPetsByStatusQuery(
 	props: FindPetsByStatusProps,
 	options: Omit<
-		UseQueryOptions<FindPetsByStatusResponse, FindPetsByStatusError>,
+		UseQueryOptions<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<FindPetsByStatusResponse, FindPetsByStatusError>(
+	return useQuery<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>(
 		['findPetsByStatus'],
 		({ signal }) => findPetsByStatus({ ...props, signal }),
 		options,

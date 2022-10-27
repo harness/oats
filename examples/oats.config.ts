@@ -1,4 +1,4 @@
-import { defineConfig } from '@harnessio/oats-cli/config';
+import { defineConfig } from '@harnessio/oats-cli';
 import reactQueryPlugin from '@harnessio/oats-plugin-react-query';
 
 export default defineConfig({

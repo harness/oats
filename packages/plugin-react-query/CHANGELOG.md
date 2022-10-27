@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 0.0.7
+
+### Patch Changes
+
+- fix: duplicay issues in generated code.
+- Updated dependencies
+  - @harnessio/oats-cli@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes

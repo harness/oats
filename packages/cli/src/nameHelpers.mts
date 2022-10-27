@@ -8,8 +8,12 @@ export function getNameForResponse(name: string): string {
 	return getNameForType(name) + 'Response';
 }
 
+export function getNameForOkResponse(name: string): string {
+	return getNameForType(name) + 'OkResponse';
+}
+
 export function getNameForErrorResponse(name: string): string {
-	return getNameForType(name) + 'Error';
+	return getNameForType(name) + 'ErrorResponse';
 }
 
 export function getNameForParameter(name: string): string {

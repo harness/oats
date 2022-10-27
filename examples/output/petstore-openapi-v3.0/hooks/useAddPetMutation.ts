@@ -6,16 +6,20 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { Pet } from '../schemas/Pet';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type AddPetResponse = Pet;
+export type AddPetRequestBody = Pet;
 
-export type AddPetError = unknown;
+export type AddPetOkResponse = Pet;
 
-export interface AddPetProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
+export type AddPetErrorResponse = unknown;
 
-export function addPet(props: AddPetProps): Promise<AddPetResponse> {
+export interface AddPetProps extends Omit<FetcherOptions<unknown, AddPetRequestBody>, 'url'> {
+	body: AddPetRequestBody;
+}
+
+export function addPet(props: AddPetProps): Promise<AddPetOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<AddPetResponse, unknown, unknown>({
+	return fetcher<AddPetOkResponse, unknown, AddPetRequestBody>({
 		url: `/pet`,
 		method: 'POST',
 		...rest,
@@ -27,7 +31,10 @@ export function addPet(props: AddPetProps): Promise<AddPetResponse> {
  */
 export function useAddPetMutation(
 	props: AddPetProps,
-	options: Omit<UseMutationOptions<AddPetResponse, AddPetError>, 'mutationKey' | 'mutationFn'>,
+	options: Omit<
+		UseMutationOptions<AddPetOkResponse, AddPetErrorResponse>,
+		'mutationKey' | 'mutationFn'
+	>,
 ) {
-	return useMutation<AddPetResponse, AddPetError>(() => addPet(props), options);
+	return useMutation<AddPetOkResponse, AddPetErrorResponse>(() => addPet(props), options);
 }

@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 0.0.7
+
+### Patch Changes
+
+- fix: duplicay issues in generated code.
+
 ## 0.0.6
 
 ### Patch Changes

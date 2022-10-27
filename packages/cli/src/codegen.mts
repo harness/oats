@@ -9,11 +9,11 @@ import type {
 import { Liquid } from 'liquidjs';
 import { has, isPlainObject, isEmpty, uniq } from 'lodash-es';
 
-import type { PluginReturn, CodeOutput } from './plugin.mjs';
+import type { PluginReturn, CodeOutput, PluginExports } from './plugin.mjs';
 import {
 	getNameForType,
-	getNameForResponse,
 	getNameForRequestBody,
+	getNameForResponse,
 	getNameForParameter,
 } from './nameHelpers.mjs';
 import { isReferenceObject } from './helpers.mjs';
@@ -41,7 +41,8 @@ export type TemplateName =
 	| 'typeDeclaration'
 	| 'interface'
 	| 'comments'
-	| 'codeWithImports';
+	| 'codeWithImports'
+	| 'indexIncludes';
 
 export type TemplateProps<T> = T extends 'comments'
 	? { schema?: SchemaObject | ReferenceObject }
@@ -53,6 +54,8 @@ export type TemplateProps<T> = T extends 'comments'
 	? { name: string; value: string; schema: SchemaObject | ReferenceObject }
 	: T extends 'codeWithImports'
 	? CodeWithImports
+	: T extends 'indexIncludes'
+	? { includes: Record<string, PluginExports> }
 	: object;
 
 export interface RenderTemplate {
@@ -76,10 +79,6 @@ export class Codegen {
 		);
 
 		this.liquidEngine.registerFilter('path_to_template', (val: string) => val.replace(/\{/g, '${'));
-		this.liquidEngine.registerFilter('name_type', getNameForType);
-		this.liquidEngine.registerFilter('name_response', getNameForResponse);
-		this.liquidEngine.registerFilter('name_request_body', getNameForRequestBody);
-		this.liquidEngine.registerFilter('name_parameter', getNameForParameter);
 	}
 
 	renderTemplate: RenderTemplate = (name, data): string => {
@@ -280,7 +279,7 @@ export class Codegen {
 
 	createRequestBodyDefinitions(schemas: ComponentsObject['requestBodies'] = {}): PluginReturn {
 		const files: CodeOutput[] = [];
-		const includes: string[] = [];
+		const indexIncludes: Record<string, PluginExports> = {};
 		const data = Object.entries(schemas);
 
 		data.forEach(([name, schema]) => {
@@ -309,15 +308,21 @@ export class Codegen {
 			}
 
 			files.push({ code, file: `requestBodies/${finalName}.ts` });
-			includes.push(`export { ${finalName} } from './requestBodies/${finalName}';`);
+			const includesPath = `./requestBodies/${finalName}`;
+
+			if (!indexIncludes[includesPath]) {
+				indexIncludes[includesPath] = { types: [], exports: [] };
+			}
+
+			indexIncludes[includesPath].types.push(finalName);
 		});
 
-		return { files, indexInclude: includes.join('\n') };
+		return { files, indexIncludes };
 	}
 
 	createSchemaDefinitions(schemas: ComponentsObject['schemas'] = {}): PluginReturn {
 		const files: CodeOutput[] = [];
-		const includes: string[] = [];
+		const indexIncludes: Record<string, PluginExports> = {};
 		const data = Object.entries(schemas);
 
 		data.forEach(([name, schema]) => {
@@ -340,10 +345,16 @@ export class Codegen {
 			}
 
 			files.push({ code, file: `schemas/${finalName}.ts` });
-			includes.push(`export { ${finalName} } from './schemas/${finalName}';`);
+			const includesPath = `./schemas/${finalName}`;
+
+			if (!indexIncludes[includesPath]) {
+				indexIncludes[includesPath] = { types: [], exports: [] };
+			}
+
+			indexIncludes[includesPath].types.push(finalName);
 		});
 
-		return { files, indexInclude: includes.join('\n') };
+		return { files, indexIncludes };
 	}
 
 	getReqResTypes(

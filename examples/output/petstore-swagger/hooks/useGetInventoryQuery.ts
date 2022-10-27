@@ -5,16 +5,16 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export type GetInventoryResponse = { '[key: string]'?: number };
+export type GetInventoryOkResponse = { '[key: string]'?: number };
 
-export type GetInventoryError = unknown;
+export type GetInventoryErrorResponse = unknown;
 
 export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getInventory(props: GetInventoryProps): Promise<GetInventoryResponse> {
+export function getInventory(props: GetInventoryProps): Promise<GetInventoryOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<GetInventoryResponse, unknown, unknown>({
+	return fetcher<GetInventoryOkResponse, unknown, unknown>({
 		url: `/store/inventory`,
 		method: 'GET',
 		...rest,
@@ -26,9 +26,12 @@ export function getInventory(props: GetInventoryProps): Promise<GetInventoryResp
  */
 export function useGetInventoryQuery(
 	props: GetInventoryProps,
-	options: Omit<UseQueryOptions<GetInventoryResponse, GetInventoryError>, 'queryKey' | 'queryFn'>,
+	options: Omit<
+		UseQueryOptions<GetInventoryOkResponse, GetInventoryErrorResponse>,
+		'queryKey' | 'queryFn'
+	>,
 ) {
-	return useQuery<GetInventoryResponse, GetInventoryError>(
+	return useQuery<GetInventoryOkResponse, GetInventoryErrorResponse>(
 		['getInventory'],
 		({ signal }) => getInventory({ ...props, signal }),
 		options,

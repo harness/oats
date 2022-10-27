@@ -9,11 +9,14 @@ import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
 import { convertToOpenAPI, logInfo } from './helpers.mjs';
 import type { ServiceConfig } from './config.mjs';
 import type { PluginReturn } from './plugin.mjs';
+import type { Codegen } from 'codegen.mjs';
 
 /**
  * Loads spec file/url and creates code from the spec
  */
-export async function generateSpecFromFileOrUrl(config: ServiceConfig): Promise<PluginReturn> {
+export async function generateSpecFromFileOrUrl(
+	config: ServiceConfig,
+): Promise<PluginReturn & { codegen: Codegen }> {
 	let spec: OpenAPIObject | undefined;
 
 	if (config.file) {

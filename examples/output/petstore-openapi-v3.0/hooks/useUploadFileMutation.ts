@@ -17,20 +17,23 @@ export interface UseUploadFileMutationQueryParams {
 	additionalMetadata?: string;
 }
 
-export type UploadFileResponse = ApiResponse;
+export type UploadFileRequestBody = string;
 
-export type UploadFileError = unknown;
+export type UploadFileOkResponse = ApiResponse;
+
+export type UploadFileErrorResponse = unknown;
 
 export interface UploadFileProps
 	extends UseUploadFileMutationPathParams,
-		Omit<FetcherOptions<UseUploadFileMutationQueryParams, unknown>, 'url'> {
+		Omit<FetcherOptions<UseUploadFileMutationQueryParams, UploadFileRequestBody>, 'url'> {
 	queryParams: UseUploadFileMutationQueryParams;
+	body: UploadFileRequestBody;
 }
 
-export function uploadFile(props: UploadFileProps): Promise<UploadFileResponse> {
+export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<UploadFileResponse, UseUploadFileMutationQueryParams, unknown>({
+	return fetcher<UploadFileOkResponse, UseUploadFileMutationQueryParams, UploadFileRequestBody>({
 		url: `/pet/${petId}/uploadImage`,
 		method: 'POST',
 		...rest,
@@ -43,9 +46,12 @@ export function uploadFile(props: UploadFileProps): Promise<UploadFileResponse> 
 export function useUploadFileMutation(
 	props: UploadFileProps,
 	options: Omit<
-		UseMutationOptions<UploadFileResponse, UploadFileError>,
+		UseMutationOptions<UploadFileOkResponse, UploadFileErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UploadFileResponse, UploadFileError>(() => uploadFile(props), options);
+	return useMutation<UploadFileOkResponse, UploadFileErrorResponse>(
+		() => uploadFile(props),
+		options,
+	);
 }

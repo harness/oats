@@ -20,7 +20,7 @@ export function isReferenceObject(data: unknown): data is ReferenceObject {
 }
 
 export function logInfo(msg: string): void {
-	if (process.env.DEBUG_OA2TS === 'true') {
+	if (process.env.DEBUG_OATS === 'true') {
 		console.log(chalk.cyan(`oa2ts: [INFO]: ${msg}`));
 	}
 }

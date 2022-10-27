@@ -16,6 +16,9 @@ Using Yarn:
 yarn add -D @harnessio/oats-cli
 ```
 
+You can run the commands shown below using `npx` (which is bundled with `npm`).
+For example `npx oats import --config oats.config.ts`.
+
 ## Usage
 
 ```
