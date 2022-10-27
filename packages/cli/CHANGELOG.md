@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 0.0.8
+
+### Patch Changes
+
+- Transformer works with openAPI 3.x only
+
 ## 0.0.7
 
 ### Patch Changes

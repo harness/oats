@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 0.0.8
+
+### Patch Changes
+
+- Transformer works with openAPI 3.x only
+- Updated dependencies
+  - @harnessio/oats-cli@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes

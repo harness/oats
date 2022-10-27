@@ -67,15 +67,15 @@ export async function generateSpecFromFileOrUrl(
 		throw new Error(`Could not resolve OpenAPI spec from "${config.file || config.url}"`);
 	}
 
+	if (!spec.info || !spec.info.version.startsWith('3.')) {
+		logInfo('Converting spec from Swagger to OpenAPI');
+		spec = await convertToOpenAPI(spec);
+	}
+
 	if (config.transformer) {
 		logInfo(`Transforming schema using "${config.transformer}"`);
 
 		spec = config.transformer(spec);
-	}
-
-	if (!spec.info || !spec.info.version.startsWith('3.')) {
-		logInfo('Converting spec from Swagger to OpenAPI');
-		spec = await convertToOpenAPI(spec);
 	}
 
 	return generateOpenAPISpec(spec, config.plugins);
