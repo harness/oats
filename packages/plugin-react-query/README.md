@@ -28,12 +28,22 @@ export default defineConfig({
   plugins: [
     reactQueryPlugin({
       /**
-       * Path to file which exports a custom fetcher/query function
-       * This field is optional.
+       * Path poiniting to the file where the custom fetcher resides.
+       * This path will be used as is, while generating the hooks.
        *
-       * See "Custom Fetcher" for more details
+       * This path must be a relative path which can be resolved with respect
+       * to a file within the hooks folder.
        */
       customFetcher: '../realtive/path/to/custom/fetcher',
+      /**
+       * An allow-list, for filtering out operation IDs which are to be generated.
+       *
+       * When defined, hooks will be generated only for the operation IDs
+       * defined in this list.
+       *
+       * This field is optional.
+       */
+      allowedOperationIds: [],
       /**
        * Override options per operation.
        * The key must the operation Id from the spec.
@@ -42,12 +52,12 @@ export default defineConfig({
       overrides: {
         operationId: {
           /**
-           * By default, if the method is `GET`, `useQuery` is used
-           * else, `useMutation` is used. This might not be the desired output
-           * always and this option can be used to override the behaviour.
+           * By default, any operation expect "GET", will generate a mutation
+           * hook using `useMutation`. This option can be used to overide this
+           * behaviour for a given operation ID.
            *
-           * If this is set to `true`, no matter what the method is, `useQuery`
-           * will always to used.
+           * When set to `true`, no matter what the verb, query hook will be
+           * generated using `useQuery`.
            */
           useQuery: true,
         },

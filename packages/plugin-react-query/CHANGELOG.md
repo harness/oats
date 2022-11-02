@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 1.0.1
+
+### Patch Changes
+
+- Add `allowedOperationIds` config
+- Updated dependencies
+  - @harnessio/oats-cli@1.0.0
+
 ## 1.0.0
 
 ### Minor Changes

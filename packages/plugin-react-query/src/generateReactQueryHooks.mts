@@ -65,6 +65,15 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 				);
 			}
 
+			if (
+				config &&
+				Array.isArray(config.allowedOperationIds) &&
+				// check for the operationId in the allow-list.
+				!config.allowedOperationIds.includes(operation.operationId)
+			) {
+				return;
+			}
+
 			const useUseQuery = verb === 'get' || config?.overrides?.[operation.operationId]?.useQuery;
 			const suffix = useUseQuery ? 'Query' : 'Mutation';
 
