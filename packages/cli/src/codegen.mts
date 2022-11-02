@@ -357,6 +357,53 @@ export class Codegen {
 		return { files, indexIncludes };
 	}
 
+	createResponseDefinitions(schemas: ComponentsObject['responses'] = {}): PluginReturn {
+		const files: CodeOutput[] = [];
+		const indexIncludes: Record<string, PluginExports> = {};
+		const data = Object.entries(schemas);
+
+		data.forEach(([name, schema]) => {
+			const finalName = getNameForResponse(name);
+			const responseSchema = this.getRequestResponseSchema(schema);
+			let code = '';
+
+			if (!responseSchema) {
+				code = `export type ${finalName} = unknown`;
+				return;
+			}
+
+			if (
+				!isReferenceObject(responseSchema) &&
+				(!responseSchema.type || responseSchema.type === 'object') &&
+				!responseSchema.allOf &&
+				!responseSchema.oneOf &&
+				!responseSchema.nullable
+			) {
+				code = this.renderTemplate(
+					'codeWithImports',
+					this.createInterface(finalName, responseSchema),
+				);
+			} else {
+				code = this.renderTemplate(
+					'codeWithImports',
+					this.createTypeDeclaration(finalName, responseSchema),
+				);
+			}
+
+			files.push({ code, file: `responses/${finalName}.ts` });
+
+			const includesPath = `./responses/${finalName}`;
+
+			if (!indexIncludes[includesPath]) {
+				indexIncludes[includesPath] = { types: [], exports: [] };
+			}
+
+			indexIncludes[includesPath].types.push(finalName);
+		});
+
+		return { files, indexIncludes };
+	}
+
 	getReqResTypes(
 		responsesOrRequests: Array<[string, ResponseObject | ReferenceObject | RequestBodyObject]>,
 	): CodeWithImports {

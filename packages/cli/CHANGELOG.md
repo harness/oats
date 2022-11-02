@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 0.1.0
+
+### Minor Changes
+
+- add support for repose generation
+
 ## 0.0.8
 
 ### Patch Changes

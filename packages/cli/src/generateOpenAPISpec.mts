@@ -55,6 +55,25 @@ export async function generateOpenAPISpec(
 		}
 	}
 
+	if (spec.components?.responses) {
+		logInfo('Generating response definitions');
+
+		const responseDefs = codegen.createResponseDefinitions(spec.components.responses);
+
+		files.push(...responseDefs.files);
+
+		if (responseDefs.indexIncludes) {
+			forEach(responseDefs.indexIncludes, (val, key) => {
+				if (!indexIncludes[key]) {
+					indexIncludes[key] = { types: [], exports: [] };
+				}
+
+				indexIncludes[key].exports.push(...val.exports);
+				indexIncludes[key].types.push(...val.types);
+			});
+		}
+	}
+
 	if (Array.isArray(plugins)) {
 		for (const plugin of plugins) {
 			logInfo(`Executing plugin: ${plugin.name}`);
