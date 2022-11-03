@@ -32,7 +32,7 @@ export function addPet(props: AddPetProps): Promise<AddPetOkResponse> {
  */
 export function useAddPetMutation(
 	props: AddPetProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<AddPetOkResponse, AddPetErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

@@ -36,7 +36,7 @@ export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdOkResponse
  */
 export function useGetPetByIdQuery(
 	props: GetPetByIdProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<GetPetByIdOkResponse, GetPetByIdErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

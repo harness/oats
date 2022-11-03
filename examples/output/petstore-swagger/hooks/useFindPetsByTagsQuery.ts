@@ -36,7 +36,7 @@ export function findPetsByTags(props: FindPetsByTagsProps): Promise<FindPetsByTa
  */
 export function useFindPetsByTagsQuery(
 	props: FindPetsByTagsProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<FindPetsByTagsOkResponse, FindPetsByTagsErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

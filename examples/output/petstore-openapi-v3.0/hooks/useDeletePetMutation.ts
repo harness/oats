@@ -35,7 +35,7 @@ export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {
  */
 export function useDeletePetMutation(
 	props: DeletePetProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<DeletePetOkResponse, DeletePetErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

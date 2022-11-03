@@ -27,7 +27,7 @@ export function logoutUser(props: LogoutUserProps): Promise<LogoutUserOkResponse
  */
 export function useLogoutUserQuery(
 	props: LogoutUserProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<LogoutUserOkResponse, LogoutUserErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

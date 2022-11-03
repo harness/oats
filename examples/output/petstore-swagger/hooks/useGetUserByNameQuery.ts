@@ -34,7 +34,7 @@ export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameO
  */
 export function useGetUserByNameQuery(
 	props: GetUserByNameProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<GetUserByNameOkResponse, GetUserByNameErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

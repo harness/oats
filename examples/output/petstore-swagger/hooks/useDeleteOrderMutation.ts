@@ -36,7 +36,7 @@ export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderOkRespo
  */
 export function useDeleteOrderMutation(
 	props: DeleteOrderProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<DeleteOrderOkResponse, DeleteOrderErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

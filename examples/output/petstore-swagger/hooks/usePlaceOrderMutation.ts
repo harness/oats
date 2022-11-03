@@ -33,7 +33,7 @@ export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderOkResponse
  */
 export function usePlaceOrderMutation(
 	props: PlaceOrderProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<PlaceOrderOkResponse, PlaceOrderErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

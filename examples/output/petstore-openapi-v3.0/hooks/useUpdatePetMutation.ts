@@ -31,7 +31,7 @@ export function updatePet(props: UpdatePetProps): Promise<UpdatePetOkResponse> {
  */
 export function useUpdatePetMutation(
 	props: UpdatePetProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<UpdatePetOkResponse, UpdatePetErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

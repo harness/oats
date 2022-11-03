@@ -27,7 +27,7 @@ export function getInventory(props: GetInventoryProps): Promise<GetInventoryOkRe
  */
 export function useGetInventoryQuery(
 	props: GetInventoryProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<GetInventoryOkResponse, GetInventoryErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

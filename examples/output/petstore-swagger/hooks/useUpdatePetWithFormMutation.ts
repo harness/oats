@@ -42,7 +42,7 @@ export function updatePetWithForm(
  */
 export function useUpdatePetWithFormMutation(
 	props: UpdatePetWithFormProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<UpdatePetWithFormOkResponse, UpdatePetWithFormErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

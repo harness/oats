@@ -32,7 +32,7 @@ export function createUser(props: CreateUserProps): Promise<CreateUserOkResponse
  */
 export function useCreateUserMutation(
 	props: CreateUserProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<CreateUserOkResponse, CreateUserErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

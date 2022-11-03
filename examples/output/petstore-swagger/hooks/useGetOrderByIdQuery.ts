@@ -37,7 +37,7 @@ export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkRe
  */
 export function useGetOrderByIdQuery(
 	props: GetOrderByIdProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

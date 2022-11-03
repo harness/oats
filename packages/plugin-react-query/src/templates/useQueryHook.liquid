@@ -1,4 +1,4 @@
-export function {{hookName}}(props: {{fetcherPropsName}}, options: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>) {
+export function {{hookName}}(props: {{fetcherPropsName}}, options?: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>) {
 
 
   return useQuery<{{okResponseName}}, {{errorResponseName}}>(

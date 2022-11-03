@@ -34,7 +34,7 @@ export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
  */
 export function useLoginUserQuery(
 	props: LoginUserProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<LoginUserOkResponse, LoginUserErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

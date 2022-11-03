@@ -34,7 +34,7 @@ export function createUsersWithListInput(
  */
 export function useCreateUsersWithListInputMutation(
 	props: CreateUsersWithListInputProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<CreateUsersWithListInputOkResponse, CreateUsersWithListInputErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

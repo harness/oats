@@ -41,7 +41,7 @@ export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse
  */
 export function useUploadFileMutation(
 	props: UploadFileProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<UploadFileOkResponse, UploadFileErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

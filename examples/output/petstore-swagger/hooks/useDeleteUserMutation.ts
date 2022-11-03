@@ -33,7 +33,7 @@ export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse
  */
 export function useDeleteUserMutation(
 	props: DeleteUserProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<DeleteUserOkResponse, DeleteUserErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

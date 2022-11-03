@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query
 
+## 1.0.2
+
+### Patch Changes
+
+- Make options optional
+
 ## 1.0.1
 
 ### Patch Changes

@@ -39,7 +39,7 @@ export function createUsersWithArrayInput(
  */
 export function useCreateUsersWithArrayInputMutation(
 	props: CreateUsersWithArrayInputProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<CreateUsersWithArrayInputOkResponse, CreateUsersWithArrayInputErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,

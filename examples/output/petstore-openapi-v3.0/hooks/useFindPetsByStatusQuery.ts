@@ -39,7 +39,7 @@ export function findPetsByStatus(
  */
 export function useFindPetsByStatusQuery(
 	props: FindPetsByStatusProps,
-	options: Omit<
+	options?: Omit<
 		UseQueryOptions<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,

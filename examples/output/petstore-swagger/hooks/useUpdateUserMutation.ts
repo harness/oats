@@ -38,7 +38,7 @@ export function updateUser(props: UpdateUserProps): Promise<UpdateUserOkResponse
  */
 export function useUpdateUserMutation(
 	props: UpdateUserProps,
-	options: Omit<
+	options?: Omit<
 		UseMutationOptions<UpdateUserOkResponse, UpdateUserErrorResponse>,
 		'mutationKey' | 'mutationFn'
 	>,
