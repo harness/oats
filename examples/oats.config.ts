@@ -7,6 +7,7 @@ export default defineConfig({
 		'petstore-swagger': {
 			output: './output/petstore-swagger',
 			url: 'https://petstore.swagger.io/v2/swagger.json',
+			fileHeader: '/* This is a sample header */',
 		},
 		'petstore-openapi-v3.0': {
 			output: './output/petstore-openapi-v3.0',

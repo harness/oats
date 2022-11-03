@@ -14,7 +14,7 @@ import type { Codegen } from 'codegen.mjs';
 /**
  * Loads spec file/url and creates code from the spec
  */
-export async function generateSpecFromFileOrUrl(
+export async function loadSpecFromFileOrUrl(
 	config: ServiceConfig,
 ): Promise<PluginReturn & { codegen: Codegen }> {
 	let spec: OpenAPIObject | undefined;

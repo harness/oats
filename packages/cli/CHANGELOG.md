@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 1.1.0
+
+### Minor Changes
+
+- Add option to prepend a file header
+
 ## 1.0.0
 
 ### Major Changes

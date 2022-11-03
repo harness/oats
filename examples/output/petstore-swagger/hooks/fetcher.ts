@@ -1,3 +1,4 @@
+/* This is a sample header */
 export interface FetcherOptions<TQueryParams = never, TBody = never>
 	extends Omit<RequestInit, 'body'> {
 	url: string;

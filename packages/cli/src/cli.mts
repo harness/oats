@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { generateSpec } from './generateSpec.mjs';
+import { importSpec } from './importSpec.mjs';
 import type { CLIConfig } from './config.mjs';
 import { logError } from './helpers.mjs';
 
@@ -65,7 +65,7 @@ yargs(hideBin(process.argv))
 				});
 		},
 		(argv) => {
-			return generateSpec(argv as CLIConfig);
+			return importSpec(argv as CLIConfig);
 		},
 	)
 	.help()

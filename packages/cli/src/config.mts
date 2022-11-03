@@ -67,6 +67,12 @@ export interface ServiceConfig {
 	 * The plugins will be replaced and not merged.
 	 */
 	plugins?: Plugin[];
+	/**
+	 * This will be used as file header. This will be output as it is.
+	 * This can be used to add copyright notice, author details, etc. as
+	 * comments.
+	 */
+	fileHeader?: string;
 }
 
 export interface Config {
