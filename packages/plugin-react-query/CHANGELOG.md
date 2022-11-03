@@ -1,5 +1,16 @@
 # @harnessio/oats-plugin-react-query
 
+## 1.1.0
+
+### Minor Changes
+
+- fix self-referencing imports
+
+### Patch Changes
+
+- Updated dependencies
+  - @harnessio/oats-cli@1.1.1
+
 ## 1.0.2
 
 ### Patch Changes

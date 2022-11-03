@@ -85,7 +85,11 @@ export class Codegen {
 		return this.liquidEngine.renderFileSync(name + '.liquid', data);
 	};
 
-	createObjectProperties(item: SchemaObject, $imports: Set<string>): ObjectProps[] {
+	createObjectProperties(
+		item: SchemaObject,
+		$imports: Set<string>,
+		originalRef: string,
+	): ObjectProps[] {
 		if (!item.type && !has(item, 'properties') && !has(item, 'additionalProperties')) {
 			return [];
 		}
@@ -105,7 +109,9 @@ export class Codegen {
 
 			if (item.additionalProperties) {
 				return [
-					this.createFreeFormProperty(this.resolveValue(item.additionalProperties, $imports)),
+					this.createFreeFormProperty(
+						this.resolveValue(item.additionalProperties, $imports, originalRef),
+					),
 				];
 			}
 		}
@@ -119,7 +125,7 @@ export class Codegen {
 
 					return {
 						key: name,
-						value: this.resolveValue(schema, $imports),
+						value: this.resolveValue(schema, $imports, originalRef),
 						comment: this.renderTemplate('comments', { schema }),
 						required: item.required?.includes(name),
 					};
@@ -130,7 +136,7 @@ export class Codegen {
 					this.createFreeFormProperty(
 						item.additionalProperties === true
 							? undefined
-							: this.resolveValue(item.additionalProperties, $imports),
+							: this.resolveValue(item.additionalProperties, $imports, originalRef),
 					),
 				);
 			}
@@ -141,20 +147,20 @@ export class Codegen {
 		return [];
 	}
 
-	createObject(item: SchemaObject, $imports: Set<string>): string {
+	createObject(item: SchemaObject, $imports: Set<string>, originalRef: string): string {
 		if (isReferenceObject(item)) {
-			return this.createReferenceNode(item.$ref, $imports);
+			return this.createReferenceNode(item.$ref, $imports, originalRef);
 		}
 
 		if (Array.isArray(item.allOf)) {
-			return item.allOf.map((entry) => this.resolveValue(entry, $imports)).join(' | ');
+			return item.allOf.map((entry) => this.resolveValue(entry, $imports, originalRef)).join(' | ');
 		}
 
 		if (Array.isArray(item.oneOf)) {
-			return item.oneOf.map((entry) => this.resolveValue(entry, $imports)).join(' & ');
+			return item.oneOf.map((entry) => this.resolveValue(entry, $imports, originalRef)).join(' & ');
 		}
 
-		const props = this.createObjectProperties(item, $imports);
+		const props = this.createObjectProperties(item, $imports, originalRef);
 
 		return this.renderTemplate('object', { props });
 	}
@@ -163,46 +169,55 @@ export class Codegen {
 		return { key: '[key: string]', value: valueType };
 	}
 
-	resolveValue(schema: SchemaObject | ReferenceObject, $imports: Set<string>): string {
+	resolveValue(
+		schema: SchemaObject | ReferenceObject,
+		$imports: Set<string>,
+		originalRef: string,
+	): string {
 		return isReferenceObject(schema)
-			? this.createReferenceNode(schema.$ref, $imports)
-			: this.createScalarNode(schema, $imports);
+			? this.createReferenceNode(schema.$ref, $imports, originalRef)
+			: this.createScalarNode(schema, $imports, originalRef);
 	}
 
-	createArray(item: SchemaObject, imports: Set<string>): string {
+	createArray(item: SchemaObject, imports: Set<string>, originalRef: string): string {
 		if (item.items) {
-			const value = this.resolveValue(item.items, imports);
+			const value = this.resolveValue(item.items, imports, originalRef);
 			return value.match(/\W/) ? `Array<${value}>` : `${value}[]`;
 		} else {
 			throw new Error('All arrays must have an `items` key define');
 		}
 	}
 
-	createReferenceNode(ref: string, $imports: Set<string>): string {
+	createReferenceNode(ref: string, $imports: Set<string>, originalRef: string): string {
 		let type = '';
+		let path = '';
 
 		if (ref.startsWith('#/components/schemas')) {
 			type = getNameForType(ref.replace('#/components/schemas/', ''));
-			$imports.add(`import type { ${type} } from '../schemas/${type}'`);
+			path = 'schemas';
 		} else if (ref.startsWith('#/components/responses')) {
 			type = getNameForResponse(ref.replace('#/components/responses/', ''));
-			$imports.add(`import type { ${type} } from '../responses/${type}'`);
+			path = 'responses';
 		} else if (ref.startsWith('#/components/parameters')) {
 			type = getNameForParameter(ref.replace('#/components/parameters/', ''));
-			$imports.add(`import type { ${type} } from '../parameters/${type}'`);
+			path = 'parameters';
 		} else if (ref.startsWith('#/components/requestBodies')) {
 			type = getNameForRequestBody(ref.replace('#/components/requestBodies/', ''));
-			$imports.add(`import type { ${type} } from '../requestBodies/${type}'`);
+			path = 'requestBodies';
 		} else {
 			throw new Error(
 				'This library only resolve $ref that are include into `#/components/*` for now',
 			);
 		}
 
+		if (ref !== originalRef) {
+			$imports.add(`import type { ${type} } from '../${path}/${type}'`);
+		}
+
 		return type;
 	}
 
-	createScalarNode(item: SchemaObject, $imports: Set<string>): string {
+	createScalarNode(item: SchemaObject, $imports: Set<string>, originalRef: string): string {
 		let type = 'unknown';
 
 		switch (item.type) {
@@ -214,7 +229,7 @@ export class Codegen {
 				type = 'boolean';
 				break;
 			case 'array': {
-				type = this.createArray(item, $imports);
+				type = this.createArray(item, $imports, originalRef);
 				break;
 			}
 			case 'string':
@@ -227,7 +242,7 @@ export class Codegen {
 				break;
 			case 'object':
 			default: {
-				type = this.createObject(item, $imports);
+				type = this.createObject(item, $imports, originalRef);
 			}
 		}
 
@@ -238,9 +253,9 @@ export class Codegen {
 		return type;
 	}
 
-	createInterface(name: string, schema: SchemaObject): CodeWithImports {
+	createInterface(name: string, schema: SchemaObject, originalRef: string): CodeWithImports {
 		const imports = new Set<string>();
-		const props = this.createObjectProperties(schema, imports);
+		const props = this.createObjectProperties(schema, imports, originalRef);
 
 		return {
 			imports,
@@ -248,9 +263,13 @@ export class Codegen {
 		};
 	}
 
-	createTypeDeclaration(name: string, schema: SchemaObject | ReferenceObject): CodeWithImports {
+	createTypeDeclaration(
+		name: string,
+		schema: SchemaObject | ReferenceObject,
+		originalRef: string,
+	): CodeWithImports {
 		const imports = new Set<string>();
-		const value = this.resolveValue(schema, imports);
+		const value = this.resolveValue(schema, imports, originalRef);
 
 		return {
 			imports,
@@ -283,6 +302,7 @@ export class Codegen {
 		const data = Object.entries(schemas);
 
 		data.forEach(([name, schema]) => {
+			const refPath = `#/components/requestBodies/${name}`;
 			const finalName = getNameForRequestBody(name);
 			let code = '';
 
@@ -299,11 +319,14 @@ export class Codegen {
 				!response.oneOf &&
 				!response.nullable
 			) {
-				code = this.renderTemplate('codeWithImports', this.createInterface(finalName, response));
+				code = this.renderTemplate(
+					'codeWithImports',
+					this.createInterface(finalName, response, refPath),
+				);
 			} else {
 				code = this.renderTemplate(
 					'codeWithImports',
-					this.createTypeDeclaration(finalName, response),
+					this.createTypeDeclaration(finalName, response, refPath),
 				);
 			}
 
@@ -326,6 +349,7 @@ export class Codegen {
 		const data = Object.entries(schemas);
 
 		data.forEach(([name, schema]) => {
+			const refPath = `#/components/schemas/${name}`;
 			const finalName = getNameForType(name);
 			let code = '';
 
@@ -336,11 +360,14 @@ export class Codegen {
 				!schema.oneOf &&
 				!schema.nullable
 			) {
-				code = this.renderTemplate('codeWithImports', this.createInterface(finalName, schema));
+				code = this.renderTemplate(
+					'codeWithImports',
+					this.createInterface(finalName, schema, refPath),
+				);
 			} else {
 				code = this.renderTemplate(
 					'codeWithImports',
-					this.createTypeDeclaration(finalName, schema),
+					this.createTypeDeclaration(finalName, schema, refPath),
 				);
 			}
 
@@ -363,6 +390,7 @@ export class Codegen {
 		const data = Object.entries(schemas);
 
 		data.forEach(([name, schema]) => {
+			const refPath = `#/components/responses/${name}`;
 			const finalName = getNameForResponse(name);
 			const responseSchema = this.getRequestResponseSchema(schema);
 			let code = '';
@@ -381,12 +409,12 @@ export class Codegen {
 			) {
 				code = this.renderTemplate(
 					'codeWithImports',
-					this.createInterface(finalName, responseSchema),
+					this.createInterface(finalName, responseSchema, refPath),
 				);
 			} else {
 				code = this.renderTemplate(
 					'codeWithImports',
-					this.createTypeDeclaration(finalName, responseSchema),
+					this.createTypeDeclaration(finalName, responseSchema, refPath),
 				);
 			}
 
@@ -406,6 +434,7 @@ export class Codegen {
 
 	getReqResTypes(
 		responsesOrRequests: Array<[string, ResponseObject | ReferenceObject | RequestBodyObject]>,
+		originalRef: string,
 	): CodeWithImports {
 		const imports = new Set<string>();
 		const codes = responsesOrRequests.map(([_, reqOrRes]): string => {
@@ -416,7 +445,7 @@ export class Codegen {
 			const responseSchema = this.getRequestResponseSchema(reqOrRes);
 
 			if (responseSchema) {
-				return this.resolveValue(responseSchema, imports);
+				return this.resolveValue(responseSchema, imports, originalRef);
 			}
 
 			return 'unknown';
@@ -425,16 +454,16 @@ export class Codegen {
 		return { code: uniq(codes).join(' | ') || 'unknown', imports };
 	}
 
-	getOkResponses(responses: ResponsesObject): CodeWithImports {
+	getOkResponses(responses: ResponsesObject, originalRef: string): CodeWithImports {
 		const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2'));
-		return this.getReqResTypes(okResponses);
+		return this.getReqResTypes(okResponses, originalRef);
 	}
 
-	getErrorResponses(responses: ResponsesObject): CodeWithImports {
+	getErrorResponses(responses: ResponsesObject, originalRef: string): CodeWithImports {
 		const errorResponses = Object.entries(responses).filter(
 			([key]) =>
 				key.startsWith('3') || key.startsWith('4') || key.startsWith('5') || key === 'default',
 		);
-		return this.getReqResTypes(errorResponses);
+		return this.getReqResTypes(errorResponses, originalRef);
 	}
 }

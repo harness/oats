@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 1.1.1
+
+### Patch Changes
+
+- fix self-referencing imports
+
 ## 1.1.0
 
 ### Minor Changes

@@ -85,15 +85,15 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 			const requestBodyName = getNameForRequestBody(operation.operationId);
 			const okResponseName = getNameForOkResponse(operation.operationId);
 			const errorResponseName = getNameForErrorResponse(operation.operationId);
-			const okResponseCode = codegen.getOkResponses(operation.responses);
-			const errorResponseCode = codegen.getErrorResponses(operation.responses);
+			const okResponseCode = codegen.getOkResponses(operation.responses, '');
+			const errorResponseCode = codegen.getErrorResponses(operation.responses, '');
 			let requestBodyCode: string | null = null;
 
 			okResponseCode.imports.forEach((imp) => imports.add(imp));
 			errorResponseCode.imports.forEach((imp) => imports.add(imp));
 
 			if (METHODS_WITH_BODY.includes(verb) && operation.requestBody) {
-				const bodyCode = codegen.getReqResTypes([['body', operation.requestBody]]);
+				const bodyCode = codegen.getReqResTypes([['body', operation.requestBody]], '');
 
 				requestBodyCode = bodyCode.code;
 				bodyCode.imports.forEach((imp) => imports.add(imp));
@@ -104,7 +104,7 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 				props: params.path.map(
 					(param): ObjectProps => ({
 						key: param.name,
-						value: param.schema ? codegen.resolveValue(param.schema, imports) : 'unknown',
+						value: param.schema ? codegen.resolveValue(param.schema, imports, '') : 'unknown',
 						comment: codegen.renderTemplate('comments', { schema: param.schema }),
 						required: true,
 					}),
@@ -116,7 +116,7 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 				props: params.query.map(
 					(param): ObjectProps => ({
 						key: param.name,
-						value: param.schema ? codegen.resolveValue(param.schema, imports) : 'unknown',
+						value: param.schema ? codegen.resolveValue(param.schema, imports, '') : 'unknown',
 						comment: codegen.renderTemplate('comments', { schema: param.schema }),
 						required: !!param.required,
 					}),
