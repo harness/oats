@@ -42,7 +42,7 @@ export function useGetOrderByIdQuery(
 	>,
 ) {
 	return useQuery<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>(
-		['getOrderById'],
+		['getOrderById', props.orderId],
 		({ signal }) => getOrderById({ ...props, signal }),
 		options,
 	);

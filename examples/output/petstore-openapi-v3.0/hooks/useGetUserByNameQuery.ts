@@ -39,7 +39,7 @@ export function useGetUserByNameQuery(
 	>,
 ) {
 	return useQuery<GetUserByNameOkResponse, GetUserByNameErrorResponse>(
-		['getUserByName'],
+		['getUserByName', props.username],
 		({ signal }) => getUserByName({ ...props, signal }),
 		options,
 	);

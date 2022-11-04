@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query
 
+## 1.1.2
+
+### Patch Changes
+
+- fix: include path and query params in query key
+
 ## 1.1.1
 
 ### Patch Changes

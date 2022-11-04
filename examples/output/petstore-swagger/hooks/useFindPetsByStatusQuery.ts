@@ -43,7 +43,7 @@ export function useFindPetsByStatusQuery(
 	>,
 ) {
 	return useQuery<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>(
-		['findPetsByStatus'],
+		['findPetsByStatus', props.queryParams],
 		({ signal }) => findPetsByStatus({ ...props, signal }),
 		options,
 	);

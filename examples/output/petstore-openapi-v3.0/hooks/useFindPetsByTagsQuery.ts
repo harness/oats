@@ -40,7 +40,7 @@ export function useFindPetsByTagsQuery(
 	>,
 ) {
 	return useQuery<FindPetsByTagsOkResponse, FindPetsByTagsErrorResponse>(
-		['findPetsByTags'],
+		['findPetsByTags', props.queryParams],
 		({ signal }) => findPetsByTags({ ...props, signal }),
 		options,
 	);

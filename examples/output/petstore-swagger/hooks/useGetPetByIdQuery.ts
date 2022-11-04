@@ -43,7 +43,7 @@ export function useGetPetByIdQuery(
 	>,
 ) {
 	return useQuery<GetPetByIdOkResponse, GetPetByIdErrorResponse>(
-		['getPetById'],
+		['getPetById', props.petId],
 		({ signal }) => getPetById({ ...props, signal }),
 		options,
 	);

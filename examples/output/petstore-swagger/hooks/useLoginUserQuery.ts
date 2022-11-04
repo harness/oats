@@ -41,7 +41,7 @@ export function useLoginUserQuery(
 	>,
 ) {
 	return useQuery<LoginUserOkResponse, LoginUserErrorResponse>(
-		['loginUser'],
+		['loginUser', props.queryParams],
 		({ signal }) => loginUser({ ...props, signal }),
 		options,
 	);
