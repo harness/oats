@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query
 
+## 1.1.1
+
+### Patch Changes
+
+- Fix body not being included in query key
+
 ## 1.1.0
 
 ### Minor Changes

@@ -12,7 +12,7 @@ export function {{hookName}}(props: {{fetcherPropsName}}, options?: Omit<UseQuer
     {% if has_query_params -%}
     , props.queryParams
     {%- endif -%}
-    {% if bodyCode %}
+    {% if requestBodyCode %}
     , props.body
     {%- endif %}
     ],
