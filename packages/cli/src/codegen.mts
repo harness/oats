@@ -43,7 +43,6 @@ liquid.registerFilter('js_comment', (val: string, indent = 2) =>
 export const OBJECT_TEMPLATE = liquid.parse(_readTemplate('object.liquid'));
 export const COMMENTS_TEMPLATE = liquid.parse(_readTemplate('comments.liquid'));
 export const CODE_WITH_IMPORTS_TEMPLATE = liquid.parse(_readTemplate('codeWithImports.liquid'));
-export const INDEX_TEMPLATE = liquid.parse(_readTemplate('indexIncludes.liquid'));
 
 export function createReferenceNode(ref: string, originalRef: string): ICodeWithMetadata {
 	let path = '';

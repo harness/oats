@@ -10,7 +10,6 @@ export {
 	COMMENTS_TEMPLATE,
 	CODE_WITH_IMPORTS_TEMPLATE,
 	OBJECT_TEMPLATE,
-	INDEX_TEMPLATE,
 } from './codegen.mjs';
 export { getParamsInPath, groupByParamType, processPaths } from './pathHelpers.mjs';
 export {

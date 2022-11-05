@@ -13,31 +13,5 @@ export default defineConfig({
 			output: './output/petstore-openapi-v3.0',
 			file: './schemas/petstore-v3.yaml',
 		},
-		'cd-ng': {
-			url: 'https://stress.harness.io/ng/api/swagger.json',
-			output: './output/cd-ng-rq',
-			// transformer(spec) {
-			// 	return {
-			// 		...spec,
-			// 		components: {
-			// 			...spec.components,
-			// 			schemas: omit(spec.components?.schemas, ['OauthSettings'])
-			// 		},
-			// 		paths: mapKeys(spec.paths, (_val, key) => `ng/api${key}`)
-			// 	}
-			// },
-			genOnlyUsed: true,
-			plugins: [
-				reactQueryPlugin({
-					customFetcher: 'services/fetcher',
-					allowedOperationIds: ['getServicesYamlAndRuntimeInputs', 'getServiceAccessList'],
-					overrides: {
-						getServicesYamlAndRuntimeInputs: {
-							useQuery: true,
-						},
-					},
-				}),
-			],
-		},
 	},
 });
