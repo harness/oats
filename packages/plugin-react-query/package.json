@@ -20,7 +20,11 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc --outDir dist && cp -R src/templates dist/",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "test": "exit 0",
+    "lint": "eslint src/**/*.mts",
+    "fmtc": "prettier --check src/**/*.mts",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=16.0.0"
