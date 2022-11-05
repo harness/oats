@@ -6,464 +6,471 @@ import type {
 	ResponseObject,
 	ResponsesObject,
 } from 'openapi3-ts';
-import { Liquid } from 'liquidjs';
 import { has, isPlainObject, isEmpty, uniq } from 'lodash-es';
+import { Liquid } from 'liquidjs';
 
-import type { PluginReturn, CodeOutput, PluginExports } from './plugin.mjs';
+import type { ICodeOutput } from './plugin.mjs';
 import {
 	getNameForType,
 	getNameForRequestBody,
 	getNameForResponse,
 	getNameForParameter,
 } from './nameHelpers.mjs';
-import { isReferenceObject } from './helpers.mjs';
+import { isReferenceObject, _readTemplate } from './helpers.mjs';
 
-export interface CodeWithImports {
+export interface ICodeWithMetadata {
 	code: string;
-	imports: Set<string>;
+	imports: string[];
+	dependencies: string[];
 }
 
-export interface ObjectProps {
+export interface IObjectProps extends Omit<ICodeWithMetadata, 'code'> {
 	key: string;
 	value: string;
 	comment?: string;
 	required?: boolean;
 }
 
-export interface ParamsReturn {
-	code: string;
-	name: string;
-	imports: Set<string>;
-}
+export const liquid = new Liquid();
 
-export type TemplateName =
-	| 'object'
-	| 'typeDeclaration'
-	| 'interface'
-	| 'comments'
-	| 'codeWithImports'
-	| 'indexIncludes';
+liquid.registerFilter('js_comment', (val: string, indent = 2) =>
+	val
+		.split('\n')
+		.map((c) => `* ${c}`.padStart(indent + c.length + 2, ''))
+		.join('\n'),
+);
 
-export type TemplateProps<T> = T extends 'comments'
-	? { schema?: SchemaObject | ReferenceObject }
-	: T extends 'object'
-	? { props: ObjectProps[] }
-	: T extends 'interface'
-	? { name: string; props: ObjectProps[]; schema: SchemaObject }
-	: T extends 'typeDeclaration'
-	? { name: string; value: string; schema: SchemaObject | ReferenceObject }
-	: T extends 'codeWithImports'
-	? CodeWithImports
-	: T extends 'indexIncludes'
-	? { includes: Record<string, PluginExports> }
-	: object;
+export const OBJECT_TEMPLATE = liquid.parse(_readTemplate('object.liquid'));
+export const COMMENTS_TEMPLATE = liquid.parse(_readTemplate('comments.liquid'));
+export const CODE_WITH_IMPORTS_TEMPLATE = liquid.parse(_readTemplate('codeWithImports.liquid'));
+export const INDEX_TEMPLATE = liquid.parse(_readTemplate('indexIncludes.liquid'));
 
-export interface RenderTemplate {
-	<T extends TemplateName>(name: TemplateName, data?: TemplateProps<T>): string;
-}
+export function createReferenceNode(ref: string, originalRef: string): ICodeWithMetadata {
+	let path = '';
+	const ret: ICodeWithMetadata = { code: '', imports: [], dependencies: [] };
 
-export class Codegen {
-	private liquidEngine: Liquid;
+	if (ref.startsWith('#/components/schemas')) {
+		ret.code = getNameForType(ref.replace('#/components/schemas/', ''));
+		ret.dependencies.push(ref);
+		path = 'schemas';
+	} else if (ref.startsWith('#/components/responses')) {
+		ret.code = getNameForResponse(ref.replace('#/components/responses/', ''));
+		ret.dependencies.push(ref);
 
-	constructor(templateDirs: string[]) {
-		this.liquidEngine = new Liquid({
-			cache: true,
-			root: templateDirs,
-		});
+		path = 'responses';
+	} else if (ref.startsWith('#/components/parameters')) {
+		ret.code = getNameForParameter(ref.replace('#/components/parameters/', ''));
+		ret.dependencies.push(ref);
 
-		this.liquidEngine.registerFilter('js_comment', (val: string, indent = 2) =>
-			val
-				.split('\n')
-				.map((c) => `* ${c}`.padStart(indent + c.length + 2, ''))
-				.join('\n'),
+		path = 'parameters';
+	} else if (ref.startsWith('#/components/requestBodies')) {
+		ret.code = getNameForRequestBody(ref.replace('#/components/requestBodies/', ''));
+		ret.dependencies.push(ref);
+		path = 'requestBodies';
+	} else {
+		throw new Error(
+			'This library only resolve $ref that are include into `#/components/*` for now',
 		);
-
-		this.liquidEngine.registerFilter('path_to_template', (val: string) => val.replace(/\{/g, '${'));
 	}
 
-	renderTemplate: RenderTemplate = (name, data): string => {
-		return this.liquidEngine.renderFileSync(name + '.liquid', data);
-	};
+	if (ref !== originalRef) {
+		ret.imports.push(`import type { ${ret.code} } from '../${path}/${ret.code}'`);
+	}
 
-	createObjectProperties(
-		item: SchemaObject,
-		$imports: Set<string>,
-		originalRef: string,
-	): ObjectProps[] {
-		if (!item.type && !has(item, 'properties') && !has(item, 'additionalProperties')) {
-			return [];
-		}
+	return ret;
+}
 
-		if (item.type === 'object' && !has(item, 'properties')) {
-			if (
-				!has(item, 'additionalProperties') ||
-				(isPlainObject(item.additionalProperties) && isEmpty(item.additionalProperties)) ||
-				item.additionalProperties === true
-			) {
-				return [this.createFreeFormProperty()];
-			}
-
-			if (item.additionalProperties === false) {
-				return [];
-			}
-
-			if (item.additionalProperties) {
-				return [
-					this.createFreeFormProperty(
-						this.resolveValue(item.additionalProperties, $imports, originalRef),
-					),
-				];
-			}
-		}
-
-		if (item.properties) {
-			const props = Object.keys(item.properties)
-				.sort()
-				.map((name): ObjectProps => {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					const schema = item.properties![name];
-
-					return {
-						key: name,
-						value: this.resolveValue(schema, $imports, originalRef),
-						comment: this.renderTemplate('comments', { schema }),
-						required: item.required?.includes(name),
-					};
-				});
-
-			if (item.additionalProperties) {
-				props.push(
-					this.createFreeFormProperty(
-						item.additionalProperties === true
-							? undefined
-							: this.resolveValue(item.additionalProperties, $imports, originalRef),
-					),
-				);
-			}
-
-			return props;
-		}
-
+export function createObjectProperties(item: SchemaObject, originalRef: string): IObjectProps[] {
+	if (!item.type && !has(item, 'properties') && !has(item, 'additionalProperties')) {
 		return [];
 	}
 
-	createObject(item: SchemaObject, $imports: Set<string>, originalRef: string): string {
-		if (isReferenceObject(item)) {
-			return this.createReferenceNode(item.$ref, $imports, originalRef);
+	if (item.type === 'object' && !has(item, 'properties')) {
+		if (
+			!has(item, 'additionalProperties') ||
+			(isPlainObject(item.additionalProperties) && isEmpty(item.additionalProperties)) ||
+			item.additionalProperties === true
+		) {
+			return [createFreeFormProperty()];
 		}
 
-		if (Array.isArray(item.allOf)) {
-			return item.allOf.map((entry) => this.resolveValue(entry, $imports, originalRef)).join(' | ');
+		if (item.additionalProperties === false) {
+			return [];
 		}
 
-		if (Array.isArray(item.oneOf)) {
-			return item.oneOf.map((entry) => this.resolveValue(entry, $imports, originalRef)).join(' & ');
-		}
-
-		const props = this.createObjectProperties(item, $imports, originalRef);
-
-		return this.renderTemplate('object', { props });
-	}
-
-	createFreeFormProperty(valueType = 'any'): ObjectProps {
-		return { key: '[key: string]', value: valueType };
-	}
-
-	resolveValue(
-		schema: SchemaObject | ReferenceObject,
-		$imports: Set<string>,
-		originalRef: string,
-	): string {
-		return isReferenceObject(schema)
-			? this.createReferenceNode(schema.$ref, $imports, originalRef)
-			: this.createScalarNode(schema, $imports, originalRef);
-	}
-
-	createArray(item: SchemaObject, imports: Set<string>, originalRef: string): string {
-		if (item.items) {
-			const value = this.resolveValue(item.items, imports, originalRef);
-			return value.match(/\W/) ? `Array<${value}>` : `${value}[]`;
-		} else {
-			throw new Error('All arrays must have an `items` key define');
+		if (item.additionalProperties) {
+			return [createFreeFormProperty(resolveValue(item.additionalProperties, originalRef))];
 		}
 	}
 
-	createReferenceNode(ref: string, $imports: Set<string>, originalRef: string): string {
-		let type = '';
-		let path = '';
+	if (item.properties) {
+		const props = Object.keys(item.properties)
+			.sort()
+			.map((name): IObjectProps => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const schema = item.properties![name];
+				const resolvedValue = resolveValue(schema, originalRef);
 
-		if (ref.startsWith('#/components/schemas')) {
-			type = getNameForType(ref.replace('#/components/schemas/', ''));
-			path = 'schemas';
-		} else if (ref.startsWith('#/components/responses')) {
-			type = getNameForResponse(ref.replace('#/components/responses/', ''));
-			path = 'responses';
-		} else if (ref.startsWith('#/components/parameters')) {
-			type = getNameForParameter(ref.replace('#/components/parameters/', ''));
-			path = 'parameters';
-		} else if (ref.startsWith('#/components/requestBodies')) {
-			type = getNameForRequestBody(ref.replace('#/components/requestBodies/', ''));
-			path = 'requestBodies';
-		} else {
-			throw new Error(
-				'This library only resolve $ref that are include into `#/components/*` for now',
+				return {
+					key: name,
+					value: resolvedValue.code,
+					comment: liquid.renderSync(COMMENTS_TEMPLATE, { schema }),
+					required: item.required?.includes(name),
+					dependencies: resolvedValue.dependencies,
+					imports: resolvedValue.imports,
+				};
+			});
+
+		if (item.additionalProperties) {
+			props.push(
+				createFreeFormProperty(
+					item.additionalProperties === true
+						? undefined
+						: resolveValue(item.additionalProperties, originalRef),
+				),
 			);
 		}
 
-		if (ref !== originalRef) {
-			$imports.add(`import type { ${type} } from '../${path}/${type}'`);
-		}
-
-		return type;
+		return props;
 	}
 
-	createScalarNode(item: SchemaObject, $imports: Set<string>, originalRef: string): string {
-		let type = 'unknown';
+	return [];
+}
 
-		switch (item.type) {
-			case 'number':
-			case 'integer':
-				type = 'number';
-				break;
-			case 'boolean':
-				type = 'boolean';
-				break;
-			case 'array': {
-				type = this.createArray(item, $imports, originalRef);
-				break;
-			}
-			case 'string':
-				type = item.enum
-					? item.enum
-							.sort()
-							.map((name: string) => JSON.stringify(name))
-							.join(' | ')
-					: 'string';
-				break;
-			case 'object':
-			default: {
-				type = this.createObject(item, $imports, originalRef);
-			}
-		}
-
-		if (item.nullable) {
-			type = `${type} | null`;
-		}
-
-		return type;
+export function createObject(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+	if (isReferenceObject(item)) {
+		return createReferenceNode(item.$ref, originalRef);
 	}
 
-	createInterface(name: string, schema: SchemaObject, originalRef: string): CodeWithImports {
-		const imports = new Set<string>();
-		const props = this.createObjectProperties(schema, imports, originalRef);
+	if (Array.isArray(item.allOf)) {
+		const code: string[] = [];
+		const dependencies: string[] = [];
+		const imports: string[] = [];
 
-		return {
-			imports,
-			code: this.renderTemplate('interface', { name, props, schema }),
-		};
-	}
-
-	createTypeDeclaration(
-		name: string,
-		schema: SchemaObject | ReferenceObject,
-		originalRef: string,
-	): CodeWithImports {
-		const imports = new Set<string>();
-		const value = this.resolveValue(schema, imports, originalRef);
-
-		return {
-			imports,
-			code: this.renderTemplate('typeDeclaration', { name, value, schema }),
-		};
-	}
-
-	getRequestResponseSchema(
-		schema: RequestBodyObject | ReferenceObject | ResponseObject,
-	): ReferenceObject | SchemaObject | undefined {
-		if (isReferenceObject(schema)) {
-			return schema;
-		}
-
-		if (schema.content) {
-			const content = Object.entries(schema.content).find(
-				([mediaType, contentObj]) =>
-					mediaType.startsWith('*/*') ||
-					mediaType.startsWith('application/json') ||
-					(mediaType.startsWith('application/octet-stream') && contentObj.schema),
-			);
-
-			return content?.[1].schema;
-		}
-	}
-
-	createRequestBodyDefinitions(schemas: ComponentsObject['requestBodies'] = {}): PluginReturn {
-		const files: CodeOutput[] = [];
-		const indexIncludes: Record<string, PluginExports> = {};
-		const data = Object.entries(schemas);
-
-		data.forEach(([name, schema]) => {
-			const refPath = `#/components/requestBodies/${name}`;
-			const finalName = getNameForRequestBody(name);
-			let code = '';
-
-			const response = this.getRequestResponseSchema(schema);
-
-			if (!response) {
-				return;
-			}
-
-			if (
-				!isReferenceObject(response) &&
-				(!response.type || response.type === 'object') &&
-				!response.allOf &&
-				!response.oneOf &&
-				!response.nullable
-			) {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createInterface(finalName, response, refPath),
-				);
-			} else {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createTypeDeclaration(finalName, response, refPath),
-				);
-			}
-
-			files.push({ code, file: `requestBodies/${finalName}.ts` });
-			const includesPath = `./requestBodies/${finalName}`;
-
-			if (!indexIncludes[includesPath]) {
-				indexIncludes[includesPath] = { types: [], exports: [] };
-			}
-
-			indexIncludes[includesPath].types.push(finalName);
+		item.allOf.forEach((entry) => {
+			const resolvedValue = resolveValue(entry, originalRef);
+			code.push(resolvedValue.code);
+			dependencies.push(...resolvedValue.dependencies);
+			imports.push(...resolvedValue.imports);
 		});
 
-		return { files, indexIncludes };
+		return { code: code.join(' | '), dependencies, imports };
 	}
 
-	createSchemaDefinitions(schemas: ComponentsObject['schemas'] = {}): PluginReturn {
-		const files: CodeOutput[] = [];
-		const indexIncludes: Record<string, PluginExports> = {};
-		const data = Object.entries(schemas);
+	if (Array.isArray(item.oneOf)) {
+		const code: string[] = [];
+		const dependencies: string[] = [];
+		const imports: string[] = [];
 
-		data.forEach(([name, schema]) => {
-			const refPath = `#/components/schemas/${name}`;
-			const finalName = getNameForType(name);
-			let code = '';
-
-			if (
-				!isReferenceObject(schema) &&
-				(!schema.type || schema.type === 'object') &&
-				!schema.allOf &&
-				!schema.oneOf &&
-				!schema.nullable
-			) {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createInterface(finalName, schema, refPath),
-				);
-			} else {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createTypeDeclaration(finalName, schema, refPath),
-				);
-			}
-
-			files.push({ code, file: `schemas/${finalName}.ts` });
-			const includesPath = `./schemas/${finalName}`;
-
-			if (!indexIncludes[includesPath]) {
-				indexIncludes[includesPath] = { types: [], exports: [] };
-			}
-
-			indexIncludes[includesPath].types.push(finalName);
+		item.oneOf.forEach((entry) => {
+			const resolvedValue = resolveValue(entry, originalRef);
+			code.push(resolvedValue.code);
+			dependencies.push(...resolvedValue.dependencies);
+			imports.push(...resolvedValue.imports);
 		});
 
-		return { files, indexIncludes };
+		return { code: code.join(' & '), dependencies, imports };
 	}
 
-	createResponseDefinitions(schemas: ComponentsObject['responses'] = {}): PluginReturn {
-		const files: CodeOutput[] = [];
-		const indexIncludes: Record<string, PluginExports> = {};
-		const data = Object.entries(schemas);
+	const props = createObjectProperties(item, originalRef);
 
-		data.forEach(([name, schema]) => {
-			const refPath = `#/components/responses/${name}`;
-			const finalName = getNameForResponse(name);
-			const responseSchema = this.getRequestResponseSchema(schema);
-			let code = '';
+	return liquid.renderSync(OBJECT_TEMPLATE, { props });
+}
 
-			if (!responseSchema) {
-				code = `export type ${finalName} = unknown`;
-				return;
-			}
+export function createFreeFormProperty(valueType?: ICodeWithMetadata): IObjectProps {
+	return {
+		key: '[key: string]',
+		value: valueType?.code || 'any',
+		dependencies: valueType?.dependencies || [],
+		imports: valueType?.imports || [],
+	};
+}
 
-			if (
-				!isReferenceObject(responseSchema) &&
-				(!responseSchema.type || responseSchema.type === 'object') &&
-				!responseSchema.allOf &&
-				!responseSchema.oneOf &&
-				!responseSchema.nullable
-			) {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createInterface(finalName, responseSchema, refPath),
-				);
-			} else {
-				code = this.renderTemplate(
-					'codeWithImports',
-					this.createTypeDeclaration(finalName, responseSchema, refPath),
-				);
-			}
+export function resolveValue(
+	schema: SchemaObject | ReferenceObject,
+	originalRef: string,
+): ICodeWithMetadata {
+	return isReferenceObject(schema)
+		? createReferenceNode(schema.$ref, originalRef)
+		: createScalarNode(schema, originalRef);
+}
 
-			files.push({ code, file: `responses/${finalName}.ts` });
+export function createArray(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+	if (item.items) {
+		const value = resolveValue(item.items, originalRef);
+		return { ...value, code: value.code.match(/\W/) ? `Array<${value.code}>` : `${value.code}[]` };
+	} else {
+		throw new Error('All arrays must have an `items` key define');
+	}
+}
 
-			const includesPath = `./responses/${finalName}`;
+export function createScalarNode(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+	const type: ICodeWithMetadata = { code: 'unknown', dependencies: [], imports: [] };
 
-			if (!indexIncludes[includesPath]) {
-				indexIncludes[includesPath] = { types: [], exports: [] };
-			}
-
-			indexIncludes[includesPath].types.push(finalName);
-		});
-
-		return { files, indexIncludes };
+	switch (item.type) {
+		case 'number':
+		case 'integer':
+			type.code = 'number';
+			break;
+		case 'boolean':
+			type.code = 'boolean';
+			break;
+		case 'array': {
+			Object.assign(type, createArray(item, originalRef));
+			break;
+		}
+		case 'string':
+			type.code = item.enum
+				? item.enum
+						.sort()
+						.map((name: string) => JSON.stringify(name))
+						.join(' | ')
+				: 'string';
+			break;
+		case 'object':
+		default: {
+			Object.assign(type, createObject(item, originalRef));
+		}
 	}
 
-	getReqResTypes(
-		responsesOrRequests: Array<[string, ResponseObject | ReferenceObject | RequestBodyObject]>,
-		originalRef: string,
-	): CodeWithImports {
-		const imports = new Set<string>();
-		const codes = responsesOrRequests.map(([_, reqOrRes]): string => {
-			if (!reqOrRes) {
-				return 'unknown';
-			}
-
-			const responseSchema = this.getRequestResponseSchema(reqOrRes);
-
-			if (responseSchema) {
-				return this.resolveValue(responseSchema, imports, originalRef);
-			}
-
-			return 'unknown';
-		});
-
-		return { code: uniq(codes).join(' | ') || 'unknown', imports };
+	if (item.nullable) {
+		type.code = `${type.code} | null`;
 	}
 
-	getOkResponses(responses: ResponsesObject, originalRef: string): CodeWithImports {
-		const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2'));
-		return this.getReqResTypes(okResponses, originalRef);
+	return type;
+}
+
+export function createInterface(
+	name: string,
+	schema: SchemaObject,
+	originalRef: string,
+): ICodeWithMetadata {
+	const props = createObjectProperties(schema, originalRef);
+	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
+	const objectStructurce = liquid.renderSync(OBJECT_TEMPLATE, { props });
+
+	return {
+		code: `${comments}\nexport interface ${name} ${objectStructurce}`,
+		imports: props.reduce<string[]>((p, c) => [...p, ...c.imports], []),
+		dependencies: props.reduce<string[]>((p, c) => [...p, ...c.dependencies], []),
+	};
+}
+
+export function createTypeDeclaration(
+	name: string,
+	schema: SchemaObject | ReferenceObject,
+	originalRef: string,
+): ICodeWithMetadata {
+	const resolvedValue = resolveValue(schema, originalRef);
+	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
+
+	return {
+		code: `${comments}\nexport type ${name} = ${resolvedValue.code};`,
+		imports: resolvedValue.imports,
+		dependencies: resolvedValue.dependencies,
+	};
+}
+
+export function getRequestResponseSchema(
+	schema: RequestBodyObject | ReferenceObject | ResponseObject,
+): ReferenceObject | SchemaObject | undefined {
+	if (isReferenceObject(schema)) {
+		return schema;
 	}
 
-	getErrorResponses(responses: ResponsesObject, originalRef: string): CodeWithImports {
-		const errorResponses = Object.entries(responses).filter(
-			([key]) =>
-				key.startsWith('3') || key.startsWith('4') || key.startsWith('5') || key === 'default',
+	if (schema.content) {
+		const content = Object.entries(schema.content).find(
+			([mediaType, contentObj]) =>
+				mediaType.startsWith('*/*') ||
+				mediaType.startsWith('application/json') ||
+				(mediaType.startsWith('application/octet-stream') && contentObj.schema),
 		);
-		return this.getReqResTypes(errorResponses, originalRef);
+
+		return content?.[1].schema;
 	}
+}
+
+export function createRequestBodyDefinitions(
+	schemas: ComponentsObject['requestBodies'] = {},
+): Record<string, ICodeOutput> {
+	const ret: Record<string, ICodeOutput> = {};
+	const data = Object.entries(schemas);
+
+	data.forEach(([name, schema]) => {
+		const refPath = `#/components/requestBodies/${name}`;
+		const finalName = getNameForRequestBody(name);
+		let code = '';
+		const dependencies: string[] = [];
+
+		const response = getRequestResponseSchema(schema);
+
+		if (!response) {
+			return;
+		}
+
+		if (
+			!isReferenceObject(response) &&
+			(!response.type || response.type === 'object') &&
+			!response.allOf &&
+			!response.oneOf &&
+			!response.nullable
+		) {
+			const interfaceCode = createInterface(finalName, response, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
+			dependencies.push(...interfaceCode.dependencies);
+		} else {
+			const typeCode = createTypeDeclaration(finalName, response, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
+			dependencies.push(...typeCode.dependencies);
+		}
+
+		ret[refPath] = {
+			code,
+			filepath: `requestBodies/${finalName}.ts`,
+			ref: refPath,
+			jsExports: [],
+			typeExports: [finalName],
+			dependencies,
+		};
+	});
+
+	return ret;
+}
+
+export function createSchemaDefinitions(
+	schemas: ComponentsObject['schemas'] = {},
+	filter: string[] = [],
+): Record<string, ICodeOutput> {
+	const data = Object.entries(schemas);
+	const ret: Record<string, ICodeOutput> = {};
+
+	data.forEach(([name, schema]) => {
+		const refPath = `#/components/schemas/${name}`;
+		const finalName = getNameForType(name);
+		let code = '';
+		const dependencies: string[] = [];
+
+		if (filter.length > 0 && !filter.includes(refPath)) {
+			return;
+		}
+
+		if (
+			!isReferenceObject(schema) &&
+			(!schema.type || schema.type === 'object') &&
+			!schema.allOf &&
+			!schema.oneOf &&
+			!schema.nullable
+		) {
+			const interfaceCode = createInterface(finalName, schema, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
+			dependencies.push(...interfaceCode.dependencies);
+		} else {
+			const typeCode = createTypeDeclaration(finalName, schema, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
+			dependencies.push(...typeCode.dependencies);
+		}
+
+		ret[refPath] = {
+			code,
+			filepath: `schemas/${finalName}.ts`,
+			ref: refPath,
+			jsExports: [],
+			typeExports: [finalName],
+			dependencies,
+		};
+	});
+
+	return ret;
+}
+
+export function createResponseDefinitions(
+	schemas: ComponentsObject['responses'] = {},
+): Record<string, ICodeOutput> {
+	const ret: Record<string, ICodeOutput> = {};
+	const data = Object.entries(schemas);
+
+	data.forEach(([name, schema]) => {
+		const refPath = `#/components/responses/${name}`;
+		const finalName = getNameForResponse(name);
+		const responseSchema = getRequestResponseSchema(schema);
+		let code = '';
+		const dependencies: string[] = [];
+
+		if (!responseSchema) {
+			code = `export type ${finalName} = unknown`;
+			return;
+		}
+
+		if (
+			!isReferenceObject(responseSchema) &&
+			(!responseSchema.type || responseSchema.type === 'object') &&
+			!responseSchema.allOf &&
+			!responseSchema.oneOf &&
+			!responseSchema.nullable
+		) {
+			const interfaceCode = createInterface(finalName, responseSchema, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
+			dependencies.push(...interfaceCode.dependencies);
+		} else {
+			const typeCode = createTypeDeclaration(finalName, responseSchema, refPath);
+			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
+			dependencies.push(...typeCode.dependencies);
+		}
+
+		ret[refPath] = {
+			code,
+			filepath: `responses/${finalName}.ts`,
+			ref: refPath,
+			jsExports: [],
+			typeExports: [finalName],
+			dependencies,
+		};
+	});
+
+	return ret;
+}
+
+export function getReqResTypes(
+	responsesOrRequests: Array<[string, ResponseObject | ReferenceObject | RequestBodyObject]>,
+	originalRef: string,
+): ICodeWithMetadata {
+	const dependencies: string[] = [];
+	const imports: string[] = [];
+
+	const codes = responsesOrRequests.map(([_, reqOrRes]): string => {
+		if (!reqOrRes) {
+			return 'unknown';
+		}
+
+		const responseSchema = getRequestResponseSchema(reqOrRes);
+
+		if (responseSchema) {
+			const resolvedValue = resolveValue(responseSchema, originalRef);
+
+			dependencies.push(...resolvedValue.dependencies);
+			imports.push(...resolvedValue.imports);
+
+			return resolvedValue.code;
+		}
+
+		return 'unknown';
+	});
+
+	return { code: uniq(codes).join(' | ') || 'unknown', imports, dependencies };
+}
+
+export function getOkResponses(responses: ResponsesObject, originalRef: string): ICodeWithMetadata {
+	const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2'));
+	return getReqResTypes(okResponses, originalRef);
+}
+
+export function getErrorResponses(
+	responses: ResponsesObject,
+	originalRef: string,
+): ICodeWithMetadata {
+	const errorResponses = Object.entries(responses).filter(
+		([key]) =>
+			key.startsWith('3') || key.startsWith('4') || key.startsWith('5') || key === 'default',
+	);
+	return getReqResTypes(errorResponses, originalRef);
 }

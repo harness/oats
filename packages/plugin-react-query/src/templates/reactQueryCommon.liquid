@@ -1,12 +1,9 @@
-{% assign has_path_params = pathParams.props.length > 0 %}
-{% assign has_query_params = queryParams.props.length > 0 %}
-
-{% if has_path_params %}
-{% render 'interface.liquid', name: pathParams.name, props: pathParams.props %}
+{% if pathParamsCode %}
+export interface {{pathParamsName}} {{pathParamsCode}}
 {% endif %}
 
-{% if has_query_params %}
-{% render 'interface.liquid', name: queryParams.name, props: queryParams.props %}
+{% if queryParamsCode %}
+export interface {{queryParamsName}} {{queryParamsCode}}
 {% endif %}
 
 {% if requestBodyCode %}
@@ -22,15 +19,15 @@ export type {{okResponseName}} = {{okResponseCode}};
 export type {{errorResponseName}} = {{errorResponseCode}};
 
 export interface {{fetcherPropsName}} extends
-{% if has_path_params %}
-  {{pathParams.name}},
+{% if pathParamsCode %}
+  {{pathParamsName}},
 {% endif %}
 Omit<FetcherOptions<
-  {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
+  {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
   {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
 >, 'url'> {
-  {% if has_query_params -%}
-  queryParams: {{queryParams.name}};
+  {% if queryParamsCode -%}
+  queryParams: {{queryParamsName}};
   {%- endif %}
   {%- if requestBodyCode %}
   body: {{requestBodyName}};
@@ -39,9 +36,9 @@ Omit<FetcherOptions<
 
 export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
    const {
-  {% if has_path_params -%}
-    {% for prop in pathParams.props -%}
-    {{prop.key}},
+  {% if pathParamsCode -%}
+    {% for name in pathParamsNamesList -%}
+    {{name}},
     {%- endfor %}
   {%- endif -%}
   ...rest
@@ -49,7 +46,7 @@ export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okRespon
 
   return fetcher<
     {{okResponseName}},
-    {% if has_query_params -%}{{queryParams.name}}{% else %}unknown{%- endif %},
+    {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
   >({
     url: `{{route | path_to_template}}`,
@@ -57,5 +54,3 @@ export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okRespon
     ...rest
   })
 }
-
-{% render 'comments.liquid', schema: operation %}

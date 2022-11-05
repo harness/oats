@@ -1,9 +1,16 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import swagger2openapi from 'swagger2openapi';
 import type { OpenAPIObject, ReferenceObject } from 'openapi3-ts';
 import chalk from 'chalk';
 import { has } from 'lodash-es';
 
-export function convertToOpenAPI(schema: unknown): Promise<OpenAPIObject> {
+const DIR_NAME = getDirNameForCurrentFile(import.meta);
+
+// internal function
+export function _convertToOpenAPI(schema: unknown): Promise<OpenAPIObject> {
 	return new Promise((resolve, reject) => {
 		swagger2openapi.convertObj(schema, {}, (err, convertedObj) => {
 			if (err) {
@@ -13,6 +20,11 @@ export function convertToOpenAPI(schema: unknown): Promise<OpenAPIObject> {
 			}
 		});
 	});
+}
+
+// internal function
+export function _readTemplate(name: string): string {
+	return fs.readFileSync(path.resolve(DIR_NAME, `./templates/${name}`), 'utf8');
 }
 
 export function isReferenceObject(data: unknown): data is ReferenceObject {
@@ -38,4 +50,12 @@ export function padChunk(chunk: string, spacing = 6): string {
 		.split('\n')
 		.map((line) => ' '.repeat(spacing) + line)
 		.join('\n');
+}
+
+export function getDirNameForCurrentFile(meta: ImportMeta): string {
+	return path.dirname(fileURLToPath(meta.url));
+}
+
+export function pathToTemplate(val: string): string {
+	return val.replace(/\{/g, '${');
 }

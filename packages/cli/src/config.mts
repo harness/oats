@@ -1,85 +1,38 @@
-import type { OpenAPIObject } from 'openapi3-ts';
-import * as Yup from 'yup';
+import { z } from 'zod';
 
-import { getPluginSchema, type Plugin } from './plugin.mjs';
+import { Plugin, OpenAPIObj } from './plugin.mjs';
 
-export interface CLIConfig {
-	output: string;
-	file?: string;
-	url?: string;
-	config?: string;
-	clean: boolean;
-	service: string[];
-}
+export const CLIConfig = z.object({
+	output: z.string(),
+	file: z.string().optional(),
+	url: z.string().optional(),
+	config: z.string().optional(),
+	clean: z.boolean().optional(),
+	genOnlyUsed: z.boolean().optional(),
+	service: z.array(z.string()).optional(),
+});
 
-export const getServiceConfigSchema = (): Yup.AnyObjectSchema =>
-	Yup.object({
-		output: Yup.string().required(),
-		file: Yup.string(),
-		url: Yup.string(),
-		transformer: Yup.mixed().test(function (value) {
-			if (value && typeof value !== 'function') {
-				return this.createError({ message: `Expected to be a function, but got: ${typeof value}` });
-			}
+export type ICLIConfig = z.infer<typeof CLIConfig>;
 
-			return true;
-		}),
-		plugins: Yup.array(getPluginSchema().required()),
-	}).test(function (obj: any) {
-		if ((!obj.file || !obj.file.length) && (!obj.url || !obj.url.length)) {
-			return this.createError({ message: 'Either file or url is required' });
-		}
+export const ServiceConfig = z.object({
+	output: z.string(),
+	file: z.string().optional(),
+	url: z.string().optional(),
+	transformer: z.function(z.tuple([OpenAPIObj]), OpenAPIObj).optional(),
+	plugins: z.array(Plugin).optional(),
+	fileHeader: z.string().optional(),
+	genOnlyUsed: z.boolean().optional(),
+});
 
-		return true;
-	});
+export type IServiceConfig = z.infer<typeof ServiceConfig>;
 
-export const getConfigSchema = (): Yup.AnyObjectSchema =>
-	Yup.object({
-		plugins: Yup.array(getPluginSchema().required()),
-		services: Yup.lazy((obj) => {
-			const schema = Object.keys(obj).reduce(
-				(p, c) => ({ ...p, [c]: getServiceConfigSchema().required() }),
-				{},
-			);
-			return Yup.object(schema).required();
-		}),
-	});
+export const Config = z.object({
+	plugins: z.array(Plugin).optional(),
+	services: z.record(z.string(), ServiceConfig),
+});
 
-export interface ServiceConfig {
-	/**
-	 * Path where the output should be written to.
-	 */
-	output: string;
-	/**
-	 * Path from where the OpenAPI spec is to be read.
-	 */
-	file?: string;
-	/**
-	 * URL from where the OpenAPI spec is to be read.
-	 */
-	url?: string;
-	/**
-	 * A function, which can be used to pre-process the imported spec.
-	 */
-	transformer?: (spec: Readonly<OpenAPIObject>) => OpenAPIObject;
-	/**
-	 * Plugins to be overriden for this particular service.
-	 * The plugins will be replaced and not merged.
-	 */
-	plugins?: Plugin[];
-	/**
-	 * This will be used as file header. This will be output as it is.
-	 * This can be used to add copyright notice, author details, etc. as
-	 * comments.
-	 */
-	fileHeader?: string;
-}
+export type IConfig = z.infer<typeof Config>;
 
-export interface Config {
-	plugins?: Plugin[];
-	services: Record<string, ServiceConfig>;
-}
-
-export function defineConfig(config: Config): Config {
+export function defineConfig(config: IConfig): IConfig {
 	return config;
 }

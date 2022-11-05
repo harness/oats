@@ -1,18 +1,16 @@
-{% assign has_path_params = pathParams.props.length > 0 %}
-{% assign has_query_params = queryParams.props.length > 0 %}
-
-export function {{hookName}}(props: {{fetcherPropsName}}, options?: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>) {
-
-
+export function {{hookName}}(
+  props: {{fetcherPropsName}},
+  options?: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>
+) {
   return useQuery<{{okResponseName}}, {{errorResponseName}}>(
     [
       {{operation.operationId | json}}
-      {% if has_path_params -%}
-      {% for prop in pathParams.props -%}
-      , props.{{prop.key}}
+      {% if pathParamsCode -%}
+      {% for name in pathParamsNamesList -%}
+      , props.{{name}}
       {%- endfor %}
     {%- endif -%}
-    {% if has_query_params -%}
+    {% if queryParamsCode -%}
     , props.queryParams
     {%- endif -%}
     {% if requestBodyCode %}

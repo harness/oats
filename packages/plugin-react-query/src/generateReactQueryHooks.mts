@@ -1,61 +1,51 @@
-import type {
-	OpenAPIObject,
-	OperationObject,
-	ParameterLocation,
-	ParameterObject,
-} from 'openapi3-ts';
+import type { OpenAPIObject, ParameterObject } from 'openapi3-ts';
 import { camelCase } from 'change-case';
-import type { PluginReturn, CodeOutput, Plugin, PluginExports } from '@harnessio/oats-cli/plugin';
-import { processPaths } from '@harnessio/oats-cli/pathHelpers';
-import type { Codegen, ObjectProps } from '@harnessio/oats-cli/codegen';
-import type { Config } from './config.mjs';
+import type { ICodeOutput, IObjectProps, IPlugin, IPluginReturn } from '@harnessio/oats-cli';
 import {
+	processPaths,
+	getErrorResponses,
+	getOkResponses,
+	getReqResTypes,
 	getNameForErrorResponse,
 	getNameForRequestBody,
 	getNameForOkResponse,
 	getNameForType,
-} from '@harnessio/oats-cli/nameHelpers';
+	resolveValue,
+	CODE_WITH_IMPORTS_TEMPLATE,
+	COMMENTS_TEMPLATE,
+	OBJECT_TEMPLATE,
+} from '@harnessio/oats-cli';
 
+import type { Config } from './config.mjs';
+import { _readTemplate, liquid } from './helpers.mjs';
+
+const DEFAULT_FETCHER_TEMPLATE = liquid.parse(_readTemplate('defaultFetcher.liquid'));
+const COMMON_TEMPLATE = liquid.parse(_readTemplate('reactQueryCommon.liquid'));
+const QUERY_TEMPLATE = liquid.parse(_readTemplate('useQueryHook.liquid'));
+const MUTATION_TEMPLATE = liquid.parse(_readTemplate('useMutationHook.liquid'));
 const METHODS_WITH_BODY = ['post', 'put', 'patch'];
 
 export interface ParamsCode {
 	name: string;
-	props: ObjectProps[];
+	props: IObjectProps[];
 }
 
-export type ReactQueryTemplateName =
-	| 'useQueryHook'
-	| 'useMutationHook'
-	| 'defaultFetcher'
-	| 'reactQueryCommon';
-export interface ReactQueryTemplateProps {
-	hookName: string;
-	fetcherPropsName: string;
-	requestBodyName: string;
-	fetcherName: string;
-	requestBodyCode: string | null;
-	okResponseName: string;
-	errorResponseName: string;
-	okResponseCode: string;
-	errorResponseCode: string;
-	route: string;
-	verb: string;
-	operation: OperationObject;
-	params: Record<ParameterLocation, ParameterObject[]>;
-	pathParams: ParamsCode;
-	queryParams: ParamsCode;
+function processParams(param: ParameterObject): IObjectProps {
+	const resolvedValue = param.schema ? resolveValue(param.schema, '') : undefined;
+
+	return {
+		key: param.name,
+		value: resolvedValue?.code || 'unknown',
+		comment: liquid.renderSync(COMMENTS_TEMPLATE, { schema: param.schema }),
+		required: param.in === 'path' ? true : !!param.required,
+		dependencies: resolvedValue?.dependencies || [],
+		imports: resolvedValue?.imports || [],
+	};
 }
 
-declare module '@harnessio/oats-cli/codegen' {
-	export interface RenderTemplate {
-		(name: ReactQueryTemplateName, data?: ReactQueryTemplateProps): string;
-	}
-}
-
-export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
-	return async (spec: OpenAPIObject, codegen: Codegen): Promise<PluginReturn> => {
-		const files: CodeOutput[] = [];
-		const indexIncludes: Record<string, PluginExports> = {};
+export function generateReactQueryHooks(config?: Config): IPlugin['generate'] {
+	return async (spec: OpenAPIObject): Promise<IPluginReturn> => {
+		const files: ICodeOutput[] = [];
 
 		processPaths(spec, (route, verb, operation, params) => {
 			// check for operationId
@@ -76,54 +66,41 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 
 			const useUseQuery = verb === 'get' || config?.overrides?.[operation.operationId]?.useQuery;
 			const suffix = useUseQuery ? 'Query' : 'Mutation';
-
+			const dependencies: string[] = [];
 			let imports = new Set<string>();
 			const typeName = getNameForType(operation.operationId);
 			const hookName = `use${typeName}${suffix}`;
 			const fetcherName = `${camelCase(operation.operationId)}`;
 			const fetcherPropsName = `${typeName}Props`;
+			const pathParamsName = `${typeName}${suffix}PathParams`;
+			const queryParamsName = `${typeName}${suffix}QueryParams`;
 			const requestBodyName = getNameForRequestBody(operation.operationId);
 			const okResponseName = getNameForOkResponse(operation.operationId);
 			const errorResponseName = getNameForErrorResponse(operation.operationId);
-			const okResponseCode = codegen.getOkResponses(operation.responses, '');
-			const errorResponseCode = codegen.getErrorResponses(operation.responses, '');
+			const okResponseCode = getOkResponses(operation.responses, '');
+			const errorResponseCode = getErrorResponses(operation.responses, '');
 			let requestBodyCode: string | null = null;
 
 			okResponseCode.imports.forEach((imp) => imports.add(imp));
 			errorResponseCode.imports.forEach((imp) => imports.add(imp));
+			dependencies.push(...okResponseCode.dependencies, ...errorResponseCode.dependencies);
 
 			if (METHODS_WITH_BODY.includes(verb) && operation.requestBody) {
-				const bodyCode = codegen.getReqResTypes([['body', operation.requestBody]], '');
+				const bodyCode = getReqResTypes([['body', operation.requestBody]], '');
 
 				requestBodyCode = bodyCode.code;
 				bodyCode.imports.forEach((imp) => imports.add(imp));
+				dependencies.push(...bodyCode.dependencies);
 			}
 
-			const pathParams = {
-				name: `Use${typeName}${suffix}PathParams`,
-				props: params.path.map(
-					(param): ObjectProps => ({
-						key: param.name,
-						value: param.schema ? codegen.resolveValue(param.schema, imports, '') : 'unknown',
-						comment: codegen.renderTemplate('comments', { schema: param.schema }),
-						required: true,
-					}),
-				),
-			};
+			const pathParams = params.path.map(processParams);
+			const queryParams = params.query.map(processParams);
+			const pathParamsCode =
+				pathParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: pathParams }) : null;
+			const queryParamsCode =
+				queryParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: queryParams }) : null;
 
-			const queryParams = {
-				name: `Use${typeName}${suffix}QueryParams`,
-				props: params.query.map(
-					(param): ObjectProps => ({
-						key: param.name,
-						value: param.schema ? codegen.resolveValue(param.schema, imports, '') : 'unknown',
-						comment: codegen.renderTemplate('comments', { schema: param.schema }),
-						required: !!param.required,
-					}),
-				),
-			};
-
-			const templateProps: ReactQueryTemplateProps = {
+			const templateProps = {
 				hookName,
 				fetcherPropsName,
 				fetcherName,
@@ -137,35 +114,32 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 				verb,
 				operation,
 				params,
-				pathParams,
-				queryParams,
+				pathParamsName,
+				pathParamsCode,
+				queryParamsName,
+				queryParamsCode,
+				pathParamsNamesList: params.path.map((p) => p.name),
 			};
 
 			const code = [
-				codegen.renderTemplate('reactQueryCommon', templateProps).trim(),
-				codegen
-					.renderTemplate(useUseQuery ? 'useQueryHook' : 'useMutationHook', templateProps)
-					.trim(),
+				liquid.renderSync(COMMON_TEMPLATE, templateProps).trim(),
+				liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
+				liquid.renderSync(useUseQuery ? QUERY_TEMPLATE : MUTATION_TEMPLATE, templateProps).trim(),
 			].join('\n');
 
-			const exportedTypes = [fetcherPropsName, okResponseName, errorResponseName];
+			const typeExports = [fetcherPropsName, okResponseName, errorResponseName];
+			const jsExports = [hookName, fetcherName];
 
-			if (pathParams.props.length > 0) {
-				exportedTypes.push(pathParams.name);
+			if (pathParams.length > 0) {
+				typeExports.push(pathParamsName);
 			}
 
-			if (queryParams.props.length > 0) {
-				exportedTypes.push(queryParams.name);
+			if (queryParams.length > 0) {
+				typeExports.push(queryParamsName);
 			}
 
 			if (requestBodyCode) {
-				exportedTypes.push(requestBodyName);
-			}
-
-			indexIncludes[`./hooks/${hookName}`] = { exports: [hookName, fetcherName], types: [] };
-
-			if (exportedTypes.length > 0) {
-				indexIncludes[`./hooks/${hookName}`].types.push(...exportedTypes);
+				typeExports.push(requestBodyName);
 			}
 
 			if (useUseQuery) {
@@ -183,7 +157,14 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 			}
 
 			if (!config?.customFetcher) {
-				files.push({ code: codegen.renderTemplate('defaultFetcher'), file: 'hooks/fetcher.ts' });
+				files.push({
+					code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
+					filepath: 'hooks/fetcher.ts',
+					ref: '',
+					dependencies: [],
+					jsExports: [],
+					typeExports: [],
+				});
 			}
 
 			imports.add(
@@ -191,14 +172,18 @@ export function generateReactQueryHooks(config?: Config): Plugin['generate'] {
 			);
 
 			files.push({
-				code: codegen.renderTemplate('codeWithImports', {
+				code: liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, {
 					imports,
 					code,
 				}),
-				file: `hooks/${hookName}.ts`,
+				filepath: `hooks/${hookName}.ts`,
+				ref: '',
+				dependencies,
+				jsExports,
+				typeExports,
 			});
 		});
 
-		return { files, indexIncludes };
+		return { files };
 	};
 }

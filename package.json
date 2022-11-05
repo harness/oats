@@ -16,21 +16,21 @@
     "fmt": "prettier --write packages/*/src/**/*.ts"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.25.0",
+    "@changesets/cli": "^2.25.2",
     "@types/js-yaml": "^4.0.1",
-    "@types/node": "^18.11.0",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
     "chokidar": "^3.5.3",
-    "eslint": "^8.25.0",
+    "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-import-resolver-typescript": "^3.5.1",
+    "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
     "globby": "^13.1.2",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.2.1",
     "typescript": "^4.8.4",
-    "vitest": "^0.24.3"
+    "vitest": "^0.24.5"
   }
 }

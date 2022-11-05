@@ -6,17 +6,14 @@ import type { OpenAPIObject } from 'openapi3-ts';
 import yaml from 'js-yaml';
 
 import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
-import { convertToOpenAPI, logInfo } from './helpers.mjs';
-import type { ServiceConfig } from './config.mjs';
-import type { PluginReturn } from './plugin.mjs';
-import type { Codegen } from 'codegen.mjs';
+import { _convertToOpenAPI, logInfo } from './helpers.mjs';
+import type { IServiceConfig } from './config.mjs';
+import type { IPluginReturn } from './plugin.mjs';
 
 /**
  * Loads spec file/url and creates code from the spec
  */
-export async function loadSpecFromFileOrUrl(
-	config: ServiceConfig,
-): Promise<PluginReturn & { codegen: Codegen }> {
+export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPluginReturn> {
 	let spec: OpenAPIObject | undefined;
 
 	if (config.file) {
@@ -69,7 +66,7 @@ export async function loadSpecFromFileOrUrl(
 
 	if (!spec.info || !spec.info.version.startsWith('3.')) {
 		logInfo('Converting spec from Swagger to OpenAPI');
-		spec = await convertToOpenAPI(spec);
+		spec = await _convertToOpenAPI(spec);
 	}
 
 	if (config.transformer) {
