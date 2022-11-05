@@ -38,7 +38,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint
-        run: pnpm run -r lint
+        run: |
+          pnpm run -r build
+          pnpm run -r lint
   typecheck:
     name: TypeCheck
     runs-on: ubuntu-latest
