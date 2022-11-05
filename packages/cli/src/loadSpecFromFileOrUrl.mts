@@ -75,5 +75,5 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 		spec = config.transformer(spec);
 	}
 
-	return generateOpenAPISpec(spec, config.plugins);
+	return generateOpenAPISpec(spec, config);
 }
