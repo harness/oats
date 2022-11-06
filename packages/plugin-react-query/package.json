@@ -13,9 +13,7 @@
   },
   "main": "./dist/index.mjs",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs",
-    "./custom-fetcher": "./dist/custom-fetcher.mjs"
+    ".": "./dist/index.mjs"
   },
   "scripts": {
     "prebuild": "rimraf dist",

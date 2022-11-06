@@ -1,58 +1,58 @@
 title: Works with string types
 name: ObjectInterface
 spec:
-  type: object
-  required:
-    - string
-  properties:
-    string:
-      type: string
-    byte:
-      type: string
-      format: byte
-    binary:
-      type: string
-      format: binary
-    date:
-      type: string
-      format: date
-    dateTime:
-      type: string
-      format: dateTime
-    dateTime2:
-      type: string
-      format: date-time
-    password:
-      type: string
-      format: password
-  additionalProperties:
-    type: string
+	type: object
+	required:
+		- string
+	properties:
+		string:
+			type: string
+		byte:
+			type: string
+			format: byte
+		binary:
+			type: string
+			format: binary
+		date:
+			type: string
+			format: date
+		dateTime:
+			type: string
+			format: dateTime
+		dateTime2:
+			type: string
+			format: date-time
+		password:
+			type: string
+			format: password
+	additionalProperties:
+		type: string
 ---
 export interface ObjectInterface {
-  /**
-  * @format binary
-  */
-  binary?: string;
-  /**
-  * @format byte
-  */
-  byte?: string;
-  /**
-  * @format date
-  */
-  date?: string;
-  /**
-  * @format dateTime
-  */
-  dateTime?: string;
-  /**
-  * @format date-time
-  */
-  dateTime2?: string;
-  /**
-  * @format password
-  */
-  password?: string;
-  string: string;
-  [key: string]: string;
+	/**
+	 * @format binary
+	 */
+	binary?: string;
+	/**
+	 * @format byte
+	 */
+	byte?: string;
+	/**
+	 * @format date
+	 */
+	date?: string;
+	/**
+	 * @format dateTime
+	 */
+	dateTime?: string;
+	/**
+	 * @format date-time
+	 */
+	dateTime2?: string;
+	/**
+	 * @format password
+	 */
+	password?: string;
+	string: string;
+	[key: string]: string;
 }

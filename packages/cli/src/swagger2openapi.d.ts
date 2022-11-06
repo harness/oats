@@ -1,6 +1,6 @@
 declare module 'swagger2openapi' {
 	import { OpenAPIObject } from 'openapi3-ts';
-	interface ConverObjCallbackData {
+	interface IConverObjCallbackData {
 		openapi: OpenAPIObject;
 	}
 	function convertObj(

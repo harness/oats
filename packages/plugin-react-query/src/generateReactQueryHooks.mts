@@ -16,7 +16,8 @@ import {
 	OBJECT_TEMPLATE,
 } from '@harnessio/oats-cli';
 
-import type { Config } from './config.mjs';
+import type { IConfig } from './config.mjs';
+import { Config } from './config.mjs';
 import { _readTemplate, liquid } from './helpers.mjs';
 
 const DEFAULT_FETCHER_TEMPLATE = liquid.parse(_readTemplate('defaultFetcher.liquid'));
@@ -25,7 +26,7 @@ const QUERY_TEMPLATE = liquid.parse(_readTemplate('useQueryHook.liquid'));
 const MUTATION_TEMPLATE = liquid.parse(_readTemplate('useMutationHook.liquid'));
 const METHODS_WITH_BODY = ['post', 'put', 'patch'];
 
-export interface ParamsCode {
+export interface IParamsCode {
 	name: string;
 	props: IObjectProps[];
 }
@@ -43,8 +44,11 @@ function processParams(param: ParameterObject): IObjectProps {
 	};
 }
 
-export function generateReactQueryHooks(config?: Config): IPlugin['generate'] {
+export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 	return async (spec: OpenAPIObject): Promise<IPluginReturn> => {
+		// validate config
+		await Config.parseAsync(config);
+
 		const files: ICodeOutput[] = [];
 
 		processPaths(spec, (route, verb, operation, params) => {

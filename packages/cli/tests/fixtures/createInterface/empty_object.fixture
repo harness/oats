@@ -2,5 +2,4 @@ title: Works with empty object
 name: ObjectInterface
 spec: {}
 ---
-export interface ObjectInterface {
-}
+export interface ObjectInterface {}

@@ -173,7 +173,11 @@ export function createObject(item: SchemaObject, originalRef: string): ICodeWith
 
 	const props = createObjectProperties(item, originalRef);
 
-	return liquid.renderSync(OBJECT_TEMPLATE, { props });
+	return {
+		code: liquid.renderSync(OBJECT_TEMPLATE, { props }),
+		imports: uniq(props.flatMap((p) => p.imports)),
+		dependencies: uniq(props.flatMap((p) => p.dependencies)),
+	};
 }
 
 export function createFreeFormProperty(valueType?: ICodeWithMetadata): IObjectProps {

@@ -1,56 +1,56 @@
 title: Works with number types
 name: ObjectInterface
 spec:
-  type: object
-  required:
-    - int32
-    - int64
-    - number
-  properties:
-    int32:
-      type: integer
-      format: int32
-    int64:
-      type: integer
-      format: int64
-    number:
-      type: integer
-    integer:
-      type: number
-    long:
-      type: number
-      format: long
-    float:
-      type: number
-      format: float
-    double:
-      type: number
-      format: double
-  additionalProperties:
-    type: string
+	type: object
+	required:
+		- int32
+		- int64
+		- number
+	properties:
+		int32:
+			type: integer
+			format: int32
+		int64:
+			type: integer
+			format: int64
+		number:
+			type: integer
+		integer:
+			type: number
+		long:
+			type: number
+			format: long
+		float:
+			type: number
+			format: float
+		double:
+			type: number
+			format: double
+	additionalProperties:
+		type: string
 ---
 export interface ObjectInterface {
-  /**
-  * @format double
-  */
-  double?: number;
-  /**
-  * @format float
-  */
-  float?: number;
-  /**
-  * @format int32
-  */
-  int32: number;
-  /**
-  * @format int64
-  */
-  int64: number;
-  integer?: number;
-  /**
-  * @format long
-  */
-  long?: number;
-  number: number;
-  [key: string]: string;
+	/**
+	 * @format double
+	 */
+	double?: number;
+	/**
+	 * @format float
+	 */
+	float?: number;
+	/**
+	 * @format int32
+	 */
+	int32: number;
+	/**
+	 * @format int64
+	 */
+	int64: number;
+	integer?: number;
+	/**
+	 * @format long
+	 */
+	long?: number;
+	number: number;
+	[key: string]: string;
 }

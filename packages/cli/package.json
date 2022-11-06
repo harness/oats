@@ -23,8 +23,8 @@
     "build": "tsc --outDir dist && cp -R src/templates dist/",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run",
-    "lint": "eslint src/**/*.{mts,ts}",
-    "fmtc": "prettier --check src/**/*.{mts,ts}",
+    "lint": "eslint '{src,test}/**/*.{mts,ts}'",
+    "fmtc": "prettier --check '{src,test}/**/*.{mts,ts}'",
     "typecheck": "tsc --noEmit"
   },
   "engines": {

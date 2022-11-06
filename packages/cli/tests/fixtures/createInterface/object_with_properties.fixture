@@ -1,32 +1,32 @@
 title: works with properties
 name: BasicInterface
 spec:
-  type: object
-  required:
-  - string
-  - arr
-  properties:
-    string:
-      type: string
-    number:
-      type: number
-    boolean:
-      type: boolean
-    enum:
-      type: string
-      enum:
-      - VALUE_1
-      - VALUE_2
-    arr:
-      type: array
-      items:
-        type: integer
-        format: int32
+	type: object
+	required:
+	- string
+	- arr
+	properties:
+		string:
+			type: string
+		number:
+			type: number
+		boolean:
+			type: boolean
+		enum:
+			type: string
+			enum:
+			- VALUE_1
+			- VALUE_2
+		arr:
+			type: array
+			items:
+				type: integer
+				format: int32
 ---
 export interface BasicInterface {
-  arr: number[];
-  boolean?: boolean;
-  enum?: "VALUE_1" | "VALUE_2";
-  number?: number;
-  string: string;
+	arr: number[];
+	boolean?: boolean;
+	enum?: 'VALUE_1' | 'VALUE_2';
+	number?: number;
+	string: string;
 }

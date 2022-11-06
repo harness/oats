@@ -49,7 +49,7 @@ yargs(hideBin(process.argv))
 					type: 'boolean',
 					default: false,
 					description:
-						'By default, all types defined in spec are generated. Pass this flag to only types referenced in paths are generated.',
+						'By default, all types defined in spec are generated. Pass this flag, to only generate types, which are referenced in paths.',
 				})
 				.option('verbose', {
 					type: 'boolean',
