@@ -1,5 +1,16 @@
 # @harnessio/oats-plugin-react-query
 
+## 2.0.0
+
+### Major Changes
+
+- 48e4974: Add dependency detection, which changes plugin contracts
+
+### Patch Changes
+
+- Updated dependencies [48e4974]
+  - @harnessio/oats-cli@2.0.0
+
 ## 1.1.2
 
 ### Patch Changes

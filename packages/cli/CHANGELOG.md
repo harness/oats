@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 2.0.0
+
+### Major Changes
+
+- 48e4974: Add dependency detection, which changes plugin contracts
+
 ## 1.1.1
 
 ### Patch Changes
