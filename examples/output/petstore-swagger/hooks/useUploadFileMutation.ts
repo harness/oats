@@ -7,7 +7,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { ApiResponse } from '../schemas/ApiResponse';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseUploadFileMutationPathParams {
+export interface UploadFileMutationPathParams {
 	/**
 	 * @format int64
 	 */
@@ -21,7 +21,7 @@ export type UploadFileOkResponse = ApiResponse;
 export type UploadFileErrorResponse = unknown;
 
 export interface UploadFileProps
-	extends UseUploadFileMutationPathParams,
+	extends UploadFileMutationPathParams,
 		Omit<FetcherOptions<unknown, UploadFileRequestBody>, 'url'> {
 	body: UploadFileRequestBody;
 }

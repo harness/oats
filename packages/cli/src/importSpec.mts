@@ -3,10 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import * as esbuild from 'esbuild';
 import prettier from 'prettier';
-import ts from 'typescript';
 
-import type { CLIConfig, Config } from './config.mjs';
-import { getConfigSchema } from './config.mjs';
+import type { ICLIConfig, IConfig } from './config.mjs';
+import { Config } from './config.mjs';
 import { loadSpecFromFileOrUrl } from './loadSpecFromFileOrUrl.mjs';
 import { logInfo } from './helpers.mjs';
 import { writeFiles } from './writeFiles.mjs';
@@ -14,23 +13,9 @@ import { writeFiles } from './writeFiles.mjs';
 /**
  * Resolves config and imports spec
  */
-export async function importSpec(argv: CLIConfig): Promise<void> {
+export async function importSpec(argv: ICLIConfig): Promise<void> {
 	const cwd = process.cwd();
 	const prettierConfig = await prettier.resolveConfig(cwd);
-
-	const configFile = ts.findConfigFile(cwd, ts.sys.fileExists, 'tsconfig.json');
-	let moduleResolution = 'NodeJs';
-
-	if (configFile) {
-		const { config } = ts.readConfigFile(configFile, ts.sys.readFile);
-		const { options } = ts.parseJsonConfigFileContent(config, ts.sys, cwd);
-
-		if (options.moduleResolution) {
-			moduleResolution = ts.ModuleResolutionKind[options.moduleResolution];
-		}
-	}
-
-	logInfo(`using module resolution: ${moduleResolution}`);
 
 	if (argv.config) {
 		logInfo(`using config file: ${argv.config}`);
@@ -50,16 +35,17 @@ export async function importSpec(argv: CLIConfig): Promise<void> {
 			});
 
 			logInfo(`Loading built config file: ${builtConfigPath}`);
-			const { default: config } = (await import(builtConfigPath)) as { default: Config };
+			const { default: config } = (await import(builtConfigPath)) as { default: IConfig };
 
 			logInfo(`Deleting transpiled config file: ${builtConfigPath}`);
 			await fs.promises.unlink(builtConfigPath);
 			configFileDeleted = true;
 
 			logInfo(`Validating config`);
-			await getConfigSchema().validate(config);
+			await Config.parseAsync(config);
 
-			const services = argv.service.length > 0 ? argv.service : Object.keys(config.services);
+			const services =
+				argv.service && argv.service.length > 0 ? argv.service : Object.keys(config.services);
 
 			for (const service of services) {
 				logInfo(`Generating spec for: "${service}"`);
@@ -91,6 +77,10 @@ export async function importSpec(argv: CLIConfig): Promise<void> {
 		}
 	} else {
 		const data = await loadSpecFromFileOrUrl(argv);
-		await writeFiles(data, { output: argv.output, clean: argv.clean }, prettierConfig);
+		await writeFiles(
+			data,
+			{ output: argv.output, clean: argv.clean, genOnlyUsed: argv.genOnlyUsed },
+			prettierConfig,
+		);
 	}
 }

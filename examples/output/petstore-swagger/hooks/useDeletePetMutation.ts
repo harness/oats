@@ -6,7 +6,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseDeletePetMutationPathParams {
+export interface DeletePetMutationPathParams {
 	/**
 	 * @format int64
 	 */
@@ -18,7 +18,7 @@ export type DeletePetOkResponse = unknown;
 export type DeletePetErrorResponse = unknown;
 
 export interface DeletePetProps
-	extends UseDeletePetMutationPathParams,
+	extends DeletePetMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {

@@ -6,14 +6,14 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { ApiResponse } from '../schemas/ApiResponse';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseUploadFileMutationPathParams {
+export interface UploadFileMutationPathParams {
 	/**
 	 * @format int64
 	 */
 	petId: number;
 }
 
-export interface UseUploadFileMutationQueryParams {
+export interface UploadFileMutationQueryParams {
 	additionalMetadata?: string;
 }
 
@@ -24,16 +24,16 @@ export type UploadFileOkResponse = ApiResponse;
 export type UploadFileErrorResponse = unknown;
 
 export interface UploadFileProps
-	extends UseUploadFileMutationPathParams,
-		Omit<FetcherOptions<UseUploadFileMutationQueryParams, UploadFileRequestBody>, 'url'> {
-	queryParams: UseUploadFileMutationQueryParams;
+	extends UploadFileMutationPathParams,
+		Omit<FetcherOptions<UploadFileMutationQueryParams, UploadFileRequestBody>, 'url'> {
+	queryParams: UploadFileMutationQueryParams;
 	body: UploadFileRequestBody;
 }
 
 export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<UploadFileOkResponse, UseUploadFileMutationQueryParams, UploadFileRequestBody>({
+	return fetcher<UploadFileOkResponse, UploadFileMutationQueryParams, UploadFileRequestBody>({
 		url: `/pet/${petId}/uploadImage`,
 		method: 'POST',
 		...rest,

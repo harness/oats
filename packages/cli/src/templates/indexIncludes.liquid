@@ -1,8 +1,0 @@
-{% for item in includes -%}
-{% if item[1].exports.length > 0 -%}
-export { {{ item[1].exports | join: ", "}} } from '{{item[0]}}';
-{%- endif %}
-{% if item[1].types.length > 0 -%}
-export type { {{ item[1].types | join: ", "}} } from '{{item[0]}}';
-{%- endif %}
-{%- endfor %}

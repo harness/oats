@@ -6,7 +6,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import type { Pet } from '../schemas/Pet';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseFindPetsByStatusQueryQueryParams {
+export interface FindPetsByStatusQueryQueryParams {
 	/**
 	 * @default "available"
 	 */
@@ -18,8 +18,8 @@ export type FindPetsByStatusOkResponse = Pet[];
 export type FindPetsByStatusErrorResponse = unknown;
 
 export interface FindPetsByStatusProps
-	extends Omit<FetcherOptions<UseFindPetsByStatusQueryQueryParams, unknown>, 'url'> {
-	queryParams: UseFindPetsByStatusQueryQueryParams;
+	extends Omit<FetcherOptions<FindPetsByStatusQueryQueryParams, unknown>, 'url'> {
+	queryParams: FindPetsByStatusQueryQueryParams;
 }
 
 export function findPetsByStatus(
@@ -27,7 +27,7 @@ export function findPetsByStatus(
 ): Promise<FindPetsByStatusOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<FindPetsByStatusOkResponse, UseFindPetsByStatusQueryQueryParams, unknown>({
+	return fetcher<FindPetsByStatusOkResponse, FindPetsByStatusQueryQueryParams, unknown>({
 		url: `/pet/findByStatus`,
 		method: 'GET',
 		...rest,

@@ -1,8 +1,8 @@
 title: Works with only object type
 name: ObjectInterface
 spec:
-  type: object
+	type: object
 ---
 export interface ObjectInterface {
-  [key: string]: any;
+	[key: string]: any;
 }

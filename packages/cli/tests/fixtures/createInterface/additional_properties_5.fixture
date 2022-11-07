@@ -1,14 +1,14 @@
 title: Works with properties and empty additionalProperties as number
 name: ObjectInterface
 spec:
-  type: object
-  properties:
-    id:
-      type: number
-  additionalProperties:
-    type: number
+	type: object
+	properties:
+		id:
+			type: number
+	additionalProperties:
+		type: number
 ---
 export interface ObjectInterface {
-  id?: number;
-  [key: string]: number;
+	id?: number;
+	[key: string]: number;
 }

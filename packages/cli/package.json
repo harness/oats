@@ -16,25 +16,15 @@
   },
   "main": "./dist/index.mjs",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs",
-    "./plugin": "./dist/plugin.mjs",
-    "./nameHelpers": "./dist/nameHelpers.mjs",
-    "./pathHelpers": "./dist/pathHelpers.mjs",
-    "./codegen": "./dist/codegen.mjs",
-    "./helpers": "./dist/helpers.mjs"
-  },
-  "imports": {
-    "#@harnessio/oats-cli/config": "./dist/config.mjs",
-    "#@harnessio/oats-cli/plugin": "./dist/plugin.mjs"
+    ".": "./dist/index.mjs"
   },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc --outDir dist && cp -R src/templates dist/",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run",
-    "lint": "eslint src/**/*.{mts,ts}",
-    "fmtc": "prettier --check src/**/*.{mts,ts}",
+    "lint": "eslint '{src,test}/**/*.{mts,ts}'",
+    "fmtc": "prettier --check '{src,test}/**/*.{mts,ts}'",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
@@ -46,16 +36,16 @@
   "dependencies": {
     "chalk": "^5.1.2",
     "change-case": "^4.1.2",
-    "esbuild": "^0.15.11",
+    "esbuild": "^0.15.13",
     "js-yaml": "^4.1.0",
-    "liquidjs": "^9.42.0",
+    "liquidjs": "^9.42.1",
     "lodash-es": "^4.17.21",
     "node-fetch": "^3.2.10",
     "openapi3-ts": "^3.1.1",
     "prettier": "^2.2.1",
     "swagger2openapi": "^7.0.5",
-    "yargs": "^17.6.0",
-    "yup": "^0.32.11"
+    "yargs": "^17.6.2",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.6",

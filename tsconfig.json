@@ -21,6 +21,6 @@
     "noUnusedParameters": true,
     "jsx": "preserve"
   },
-  "include": ["packages/*/src/**/*", "examples"],
+  "include": ["packages/*/src/*", "packages/*/tests/*", "examples"],
   "exclude": ["node_modules"]
 }

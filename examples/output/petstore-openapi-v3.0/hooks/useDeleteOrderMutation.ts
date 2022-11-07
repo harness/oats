@@ -5,7 +5,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseDeleteOrderMutationPathParams {
+export interface DeleteOrderMutationPathParams {
 	/**
 	 * @format int64
 	 */
@@ -17,7 +17,7 @@ export type DeleteOrderOkResponse = unknown;
 export type DeleteOrderErrorResponse = unknown;
 
 export interface DeleteOrderProps
-	extends UseDeleteOrderMutationPathParams,
+	extends DeleteOrderMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderOkResponse> {

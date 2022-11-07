@@ -6,7 +6,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseLoginUserQueryQueryParams {
+export interface LoginUserQueryQueryParams {
 	username: string;
 	password: string;
 }
@@ -16,14 +16,14 @@ export type LoginUserOkResponse = string;
 export type LoginUserErrorResponse = unknown;
 
 export interface LoginUserProps
-	extends Omit<FetcherOptions<UseLoginUserQueryQueryParams, unknown>, 'url'> {
-	queryParams: UseLoginUserQueryQueryParams;
+	extends Omit<FetcherOptions<LoginUserQueryQueryParams, unknown>, 'url'> {
+	queryParams: LoginUserQueryQueryParams;
 }
 
 export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
 	const { ...rest } = props;
 
-	return fetcher<LoginUserOkResponse, UseLoginUserQueryQueryParams, unknown>({
+	return fetcher<LoginUserOkResponse, LoginUserQueryQueryParams, unknown>({
 		url: `/user/login`,
 		method: 'GET',
 		...rest,

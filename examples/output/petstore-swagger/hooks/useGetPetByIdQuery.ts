@@ -7,7 +7,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import type { Pet } from '../schemas/Pet';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseGetPetByIdQueryPathParams {
+export interface GetPetByIdQueryPathParams {
 	/**
 	 * @format int64
 	 */
@@ -19,7 +19,7 @@ export type GetPetByIdOkResponse = Pet;
 export type GetPetByIdErrorResponse = unknown;
 
 export interface GetPetByIdProps
-	extends UseGetPetByIdQueryPathParams,
+	extends GetPetByIdQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdOkResponse> {

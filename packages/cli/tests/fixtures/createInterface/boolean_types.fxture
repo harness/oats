@@ -1,11 +1,11 @@
 title: Works with boolean types
 name: ObjectInterface
 spec:
-  type: object
-  properties:
-    bool:
-      type: boolean
+	type: object
+	properties:
+		bool:
+			type: boolean
 ---
 export interface ObjectInterface {
-  bool?: boolean;
+	bool?: boolean;
 }

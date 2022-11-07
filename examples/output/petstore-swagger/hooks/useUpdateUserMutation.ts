@@ -7,7 +7,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 import type { User } from '../schemas/User';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseUpdateUserMutationPathParams {
+export interface UpdateUserMutationPathParams {
 	username: string;
 }
 
@@ -18,7 +18,7 @@ export type UpdateUserOkResponse = unknown;
 export type UpdateUserErrorResponse = unknown;
 
 export interface UpdateUserProps
-	extends UseUpdateUserMutationPathParams,
+	extends UpdateUserMutationPathParams,
 		Omit<FetcherOptions<unknown, UpdateUserRequestBody>, 'url'> {
 	body: UpdateUserRequestBody;
 }

@@ -6,7 +6,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseDeleteUserMutationPathParams {
+export interface DeleteUserMutationPathParams {
 	username: string;
 }
 
@@ -15,7 +15,7 @@ export type DeleteUserOkResponse = unknown;
 export type DeleteUserErrorResponse = unknown;
 
 export interface DeleteUserProps
-	extends UseDeleteUserMutationPathParams,
+	extends DeleteUserMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse> {

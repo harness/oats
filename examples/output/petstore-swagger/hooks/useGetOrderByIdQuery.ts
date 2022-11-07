@@ -7,7 +7,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import type { Order } from '../schemas/Order';
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseGetOrderByIdQueryPathParams {
+export interface GetOrderByIdQueryPathParams {
 	/**
 	 * @format int64
 	 */
@@ -19,7 +19,7 @@ export type GetOrderByIdOkResponse = Order;
 export type GetOrderByIdErrorResponse = unknown;
 
 export interface GetOrderByIdProps
-	extends UseGetOrderByIdQueryPathParams,
+	extends GetOrderByIdQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkResponse> {

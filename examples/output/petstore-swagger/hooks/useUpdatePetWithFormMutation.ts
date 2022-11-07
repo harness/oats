@@ -6,7 +6,7 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseUpdatePetWithFormMutationPathParams {
+export interface UpdatePetWithFormMutationPathParams {
 	/**
 	 * @format int64
 	 */
@@ -20,7 +20,7 @@ export type UpdatePetWithFormOkResponse = unknown;
 export type UpdatePetWithFormErrorResponse = unknown;
 
 export interface UpdatePetWithFormProps
-	extends UseUpdatePetWithFormMutationPathParams,
+	extends UpdatePetWithFormMutationPathParams,
 		Omit<FetcherOptions<unknown, UpdatePetWithFormRequestBody>, 'url'> {
 	body: UpdatePetWithFormRequestBody;
 }

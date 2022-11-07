@@ -5,14 +5,14 @@ import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import { fetcher, FetcherOptions } from './fetcher';
 
-export interface UseUpdatePetWithFormMutationPathParams {
+export interface UpdatePetWithFormMutationPathParams {
 	/**
 	 * @format int64
 	 */
 	petId: number;
 }
 
-export interface UseUpdatePetWithFormMutationQueryParams {
+export interface UpdatePetWithFormMutationQueryParams {
 	name?: string;
 	status?: string;
 }
@@ -22,9 +22,9 @@ export type UpdatePetWithFormOkResponse = unknown;
 export type UpdatePetWithFormErrorResponse = unknown;
 
 export interface UpdatePetWithFormProps
-	extends UseUpdatePetWithFormMutationPathParams,
-		Omit<FetcherOptions<UseUpdatePetWithFormMutationQueryParams, unknown>, 'url'> {
-	queryParams: UseUpdatePetWithFormMutationQueryParams;
+	extends UpdatePetWithFormMutationPathParams,
+		Omit<FetcherOptions<UpdatePetWithFormMutationQueryParams, unknown>, 'url'> {
+	queryParams: UpdatePetWithFormMutationQueryParams;
 }
 
 export function updatePetWithForm(
@@ -32,7 +32,7 @@ export function updatePetWithForm(
 ): Promise<UpdatePetWithFormOkResponse> {
 	const { petId, ...rest } = props;
 
-	return fetcher<UpdatePetWithFormOkResponse, UseUpdatePetWithFormMutationQueryParams, unknown>({
+	return fetcher<UpdatePetWithFormOkResponse, UpdatePetWithFormMutationQueryParams, unknown>({
 		url: `/pet/${petId}`,
 		method: 'POST',
 		...rest,

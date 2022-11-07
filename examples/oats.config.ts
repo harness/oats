@@ -13,5 +13,15 @@ export default defineConfig({
 			output: './output/petstore-openapi-v3.0',
 			file: './schemas/petstore-v3.yaml',
 		},
+		github: {
+			url: 'https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml',
+			output: './output/github',
+			genOnlyUsed: true,
+			plugins: [
+				reactQueryPlugin({
+					allowedOperationIds: ['repos/list-for-authenticated-user'],
+				}),
+			],
+		},
 	},
 });
