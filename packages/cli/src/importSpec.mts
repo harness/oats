@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import * as esbuild from 'esbuild';
 import prettier from 'prettier';
+import ora from 'ora';
+import type { Ora } from 'ora';
 
 import type { ICLIConfig, IConfig } from './config.mjs';
 import { Config } from './config.mjs';
@@ -16,9 +18,9 @@ import { writeFiles } from './writeFiles.mjs';
 export async function importSpec(argv: ICLIConfig): Promise<void> {
 	const cwd = process.cwd();
 	const prettierConfig = await prettier.resolveConfig(cwd);
+	let spinner: Ora | undefined;
 
 	if (argv.config) {
-		logInfo(`using config file: ${argv.config}`);
 		const configFilePath = path.resolve(cwd, argv.config);
 		logInfo(`Resolve config file to: ${configFilePath}`);
 		const builtConfig = `oats.config.${new Date().getTime()}`;
@@ -48,7 +50,7 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 				argv.service && argv.service.length > 0 ? argv.service : Object.keys(config.services);
 
 			for (const service of services) {
-				logInfo(`Generating spec for: "${service}"`);
+				spinner = ora(`Generating spec for: ${service}`).start();
 				const serviceConfig = config.services[service];
 
 				if (!serviceConfig) {
@@ -66,6 +68,7 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 					{ output: serviceConfig.output, clean: argv.clean, fileHeader: serviceConfig.fileHeader },
 					prettierConfig,
 				);
+				spinner.succeed(`Generated spec for: ${service}`);
 			}
 		} catch (e) {
 			logInfo(`Deleting transpiled config file due to error: ${builtConfigPath}`);
@@ -73,14 +76,22 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 			if (!configFileDeleted) {
 				await fs.promises.unlink(builtConfigPath);
 			}
+			spinner?.fail();
 			throw e;
 		}
 	} else {
-		const data = await loadSpecFromFileOrUrl(argv);
-		await writeFiles(
-			data,
-			{ output: argv.output, clean: argv.clean, genOnlyUsed: argv.genOnlyUsed },
-			prettierConfig,
-		);
+		spinner = ora(`Generating spec`).start();
+		try {
+			const data = await loadSpecFromFileOrUrl(argv);
+			await writeFiles(
+				data,
+				{ output: argv.output, clean: argv.clean, genOnlyUsed: argv.genOnlyUsed },
+				prettierConfig,
+			);
+			spinner.succeed(`Generated spec`);
+		} catch (e) {
+			spinner.fail();
+			throw e;
+		}
 	}
 }
