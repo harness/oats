@@ -6,7 +6,7 @@ import type {
 	ResponseObject,
 	ResponsesObject,
 } from 'openapi3-ts';
-import { has, isPlainObject, isEmpty, uniq } from 'lodash-es';
+import { has, isPlainObject, isEmpty, uniq, partition, merge } from 'lodash-es';
 import { Liquid } from 'liquidjs';
 
 import type { ICodeOutput } from './plugin.mjs';
@@ -43,6 +43,27 @@ liquid.registerFilter('js_comment', (val: string, indent = 2) =>
 export const OBJECT_TEMPLATE = liquid.parse(_readTemplate('object.liquid'));
 export const COMMENTS_TEMPLATE = liquid.parse(_readTemplate('comments.liquid'));
 export const CODE_WITH_IMPORTS_TEMPLATE = liquid.parse(_readTemplate('codeWithImports.liquid'));
+
+export function shouldCreateInterface(
+	schema: SchemaObject | ReferenceObject,
+): schema is SchemaObject {
+	return (
+		!isReferenceObject(schema) &&
+		(!schema.type || schema.type === 'object') &&
+		!schema.oneOf &&
+		!schema.nullable
+	);
+}
+
+export function processAllOf(schema: SchemaObject): [SchemaObject, ReferenceObject[]] {
+	const [allRefs, allSchemas] = partition(schema.allOf, (s) => isReferenceObject(s)) as [
+		ReferenceObject[],
+		SchemaObject[],
+	];
+	const mergedSchema = allSchemas.reduce((p, c) => merge(p, c), {} as SchemaObject);
+
+	return [mergedSchema, allRefs];
+}
 
 export function createReferenceNode(ref: string, originalRef: string): ICodeWithMetadata {
 	let path = '';
@@ -245,24 +266,37 @@ export function createScalarNode(item: SchemaObject, originalRef: string): ICode
 
 export function createInterface(
 	name: string,
-	schema: SchemaObject,
 	originalRef: string,
+	schema: SchemaObject,
+	extensions: ReferenceObject[] = [],
 ): ICodeWithMetadata {
 	const props = createObjectProperties(schema, originalRef);
 	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
-	const objectStructurce = liquid.renderSync(OBJECT_TEMPLATE, { props });
+	const objectStructure = liquid.renderSync(OBJECT_TEMPLATE, { props });
+	const imports = props.reduce<string[]>((p, c) => [...p, ...c.imports], []);
+	const dependencies = props.reduce<string[]>((p, c) => [...p, ...c.dependencies], []);
+	const foo = extensions.map((ext) => {
+		const refNode = createReferenceNode(ext.$ref, originalRef);
+
+		imports.push(...refNode.imports);
+		dependencies.push(...refNode.dependencies);
+
+		return refNode.code;
+	});
+
+	const extendsCode = foo.length > 0 ? ` extends ${foo.join(', ')}` : '';
 
 	return {
-		code: `${comments}\nexport interface ${name} ${objectStructurce}`,
-		imports: props.reduce<string[]>((p, c) => [...p, ...c.imports], []),
-		dependencies: props.reduce<string[]>((p, c) => [...p, ...c.dependencies], []),
+		code: `${comments}\nexport interface ${name}${extendsCode} ${objectStructure}`,
+		imports,
+		dependencies,
 	};
 }
 
 export function createTypeDeclaration(
 	name: string,
-	schema: SchemaObject | ReferenceObject,
 	originalRef: string,
+	schema: SchemaObject | ReferenceObject,
 ): ICodeWithMetadata {
 	const resolvedValue = resolveValue(schema, originalRef);
 	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
@@ -311,18 +345,14 @@ export function createRequestBodyDefinitions(
 			return;
 		}
 
-		if (
-			!isReferenceObject(response) &&
-			(!response.type || response.type === 'object') &&
-			!response.allOf &&
-			!response.oneOf &&
-			!response.nullable
-		) {
-			const interfaceCode = createInterface(finalName, response, refPath);
+		if (shouldCreateInterface(response)) {
+			const interfaceCode = Array.isArray(response.allOf)
+				? createInterface(finalName, refPath, ...processAllOf(response))
+				: createInterface(finalName, refPath, response);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);
 		} else {
-			const typeCode = createTypeDeclaration(finalName, response, refPath);
+			const typeCode = createTypeDeclaration(finalName, refPath, response);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
 			dependencies.push(...typeCode.dependencies);
 		}
@@ -357,18 +387,14 @@ export function createSchemaDefinitions(
 			return;
 		}
 
-		if (
-			!isReferenceObject(schema) &&
-			(!schema.type || schema.type === 'object') &&
-			!schema.allOf &&
-			!schema.oneOf &&
-			!schema.nullable
-		) {
-			const interfaceCode = createInterface(finalName, schema, refPath);
+		if (shouldCreateInterface(schema)) {
+			const interfaceCode = Array.isArray(schema.allOf)
+				? createInterface(finalName, refPath, ...processAllOf(schema))
+				: createInterface(finalName, refPath, schema);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);
 		} else {
-			const typeCode = createTypeDeclaration(finalName, schema, refPath);
+			const typeCode = createTypeDeclaration(finalName, refPath, schema);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
 			dependencies.push(...typeCode.dependencies);
 		}
@@ -404,18 +430,14 @@ export function createResponseDefinitions(
 			return;
 		}
 
-		if (
-			!isReferenceObject(responseSchema) &&
-			(!responseSchema.type || responseSchema.type === 'object') &&
-			!responseSchema.allOf &&
-			!responseSchema.oneOf &&
-			!responseSchema.nullable
-		) {
-			const interfaceCode = createInterface(finalName, responseSchema, refPath);
+		if (shouldCreateInterface(responseSchema)) {
+			const interfaceCode = Array.isArray(responseSchema.allOf)
+				? createInterface(finalName, refPath, ...processAllOf(responseSchema))
+				: createInterface(finalName, refPath, responseSchema);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);
 		} else {
-			const typeCode = createTypeDeclaration(finalName, responseSchema, refPath);
+			const typeCode = createTypeDeclaration(finalName, refPath, responseSchema);
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, typeCode);
 			dependencies.push(...typeCode.dependencies);
 		}

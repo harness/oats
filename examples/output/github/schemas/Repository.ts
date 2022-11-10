@@ -162,6 +162,11 @@ export interface Repository {
 	 */
 	git_url: string;
 	/**
+	 * Whether discussions are enabled.
+	 * @example true
+	 */
+	has_discussions?: boolean;
+	/**
 	 * Whether downloads are enabled.
 	 * @default true
 	 * @example true
@@ -289,7 +294,13 @@ export interface Repository {
 	open_issues_count: number;
 	organization?: NullableSimpleUser;
 	owner: SimpleUser;
-	permissions?: unknown;
+	permissions?: {
+		admin: boolean;
+		maintain?: boolean;
+		pull: boolean;
+		push: boolean;
+		triage?: boolean;
+	};
 	/**
 	 * Whether the repository is private or public.
 	 */
@@ -375,7 +386,146 @@ export interface Repository {
 	 */
 	teams_url: string;
 	temp_clone_token?: string;
-	template_repository?: unknown | null;
+	template_repository?: {
+		allow_auto_merge?: boolean;
+		allow_merge_commit?: boolean;
+		allow_rebase_merge?: boolean;
+		allow_squash_merge?: boolean;
+		allow_update_branch?: boolean;
+		archive_url?: string;
+		archived?: boolean;
+		assignees_url?: string;
+		blobs_url?: string;
+		branches_url?: string;
+		clone_url?: string;
+		collaborators_url?: string;
+		comments_url?: string;
+		commits_url?: string;
+		compare_url?: string;
+		contents_url?: string;
+		contributors_url?: string;
+		created_at?: string;
+		default_branch?: string;
+		delete_branch_on_merge?: boolean;
+		deployments_url?: string;
+		description?: string;
+		disabled?: boolean;
+		downloads_url?: string;
+		events_url?: string;
+		fork?: boolean;
+		forks_count?: number;
+		forks_url?: string;
+		full_name?: string;
+		git_commits_url?: string;
+		git_refs_url?: string;
+		git_tags_url?: string;
+		git_url?: string;
+		has_downloads?: boolean;
+		has_issues?: boolean;
+		has_pages?: boolean;
+		has_projects?: boolean;
+		has_wiki?: boolean;
+		homepage?: string;
+		hooks_url?: string;
+		html_url?: string;
+		id?: number;
+		is_template?: boolean;
+		issue_comment_url?: string;
+		issue_events_url?: string;
+		issues_url?: string;
+		keys_url?: string;
+		labels_url?: string;
+		language?: string;
+		languages_url?: string;
+		/**
+		 * The default value for a merge commit message.
+		 *
+		 * - `PR_TITLE` - default to the pull request's title.
+		 * - `PR_BODY` - default to the pull request's body.
+		 * - `BLANK` - default to a blank commit message.
+		 */
+		merge_commit_message?: 'BLANK' | 'PR_BODY' | 'PR_TITLE';
+		/**
+		 * The default value for a merge commit title.
+		 *
+		 * - `PR_TITLE` - default to the pull request's title.
+		 * - `MERGE_MESSAGE` - default to the classic title for a merge message (e.g., Merge pull request #123 from branch-name).
+		 */
+		merge_commit_title?: 'MERGE_MESSAGE' | 'PR_TITLE';
+		merges_url?: string;
+		milestones_url?: string;
+		mirror_url?: string;
+		name?: string;
+		network_count?: number;
+		node_id?: string;
+		notifications_url?: string;
+		open_issues_count?: number;
+		owner?: {
+			avatar_url?: string;
+			events_url?: string;
+			followers_url?: string;
+			following_url?: string;
+			gists_url?: string;
+			gravatar_id?: string;
+			html_url?: string;
+			id?: number;
+			login?: string;
+			node_id?: string;
+			organizations_url?: string;
+			received_events_url?: string;
+			repos_url?: string;
+			site_admin?: boolean;
+			starred_url?: string;
+			subscriptions_url?: string;
+			type?: string;
+			url?: string;
+		};
+		permissions?: {
+			admin?: boolean;
+			maintain?: boolean;
+			pull?: boolean;
+			push?: boolean;
+			triage?: boolean;
+		};
+		private?: boolean;
+		pulls_url?: string;
+		pushed_at?: string;
+		releases_url?: string;
+		size?: number;
+		/**
+		 * The default value for a squash merge commit message:
+		 *
+		 * - `PR_BODY` - default to the pull request's body.
+		 * - `COMMIT_MESSAGES` - default to the branch's commit messages.
+		 * - `BLANK` - default to a blank commit message.
+		 */
+		squash_merge_commit_message?: 'BLANK' | 'COMMIT_MESSAGES' | 'PR_BODY';
+		/**
+		 * The default value for a squash merge commit title:
+		 *
+		 * - `PR_TITLE` - default to the pull request's title.
+		 * - `COMMIT_OR_PR_TITLE` - default to the commit's title (if only one commit) or the pull request's title (when more than one commit).
+		 */
+		squash_merge_commit_title?: 'COMMIT_OR_PR_TITLE' | 'PR_TITLE';
+		ssh_url?: string;
+		stargazers_count?: number;
+		stargazers_url?: string;
+		statuses_url?: string;
+		subscribers_count?: number;
+		subscribers_url?: string;
+		subscription_url?: string;
+		svn_url?: string;
+		tags_url?: string;
+		teams_url?: string;
+		temp_clone_token?: string;
+		topics?: string[];
+		trees_url?: string;
+		updated_at?: string;
+		url?: string;
+		use_squash_pr_title_as_default?: boolean;
+		visibility?: string;
+		watchers_count?: number;
+	} | null;
 	topics?: string[];
 	/**
 	 * @example "http://api.github.com/repos/octocat/Hello-World/git/trees{/sha}"
