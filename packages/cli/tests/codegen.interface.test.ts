@@ -8,7 +8,7 @@ describe('createInterfaces Tests', async () => {
 
 	fixtures.forEach(({ title, name, spec, code }) => {
 		test(title, () => {
-			const { code: expectedCode } = createInterface(name, spec, '');
+			const { code: expectedCode } = createInterface(name, '', spec);
 
 			expect(prettify(expectedCode).trimEnd()).toBe(code.trimEnd());
 		});
