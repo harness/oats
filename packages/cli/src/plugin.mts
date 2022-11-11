@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import { z } from 'zod';
 
 export const CodeOutput = z.object({
@@ -18,7 +18,7 @@ export const PluginReturn = z.object({
 
 export type IPluginReturn = z.infer<typeof PluginReturn>;
 
-export const OpenAPIObj: z.ZodType<Readonly<OpenAPIObject>> = z.any();
+export const OpenAPIObj: z.ZodType<Readonly<OpenAPIV3.Document>> = z.any();
 
 export const Plugin = z.object({
 	name: z.string(),

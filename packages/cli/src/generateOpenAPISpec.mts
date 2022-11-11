@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import { uniq } from 'lodash-es';
 
 import type { IPluginReturn, ICodeOutput } from './plugin.mjs';
@@ -12,7 +12,7 @@ import {
 } from './codegen.mjs';
 
 export async function generateOpenAPISpec(
-	spec: OpenAPIObject,
+	spec: OpenAPIV3.Document,
 	config: IServiceConfig,
 ): Promise<IPluginReturn> {
 	const files: ICodeOutput[] = [];

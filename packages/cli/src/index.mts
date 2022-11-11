@@ -12,6 +12,7 @@ export {
 	OBJECT_TEMPLATE,
 } from './codegen.mjs';
 export { getParamsInPath, groupByParamType, processPaths } from './pathHelpers.mjs';
+export type { IParameterLocation } from './pathHelpers.mjs';
 export {
 	getNameForErrorResponse,
 	getNameForOkResponse,

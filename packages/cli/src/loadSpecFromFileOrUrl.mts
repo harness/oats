@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import fetch from 'node-fetch';
-import type { OpenAPIObject } from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import yaml from 'js-yaml';
 
 import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
@@ -14,7 +14,7 @@ import type { IPluginReturn } from './plugin.mjs';
  * Loads spec file/url and creates code from the spec
  */
 export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPluginReturn> {
-	let spec: OpenAPIObject | undefined;
+	let spec: OpenAPIV3.Document | undefined;
 
 	if (config.file) {
 		const ext = path.extname(config.file);
@@ -46,11 +46,11 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 			logInfo('Parsing data from API');
 
 			if (contentType === 'application/json') {
-				spec = (await response.json()) as OpenAPIObject;
+				spec = (await response.json()) as OpenAPIV3.Document;
 				logInfo(`Detected format: JSON`);
 			} else {
 				const txt = await response.text();
-				spec = yaml.load(txt) as OpenAPIObject;
+				spec = yaml.load(txt) as OpenAPIV3.Document;
 				logInfo(`Detected format: YAML`);
 			}
 		} catch (_) {

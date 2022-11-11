@@ -1,13 +1,9 @@
-import type {
-	OpenAPIObject,
-	ParameterObject,
-	ParameterLocation,
-	PathItemObject,
-	OperationObject,
-} from 'openapi3-ts';
+import { OpenAPIV3 } from 'openapi-types';
 import { isReferenceObject } from './helpers.mjs';
 
-const ALLOWED_VERBS: Array<keyof PathItemObject> = ['get', 'post', 'put', 'delete', 'patch'];
+const ALLOWED_VERBS: Array<OpenAPIV3.HttpMethods> = Object.values(OpenAPIV3.HttpMethods);
+
+export type IParameterLocation = 'query' | 'header' | 'path' | 'cookie';
 
 export function getParamsInPath(path: string): string[] {
 	let n;
@@ -22,9 +18,9 @@ export function getParamsInPath(path: string): string[] {
 }
 
 export function groupByParamType(
-	params: ParameterObject[],
-): Record<ParameterLocation, ParameterObject[]> {
-	const data: Record<ParameterLocation, ParameterObject[]> = {
+	params: OpenAPIV3.ParameterObject[],
+): Record<IParameterLocation, OpenAPIV3.ParameterObject[]> {
+	const data: Record<IParameterLocation, OpenAPIV3.ParameterObject[]> = {
 		query: [],
 		header: [],
 		path: [],
@@ -32,8 +28,8 @@ export function groupByParamType(
 	};
 
 	return params.reduce((p, c) => {
-		if (p[c.in]) {
-			p[c.in].push(c);
+		if (p[c.in as IParameterLocation]) {
+			p[c.in as IParameterLocation].push(c);
 		}
 
 		return p;
@@ -41,18 +37,20 @@ export function groupByParamType(
 }
 
 export function processPaths(
-	spec: OpenAPIObject,
+	spec: OpenAPIV3.Document,
 	callback: (
 		route: string,
 		verb: string,
-		operation: OperationObject,
-		params: Record<ParameterLocation, ParameterObject[]>,
+		operation: OpenAPIV3.OperationObject,
+		params: Record<IParameterLocation, OpenAPIV3.ParameterObject[]>,
 	) => void,
 ): void {
 	const operationIds = new Set<string>();
-	Object.entries(spec.paths || {}).forEach(([route, routeObj]: [string, PathItemObject]) => {
+	Object.entries(spec.paths || {}).forEach(([route, routeObj]) => {
+		if (!routeObj) return;
+
 		ALLOWED_VERBS.forEach((verb) => {
-			const operation = routeObj[verb] as OperationObject;
+			const operation = routeObj[verb] as OpenAPIV3.OperationObject;
 
 			if (!operation) return;
 
@@ -74,7 +72,7 @@ export function processPaths(
 			const paramsInPath = getParamsInPath(route);
 
 			const resolvedParams = [...(routeObj.parameters || []), ...(operation.parameters || [])]
-				.map((param): ParameterObject => {
+				.map((param): OpenAPIV3.ParameterObject => {
 					if (isReferenceObject(param)) {
 						const ref = param.$ref.replace('#/components/parameters/', '');
 						if (spec.components?.parameters && ref in spec.components.parameters) {

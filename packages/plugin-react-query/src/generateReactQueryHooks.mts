@@ -1,4 +1,4 @@
-import type { OpenAPIObject, ParameterObject } from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import { camelCase } from 'change-case';
 import type { ICodeOutput, IObjectProps, IPlugin, IPluginReturn } from '@harnessio/oats-cli';
 import {
@@ -31,7 +31,7 @@ export interface IParamsCode {
 	props: IObjectProps[];
 }
 
-function processParams(param: ParameterObject): IObjectProps {
+function processParams(param: OpenAPIV3.ParameterObject): IObjectProps {
 	const resolvedValue = param.schema ? resolveValue(param.schema, '') : undefined;
 
 	return {
@@ -45,7 +45,7 @@ function processParams(param: ParameterObject): IObjectProps {
 }
 
 export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
-	return async (spec: OpenAPIObject): Promise<IPluginReturn> => {
+	return async (spec: OpenAPIV3.Document): Promise<IPluginReturn> => {
 		// validate config
 		await Config.parseAsync(config);
 

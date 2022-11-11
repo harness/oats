@@ -1,11 +1,4 @@
-import type {
-	ReferenceObject,
-	SchemaObject,
-	ComponentsObject,
-	RequestBodyObject,
-	ResponseObject,
-	ResponsesObject,
-} from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import { has, isPlainObject, isEmpty, uniq, partition, merge } from 'lodash-es';
 import { Liquid } from 'liquidjs';
 
@@ -17,6 +10,14 @@ import {
 	getNameForParameter,
 } from './nameHelpers.mjs';
 import { isReferenceObject, _readTemplate } from './helpers.mjs';
+
+type IReferenceObject = OpenAPIV3.ReferenceObject;
+type ISchemaObject = OpenAPIV3.SchemaObject;
+type IArraySchemaObject = OpenAPIV3.ArraySchemaObject;
+type IRequestBodyObject = OpenAPIV3.RequestBodyObject;
+type IResponseObject = OpenAPIV3.ResponseObject;
+type IComponentsObject = OpenAPIV3.ComponentsObject;
+type IResponsesObject = OpenAPIV3.ResponsesObject;
 
 export interface ICodeWithMetadata {
 	code: string;
@@ -45,8 +46,8 @@ export const COMMENTS_TEMPLATE = liquid.parse(_readTemplate('comments.liquid'));
 export const CODE_WITH_IMPORTS_TEMPLATE = liquid.parse(_readTemplate('codeWithImports.liquid'));
 
 export function shouldCreateInterface(
-	schema: SchemaObject | ReferenceObject,
-): schema is SchemaObject {
+	schema: ISchemaObject | IReferenceObject,
+): schema is ISchemaObject {
 	return (
 		!isReferenceObject(schema) &&
 		(!schema.type || schema.type === 'object') &&
@@ -55,12 +56,12 @@ export function shouldCreateInterface(
 	);
 }
 
-export function processAllOf(schema: SchemaObject): [SchemaObject, ReferenceObject[]] {
+export function processAllOf(schema: ISchemaObject): [ISchemaObject, IReferenceObject[]] {
 	const [allRefs, allSchemas] = partition(schema.allOf, (s) => isReferenceObject(s)) as [
-		ReferenceObject[],
-		SchemaObject[],
+		IReferenceObject[],
+		ISchemaObject[],
 	];
-	const mergedSchema = allSchemas.reduce((p, c) => merge(p, c), {} as SchemaObject);
+	const mergedSchema = allSchemas.reduce((p, c) => merge(p, c), {} as ISchemaObject);
 
 	return [mergedSchema, allRefs];
 }
@@ -100,7 +101,7 @@ export function createReferenceNode(ref: string, originalRef: string): ICodeWith
 	return ret;
 }
 
-export function createObjectProperties(item: SchemaObject, originalRef: string): IObjectProps[] {
+export function createObjectProperties(item: ISchemaObject, originalRef: string): IObjectProps[] {
 	if (!item.type && !has(item, 'properties') && !has(item, 'additionalProperties')) {
 		return [];
 	}
@@ -157,7 +158,7 @@ export function createObjectProperties(item: SchemaObject, originalRef: string):
 	return [];
 }
 
-export function createObject(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+export function createObject(item: ISchemaObject, originalRef: string): ICodeWithMetadata {
 	if (isReferenceObject(item)) {
 		return createReferenceNode(item.$ref, originalRef);
 	}
@@ -211,7 +212,7 @@ export function createFreeFormProperty(valueType?: ICodeWithMetadata): IObjectPr
 }
 
 export function resolveValue(
-	schema: SchemaObject | ReferenceObject,
+	schema: ISchemaObject | IReferenceObject,
 	originalRef: string,
 ): ICodeWithMetadata {
 	return isReferenceObject(schema)
@@ -219,7 +220,7 @@ export function resolveValue(
 		: createScalarNode(schema, originalRef);
 }
 
-export function createArray(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+export function createArray(item: IArraySchemaObject, originalRef: string): ICodeWithMetadata {
 	if (item.items) {
 		const value = resolveValue(item.items, originalRef);
 		return { ...value, code: value.code.match(/\W/) ? `Array<${value.code}>` : `${value.code}[]` };
@@ -228,7 +229,7 @@ export function createArray(item: SchemaObject, originalRef: string): ICodeWithM
 	}
 }
 
-export function createScalarNode(item: SchemaObject, originalRef: string): ICodeWithMetadata {
+export function createScalarNode(item: ISchemaObject, originalRef: string): ICodeWithMetadata {
 	const type: ICodeWithMetadata = { code: 'unknown', dependencies: [], imports: [] };
 
 	switch (item.type) {
@@ -267,8 +268,8 @@ export function createScalarNode(item: SchemaObject, originalRef: string): ICode
 export function createInterface(
 	name: string,
 	originalRef: string,
-	schema: SchemaObject,
-	extensions: ReferenceObject[] = [],
+	schema: ISchemaObject,
+	extensions: IReferenceObject[] = [],
 ): ICodeWithMetadata {
 	const props = createObjectProperties(schema, originalRef);
 	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
@@ -296,7 +297,7 @@ export function createInterface(
 export function createTypeDeclaration(
 	name: string,
 	originalRef: string,
-	schema: SchemaObject | ReferenceObject,
+	schema: ISchemaObject | IReferenceObject,
 ): ICodeWithMetadata {
 	const resolvedValue = resolveValue(schema, originalRef);
 	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
@@ -309,8 +310,8 @@ export function createTypeDeclaration(
 }
 
 export function getRequestResponseSchema(
-	schema: RequestBodyObject | ReferenceObject | ResponseObject,
-): ReferenceObject | SchemaObject | undefined {
+	schema: IRequestBodyObject | IReferenceObject | IResponseObject,
+): IReferenceObject | ISchemaObject | undefined {
 	if (isReferenceObject(schema)) {
 		return schema;
 	}
@@ -328,7 +329,7 @@ export function getRequestResponseSchema(
 }
 
 export function createRequestBodyDefinitions(
-	schemas: ComponentsObject['requestBodies'] = {},
+	schemas: IComponentsObject['requestBodies'] = {},
 ): Record<string, ICodeOutput> {
 	const ret: Record<string, ICodeOutput> = {};
 	const data = Object.entries(schemas);
@@ -371,7 +372,7 @@ export function createRequestBodyDefinitions(
 }
 
 export function createSchemaDefinitions(
-	schemas: ComponentsObject['schemas'] = {},
+	schemas: IComponentsObject['schemas'] = {},
 	filter: string[] = [],
 ): Record<string, ICodeOutput> {
 	const data = Object.entries(schemas);
@@ -413,7 +414,7 @@ export function createSchemaDefinitions(
 }
 
 export function createResponseDefinitions(
-	schemas: ComponentsObject['responses'] = {},
+	schemas: IComponentsObject['responses'] = {},
 ): Record<string, ICodeOutput> {
 	const ret: Record<string, ICodeOutput> = {};
 	const data = Object.entries(schemas);
@@ -456,7 +457,7 @@ export function createResponseDefinitions(
 }
 
 export function getReqResTypes(
-	responsesOrRequests: Array<[string, ResponseObject | ReferenceObject | RequestBodyObject]>,
+	responsesOrRequests: Array<[string, IResponseObject | IReferenceObject | IRequestBodyObject]>,
 	originalRef: string,
 ): ICodeWithMetadata {
 	const dependencies: string[] = [];
@@ -484,13 +485,16 @@ export function getReqResTypes(
 	return { code: uniq(codes).join(' | ') || 'unknown', imports, dependencies };
 }
 
-export function getOkResponses(responses: ResponsesObject, originalRef: string): ICodeWithMetadata {
+export function getOkResponses(
+	responses: IResponsesObject,
+	originalRef: string,
+): ICodeWithMetadata {
 	const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2'));
 	return getReqResTypes(okResponses, originalRef);
 }
 
 export function getErrorResponses(
-	responses: ResponsesObject,
+	responses: IResponsesObject,
 	originalRef: string,
 ): ICodeWithMetadata {
 	const errorResponses = Object.entries(responses).filter(
