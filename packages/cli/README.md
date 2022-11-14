@@ -1,5 +1,7 @@
 # CLI
 
+![@harnessio/oats-cli](https://img.shields.io/npm/v/@harnessio/oats-cli.svg?style=flat-square)
+
 Command-line utility for converting OpenAPI (formerly Swagger) definitions to TypeScript.
 
 ## Installation

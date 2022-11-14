@@ -1,5 +1,7 @@
 # React Query Plugin
 
+![@harnessio/oats-plugin-react-query](https://img.shields.io/npm/v/@harnessio/oats-plugin-react-query.svg?style=flat-square)
+
 Plugin for `oats` cli, for generating react query hooks. This will generate hooks
 using `react-query`.
 

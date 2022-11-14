@@ -17,6 +17,14 @@ Checkout the individual packages for documentation.
 
 You can also check the [examples](./examples/) folder for usage.
 
+### CLI
+
+![@harnessio/oats-cli](https://img.shields.io/npm/v/@harnessio/oats-cli.svg?style=flat-square)
+
+### React Query Plugin
+
+![@harnessio/oats-plugin-react-query](https://img.shields.io/npm/v/@harnessio/oats-plugin-react-query.svg?style=flat-square)
+
 ## Development
 
 This repo uses [pnpm](https://pnpm.io/) as a package manager and [changesets](https://github.com/changesets/changesets) for versioning.
@@ -25,4 +33,4 @@ Check out the [development docs](./docs/development.md) for more info.
 
 ## License
 
-MIT.
+[MIT](./LICENSE.md). Copyright(c) [Harness Inc](https://harness.io)

@@ -4,7 +4,7 @@ This document describes the process for running this application on your local c
 
 ## Getting Started
 
-You'll need Node.js vesion 16 to run this project. You can install Node.js [from here].(https://nodejs.org/en/download/package-manager/)
+You'll need Node.js vesion 16 to run this project. You can install Node.js [from here](https://nodejs.org/en/download/package-manager/).
 
 You'll also need to [install pnpm](https://pnpm.io/installation).
 
