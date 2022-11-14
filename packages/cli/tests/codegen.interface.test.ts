@@ -12,7 +12,7 @@ describe('createInterfaces Tests', async () => {
 				name,
 				originalRef: '',
 				components: components || {},
-				...processAllOf(spec),
+				schema: spec,
 			});
 
 			expect(prettify(expectedCode).trimEnd()).toBe(code.trimEnd());

@@ -45,6 +45,7 @@ liquid.registerFilter('js_comment', (val: string, indent = 2) =>
 export const OBJECT_TEMPLATE = liquid.parse(_readTemplate('object.liquid'));
 export const COMMENTS_TEMPLATE = liquid.parse(_readTemplate('comments.liquid'));
 export const CODE_WITH_IMPORTS_TEMPLATE = liquid.parse(_readTemplate('codeWithImports.liquid'));
+export const INTERFACE_TEMPLATE = liquid.parse(_readTemplate('interface.liquid'));
 
 export function shouldCreateInterface(
 	schema: ISchemaObject | IReferenceObject,
@@ -58,14 +59,18 @@ export function shouldCreateInterface(
 }
 
 export function hasDiscriminator(
-	schema: ISchemaObject | IReferenceObject,
-	components: IComponentsObject,
+	schema?: ISchemaObject | IReferenceObject,
+	components?: IComponentsObject,
 ): boolean {
+	if (!schema) {
+		return false;
+	}
+
 	if (isReferenceObject(schema)) {
 		const path = schema.$ref.split('/');
 		path.shift();
 
-		const resolvedSchema = get(components, path);
+		const resolvedSchema = get({ components }, path);
 
 		return hasDiscriminator(resolvedSchema, components);
 	}
@@ -308,14 +313,27 @@ export interface ICreateInterfaceProps {
 }
 
 export function createInterface(props: ICreateInterfaceProps): ICodeWithMetadata {
-	const { name, originalRef, schema: ogSchema, components } = props;
-	const { schema, extensions } = processAllOf(ogSchema);
-	const objProps = createObjectProperties(schema, originalRef, components);
+	const { name, originalRef, schema: originalSchema, components } = props;
+	const { schema, extensions } = processAllOf(originalSchema);
+	const generics: string[] = [];
+	let i = 0;
+
+	const objProps = createObjectProperties(schema, originalRef, components).map((obj) => {
+		let value = obj.value;
+
+		if (obj.hasDiscriminator) {
+			value = `T${i++}`;
+			generics.push(`${value} extends ${obj.value} = ${obj.value}`);
+		}
+
+		return { ...obj, value };
+	});
+
 	const comments = liquid.renderSync(COMMENTS_TEMPLATE, { schema });
 	const objectStructure = liquid.renderSync(OBJECT_TEMPLATE, { props: objProps });
 	const imports = objProps.reduce<string[]>((p, c) => [...p, ...c.imports], []);
 	const dependencies = objProps.reduce<string[]>((p, c) => [...p, ...c.dependencies], []);
-	const foo = extensions.map((ext) => {
+	const resovledExtensions = extensions.map((ext) => {
 		const refNode = createReferenceNode(ext.$ref, originalRef);
 
 		imports.push(...refNode.imports);
@@ -324,10 +342,14 @@ export function createInterface(props: ICreateInterfaceProps): ICodeWithMetadata
 		return refNode.code;
 	});
 
-	const extendsCode = foo.length > 0 ? ` extends ${foo.join(', ')}` : '';
-
 	return {
-		code: `${comments}\nexport interface ${name}${extendsCode} ${objectStructure}`,
+		code: liquid.renderSync(INTERFACE_TEMPLATE, {
+			resovledExtensions,
+			name,
+			objectStructure,
+			comments,
+			generics,
+		}),
 		imports,
 		dependencies,
 	};
@@ -391,7 +413,7 @@ export function createRequestBodyDefinitions(
 				name: finalName,
 				originalRef: refPath,
 				components,
-				...processAllOf(response),
+				schema: response,
 			});
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);
@@ -437,7 +459,7 @@ export function createSchemaDefinitions(
 				name: finalName,
 				originalRef: refPath,
 				components,
-				...processAllOf(schema),
+				schema,
 			});
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);
@@ -484,7 +506,7 @@ export function createResponseDefinitions(
 				name: finalName,
 				originalRef: refPath,
 				components,
-				...processAllOf(responseSchema),
+				schema: responseSchema,
 			});
 			code = liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, interfaceCode);
 			dependencies.push(...interfaceCode.dependencies);

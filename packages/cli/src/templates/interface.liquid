@@ -1,0 +1,9 @@
+{{comments}}
+export interface {{name}}
+{% if generics.length > 0 %}
+<{{generics | join: ", "}}>
+{% endif %}
+{% if resovledExtensions.length > 0 %}
+extends {{resovledExtensions | join: ", "}}
+{% endif %}
+{{objectStructure}}

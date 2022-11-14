@@ -3,15 +3,21 @@ name: GenericInterface
 spec:
 	type: object
 	properties:
-		byte:
-			type: string
-			format: byte
-
+		animal:
+			$ref: '#/components/schemas/Animal'
+components:
+	schemas:
+		Animal:
+			type: object
+			properties:
+				type:
+					type: string
+			discriminator:
+				propertyName: type
+				mapping:
+					Dog: '#/components/Dog'
+					Cat: '#/components/Cat'
 ---
-export interface AllInterface extends BaseInterface {
-	/**
-	 * @format byte
-	 */
-	byte?: string;
-	string?: string;
+export interface GenericInterface<T0 extends Animal = Animal> {
+	animal?: T0;
 }
