@@ -21,14 +21,14 @@ export async function generateOpenAPISpec(
 
 	if (spec.components?.schemas) {
 		logInfo('Generating schema definitions');
-		const schemaDefs = createSchemaDefinitions(spec.components.schemas);
+		const schemaDefs = createSchemaDefinitions(spec.components);
 
 		Object.assign(components, schemaDefs);
 	}
 
 	if (spec.components?.requestBodies) {
 		logInfo('Generating request body definitions');
-		const requestBodyDefs = createRequestBodyDefinitions(spec.components.requestBodies);
+		const requestBodyDefs = createRequestBodyDefinitions(spec.components);
 
 		Object.assign(components, requestBodyDefs);
 	}
@@ -36,7 +36,7 @@ export async function generateOpenAPISpec(
 	if (spec.components?.responses) {
 		logInfo('Generating response definitions');
 
-		const responseDefs = createResponseDefinitions(spec.components.responses);
+		const responseDefs = createResponseDefinitions(spec.components);
 
 		Object.assign(components, responseDefs);
 	}

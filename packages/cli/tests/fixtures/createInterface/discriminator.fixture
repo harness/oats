@@ -1,0 +1,17 @@
+title: Works with prop with discriminator
+name: GenericInterface
+spec:
+	type: object
+	properties:
+		byte:
+			type: string
+			format: byte
+
+---
+export interface AllInterface extends BaseInterface {
+	/**
+	 * @format byte
+	 */
+	byte?: string;
+	string?: string;
+}
