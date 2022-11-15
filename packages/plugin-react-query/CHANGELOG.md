@@ -1,5 +1,17 @@
 # @harnessio/oats-plugin-react-query
 
+## 3.0.0
+
+### Patch Changes
+
+- 814f849: replace openapi3-ts with openapi-types internally
+- Updated dependencies [dc36c19]
+- Updated dependencies [814f849]
+- Updated dependencies [72c3280]
+- Updated dependencies [803cce7]
+- Updated dependencies [ce89f06]
+  - @harnessio/oats-cli@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

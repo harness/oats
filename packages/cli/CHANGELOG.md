@@ -1,5 +1,18 @@
 # @harnessio/oats-cli
 
+## 2.1.0
+
+### Minor Changes
+
+- dc36c19: Create interface for schema with `allOf`
+- ce89f06: use discriminator prop to generate generic interfaces
+
+### Patch Changes
+
+- 814f849: replace openapi3-ts with openapi-types internally
+- 72c3280: Added loading spinner for status
+- 803cce7: Fix precedence order for inputs in CLI
+
 ## 2.0.0
 
 ### Major Changes
