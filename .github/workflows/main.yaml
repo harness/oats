@@ -3,10 +3,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src/**/*.*'
-      - pnpm-lock.yaml
-      - .github/workflows/main.yaml
 
 jobs:
   eslint:
