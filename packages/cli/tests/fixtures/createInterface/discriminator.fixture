@@ -1,0 +1,23 @@
+title: Works with prop with discriminator
+name: GenericInterface
+spec:
+	type: object
+	properties:
+		animal:
+			$ref: '#/components/schemas/Animal'
+components:
+	schemas:
+		Animal:
+			type: object
+			properties:
+				type:
+					type: string
+			discriminator:
+				propertyName: type
+				mapping:
+					Dog: '#/components/Dog'
+					Cat: '#/components/Cat'
+---
+export interface GenericInterface<T0 extends Animal = Animal> {
+	animal?: T0;
+}

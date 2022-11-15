@@ -3,16 +3,20 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { globby } from 'globby';
-import type { SchemaObject } from 'openapi3-ts';
+import type { OpenAPIV3 } from 'openapi-types';
 import { load } from 'js-yaml';
 import { format } from 'prettier';
 import prettierConfig from '../../../.prettierrc.cjs';
 
+type ISchemaObject = OpenAPIV3.SchemaObject;
+type IComponentsObject = OpenAPIV3.ComponentsObject;
+
 export interface IFixture {
 	title: string;
 	name: string;
-	spec: SchemaObject;
+	spec: ISchemaObject;
 	code: string;
+	components: IComponentsObject;
 }
 
 export async function loadFixturesFromDir(dir: string): Promise<IFixture[]> {
