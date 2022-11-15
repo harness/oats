@@ -1,6 +1,6 @@
 /* eslint-disable import/no-named-as-default-member */
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import * as esbuild from 'esbuild';
 import prettier from 'prettier';
 import ora from 'ora';
@@ -19,6 +19,23 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 	const cwd = process.cwd();
 	const prettierConfig = await prettier.resolveConfig(cwd);
 	let spinner: Ora | undefined;
+
+	if (argv.url || argv.file) {
+		spinner = ora(`Generating spec`).start();
+		try {
+			const data = await loadSpecFromFileOrUrl(argv);
+			await writeFiles(
+				data,
+				{ output: argv.output, clean: argv.clean, genOnlyUsed: argv.genOnlyUsed },
+				prettierConfig,
+			);
+			spinner.succeed(`Generated spec`);
+			return;
+		} catch (e) {
+			spinner.fail();
+			throw e;
+		}
+	}
 
 	if (argv.config) {
 		const configFilePath = path.resolve(cwd, argv.config);
@@ -77,20 +94,6 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 				await fs.promises.unlink(builtConfigPath);
 			}
 			spinner?.fail();
-			throw e;
-		}
-	} else {
-		spinner = ora(`Generating spec`).start();
-		try {
-			const data = await loadSpecFromFileOrUrl(argv);
-			await writeFiles(
-				data,
-				{ output: argv.output, clean: argv.clean, genOnlyUsed: argv.genOnlyUsed },
-				prettierConfig,
-			);
-			spinner.succeed(`Generated spec`);
-		} catch (e) {
-			spinner.fail();
 			throw e;
 		}
 	}

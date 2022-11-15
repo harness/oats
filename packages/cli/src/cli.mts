@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -57,14 +60,17 @@ yargs(hideBin(process.argv))
 				})
 				.conflicts('file', 'url')
 				.check((argv) => {
-					if (argv.config) return true;
+					const configFilePath = path.resolve(process.cwd(), argv.config);
+					const configFileExists = fs.existsSync(configFilePath);
 
-					if (!argv.output) {
-						throw new Error('Missing required argument: output');
+					if (!configFileExists && !argv.file && !argv.url) {
+						throw new Error(
+							`Could not resolve the config file. Either provide a config file or provide a file/url via CLI arguments.`,
+						);
 					}
 
-					if (!argv.file && !argv.url) {
-						throw new Error('Either "--file" or "--url" is required');
+					if ((argv.file || argv.url) && !argv.output) {
+						throw new Error(`Missing required argument: output`);
 					}
 
 					return true;
@@ -75,13 +81,9 @@ yargs(hideBin(process.argv))
 		},
 	)
 	.help()
-	.fail((msg, err) => {
+	.fail((msg) => {
 		if (msg) {
 			logError(msg);
-		}
-
-		if (err) {
-			throw err; // preserve stack
 		}
 
 		process.exit(1);
