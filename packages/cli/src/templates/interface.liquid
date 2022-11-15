@@ -3,7 +3,7 @@ export interface {{name}}
 {% if generics.length > 0 %}
 <{{generics | join: ", "}}>
 {% endif %}
-{% if resovledExtensions.length > 0 %}
-extends {{resovledExtensions | join: ", "}}
+{% if resolvedExtensions.length > 0 %}
+extends {{resolvedExtensions | join: ", "}}
 {% endif %}
 {{objectStructure}}

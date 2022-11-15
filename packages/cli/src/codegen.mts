@@ -333,7 +333,7 @@ export function createInterface(props: ICreateInterfaceProps): ICodeWithMetadata
 	const objectStructure = liquid.renderSync(OBJECT_TEMPLATE, { props: objProps });
 	const imports = objProps.reduce<string[]>((p, c) => [...p, ...c.imports], []);
 	const dependencies = objProps.reduce<string[]>((p, c) => [...p, ...c.dependencies], []);
-	const resovledExtensions = extensions.map((ext) => {
+	const resolvedExtensions = extensions.map((ext) => {
 		const refNode = createReferenceNode(ext.$ref, originalRef);
 
 		imports.push(...refNode.imports);
@@ -344,7 +344,7 @@ export function createInterface(props: ICreateInterfaceProps): ICodeWithMetadata
 
 	return {
 		code: liquid.renderSync(INTERFACE_TEMPLATE, {
-			resovledExtensions,
+			resolvedExtensions,
 			name,
 			objectStructure,
 			comments,
