@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 2.1.1
+
+### Patch Changes
+
+- 5531856: Fix property accessor generation in hooks
+- Updated dependencies [defd9c9]
+  - @harnessio/oats-cli@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes
