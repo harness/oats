@@ -9,6 +9,7 @@ export {
 	useReposListForAuthenticatedUserQuery,
 } from './hooks/useReposListForAuthenticatedUserQuery';
 export type { ForbiddenResponse } from './responses/ForbiddenResponse';
+export type { NotModifiedResponse } from './responses/NotModifiedResponse';
 export type { RequiresAuthenticationResponse } from './responses/RequiresAuthenticationResponse';
 export type { ValidationFailedResponse } from './responses/ValidationFailedResponse';
 export type { BasicError } from './schemas/BasicError';

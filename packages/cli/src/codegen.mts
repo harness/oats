@@ -407,10 +407,8 @@ export function createRequestBodyDefinitions(
 		const response = getRequestResponseSchema(schema);
 
 		if (!response) {
-			return;
-		}
-
-		if (shouldCreateInterface(response)) {
+			code = `export type ${finalName} = unknown`;
+		} else if (shouldCreateInterface(response)) {
 			const interfaceCode = createInterface({
 				name: finalName,
 				originalRef: refPath,
@@ -500,10 +498,7 @@ export function createResponseDefinitions(
 
 		if (!responseSchema) {
 			code = `export type ${finalName} = unknown`;
-			return;
-		}
-
-		if (shouldCreateInterface(responseSchema)) {
+		} else if (shouldCreateInterface(responseSchema)) {
 			const interfaceCode = createInterface({
 				name: finalName,
 				originalRef: refPath,

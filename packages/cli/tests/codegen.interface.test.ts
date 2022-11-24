@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { createInterface, processAllOf } from '../src/codegen.mjs';
+import { createInterface } from '../src/codegen.mjs';
 import { loadFixturesFromDir, prettify } from './testUtils';
 
 describe('createInterfaces Tests', async () => {
