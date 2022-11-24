@@ -173,7 +173,7 @@ export function createObjectProperties(
 					comment: liquid.renderSync(COMMENTS_TEMPLATE, { schema }),
 					required: item.required?.includes(name),
 					dependencies: resolvedValue.dependencies,
-					imports: resolvedValue.imports,
+					imports: uniq(resolvedValue.imports),
 					hasDiscriminator: hasDiscriminator(schema, components),
 				};
 			});
@@ -215,7 +215,7 @@ export function createObject(
 			imports.push(...resolvedValue.imports);
 		});
 
-		return { code: code.join(' | '), dependencies, imports };
+		return { code: code.join(' | '), dependencies, imports: uniq(imports) };
 	}
 
 	if (Array.isArray(item.oneOf)) {
@@ -230,7 +230,7 @@ export function createObject(
 			imports.push(...resolvedValue.imports);
 		});
 
-		return { code: code.join(' & '), dependencies, imports };
+		return { code: code.join(' & '), dependencies, imports: uniq(imports) };
 	}
 
 	const props = createObjectProperties(item, originalRef, components);
@@ -247,7 +247,7 @@ export function createFreeFormProperty(valueType?: ICodeWithMetadata): IObjectPr
 		key: '[key: string]',
 		value: valueType?.code || 'any',
 		dependencies: valueType?.dependencies || [],
-		imports: valueType?.imports || [],
+		imports: uniq(valueType?.imports || []),
 	};
 }
 
@@ -302,6 +302,8 @@ export function createScalarNode(item: ISchemaObject, originalRef: string): ICod
 		type.code = `${type.code} | null`;
 	}
 
+	type.imports = uniq(type.imports);
+
 	return type;
 }
 
@@ -350,7 +352,7 @@ export function createInterface(props: ICreateInterfaceProps): ICodeWithMetadata
 			comments,
 			generics,
 		}),
-		imports,
+		imports: uniq(imports),
 		dependencies,
 	};
 }
@@ -365,7 +367,7 @@ export function createTypeDeclaration(
 
 	return {
 		code: `${comments}\nexport type ${name} = ${resolvedValue.code};`,
-		imports: resolvedValue.imports,
+		imports: uniq(resolvedValue.imports),
 		dependencies: resolvedValue.dependencies,
 	};
 }
@@ -555,7 +557,7 @@ export function getReqResTypes(
 		return 'unknown';
 	});
 
-	return { code: uniq(codes).join(' | ') || 'unknown', imports, dependencies };
+	return { code: uniq(codes).join(' | ') || 'unknown', imports: uniq(imports), dependencies };
 }
 
 export function getOkResponses(
