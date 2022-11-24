@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 2.1.1
+
+### Patch Changes
+
+- defd9c9: Fix duplicate imports in codegen
+
 ## 2.1.0
 
 ### Minor Changes
