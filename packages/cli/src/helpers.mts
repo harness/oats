@@ -46,13 +46,6 @@ export function logError(msg: string): void {
 	console.log(chalk.red(`oa2ts: [ERROR]: ${msg}`));
 }
 
-export function padChunk(chunk: string, spacing = 6): string {
-	return chunk
-		.split('\n')
-		.map((line) => ' '.repeat(spacing) + line)
-		.join('\n');
-}
-
 export function getDirNameForCurrentFile(meta: ImportMeta): string {
 	return path.dirname(fileURLToPath(meta.url));
 }

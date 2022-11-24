@@ -38,7 +38,7 @@ export const liquid = new Liquid();
 liquid.registerFilter('js_comment', (val: string, indent = 2) =>
 	val
 		.split('\n')
-		.map((c) => `* ${c}`.padStart(indent + c.length + 2, ''))
+		.map((c) => `* ${c.replace(/\*\//g, '*\u200b/')}`.padStart(indent + c.length + 2, ''))
 		.join('\n'),
 );
 

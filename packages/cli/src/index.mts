@@ -30,5 +30,4 @@ export {
 	logInfo,
 	logWarning,
 	pathToTemplate,
-	padChunk,
 } from './helpers.mjs';
