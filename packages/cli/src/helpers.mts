@@ -34,16 +34,16 @@ export function isReferenceObject(data: unknown): data is OpenAPIV3.ReferenceObj
 
 export function logInfo(msg: string): void {
 	if (process.env.DEBUG_OATS === 'true') {
-		console.log(chalk.cyan(`oa2ts: [INFO]: ${msg}`));
+		console.log(chalk.cyan(`\noa2ts: [INFO]: ${msg}`));
 	}
 }
 
 export function logWarning(msg: string): void {
-	console.log(chalk.yellow(`oa2ts: [WARN]: ${msg}`));
+	console.log(chalk.yellow(`\noa2ts: [WARN]: ${msg}`));
 }
 
 export function logError(msg: string): void {
-	console.log(chalk.red(`oa2ts: [ERROR]: ${msg}`));
+	console.log(chalk.red(`\noa2ts: [ERROR]: ${msg}`));
 }
 
 export function getDirNameForCurrentFile(meta: ImportMeta): string {
