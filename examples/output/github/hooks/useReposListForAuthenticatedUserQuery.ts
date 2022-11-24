@@ -62,8 +62,6 @@ export interface ReposListForAuthenticatedUserProps
 export function reposListForAuthenticatedUser(
 	props: ReposListForAuthenticatedUserProps,
 ): Promise<ReposListForAuthenticatedUserOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<
 		ReposListForAuthenticatedUserOkResponse,
 		ReposListForAuthenticatedUserQueryQueryParams,
@@ -71,7 +69,7 @@ export function reposListForAuthenticatedUser(
 	>({
 		url: `/user/repos`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

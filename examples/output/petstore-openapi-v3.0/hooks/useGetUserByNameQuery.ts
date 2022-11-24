@@ -19,12 +19,10 @@ export interface GetUserByNameProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameOkResponse> {
-	const { username, ...rest } = props;
-
 	return fetcher<GetUserByNameOkResponse, unknown, unknown>({
-		url: `/user/${username}`,
+		url: `/user/${props.username}`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

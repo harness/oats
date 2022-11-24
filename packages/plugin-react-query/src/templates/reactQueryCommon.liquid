@@ -35,15 +35,6 @@ Omit<FetcherOptions<
 }
 
 export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
-   const {
-  {% if pathParamsCode -%}
-    {% for name in pathParamsNamesList -%}
-    {{name}},
-    {%- endfor %}
-  {%- endif -%}
-  ...rest
-  } = props;
-
   return fetcher<
     {{okResponseName}},
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
@@ -51,6 +42,6 @@ export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okRespon
   >({
     url: `{{route | path_to_template}}`,
     method: {{verb | upcase | json}},
-    ...rest
+    ...props
   })
 }

@@ -20,12 +20,10 @@ export interface LoginUserProps
 }
 
 export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<LoginUserOkResponse, LoginUserQueryQueryParams, unknown>({
 		url: `/user/login`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

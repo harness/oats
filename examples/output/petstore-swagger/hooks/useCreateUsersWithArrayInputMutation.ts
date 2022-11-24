@@ -21,8 +21,6 @@ export interface CreateUsersWithArrayInputProps
 export function createUsersWithArrayInput(
 	props: CreateUsersWithArrayInputProps,
 ): Promise<CreateUsersWithArrayInputOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<
 		CreateUsersWithArrayInputOkResponse,
 		unknown,
@@ -30,7 +28,7 @@ export function createUsersWithArrayInput(
 	>({
 		url: `/user/createWithArray`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

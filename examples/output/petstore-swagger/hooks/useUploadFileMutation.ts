@@ -27,12 +27,10 @@ export interface UploadFileProps
 }
 
 export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse> {
-	const { petId, ...rest } = props;
-
 	return fetcher<UploadFileOkResponse, unknown, UploadFileRequestBody>({
-		url: `/pet/${petId}/uploadImage`,
+		url: `/pet/${props.petId}/uploadImage`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

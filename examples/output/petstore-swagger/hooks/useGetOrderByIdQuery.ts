@@ -23,12 +23,10 @@ export interface GetOrderByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkResponse> {
-	const { orderId, ...rest } = props;
-
 	return fetcher<GetOrderByIdOkResponse, unknown, unknown>({
-		url: `/store/order/${orderId}`,
+		url: `/store/order/${props.orderId}`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

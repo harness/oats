@@ -13,12 +13,10 @@ export type LogoutUserErrorResponse = unknown;
 export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function logoutUser(props: LogoutUserProps): Promise<LogoutUserOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<LogoutUserOkResponse, unknown, unknown>({
 		url: `/user/logout`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

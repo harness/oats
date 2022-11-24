@@ -19,12 +19,10 @@ export interface PlaceOrderProps
 }
 
 export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<PlaceOrderOkResponse, unknown, PlaceOrderRequestBody>({
 		url: `/store/order`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

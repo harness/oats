@@ -20,12 +20,10 @@ export interface FindPetsByTagsProps
 }
 
 export function findPetsByTags(props: FindPetsByTagsProps): Promise<FindPetsByTagsOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<FindPetsByTagsOkResponse, FindPetsByTagsQueryQueryParams, unknown>({
 		url: `/pet/findByTags`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

@@ -17,12 +17,10 @@ export interface AddPetProps extends Omit<FetcherOptions<unknown, AddPetRequestB
 }
 
 export function addPet(props: AddPetProps): Promise<AddPetOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<AddPetOkResponse, unknown, AddPetRequestBody>({
 		url: `/pet`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

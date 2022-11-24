@@ -22,12 +22,10 @@ export interface DeletePetProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {
-	const { petId, ...rest } = props;
-
 	return fetcher<DeletePetOkResponse, unknown, unknown>({
-		url: `/pet/${petId}`,
+		url: `/pet/${props.petId}`,
 		method: 'DELETE',
-		...rest,
+		...props,
 	});
 }
 

@@ -7,7 +7,7 @@ export function {{hookName}}(
       {{operation.operationId | json}}
       {% if pathParamsCode -%}
       {% for name in pathParamsNamesList -%}
-      , props.{{name}}
+      , props{{name | property_accessor}}
       {%- endfor %}
     {%- endif -%}
     {% if queryParamsCode -%}

@@ -23,12 +23,10 @@ export interface GetPetByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdOkResponse> {
-	const { petId, ...rest } = props;
-
 	return fetcher<GetPetByIdOkResponse, unknown, unknown>({
-		url: `/pet/${petId}`,
+		url: `/pet/${props.petId}`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

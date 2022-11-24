@@ -19,12 +19,10 @@ export interface CreateUserProps
 }
 
 export function createUser(props: CreateUserProps): Promise<CreateUserOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<CreateUserOkResponse, unknown, CreateUserRequestBody>({
 		url: `/user`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

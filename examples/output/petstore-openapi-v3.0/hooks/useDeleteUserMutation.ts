@@ -18,12 +18,10 @@ export interface DeleteUserProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse> {
-	const { username, ...rest } = props;
-
 	return fetcher<DeleteUserOkResponse, unknown, unknown>({
-		url: `/user/${username}`,
+		url: `/user/${props.username}`,
 		method: 'DELETE',
-		...rest,
+		...props,
 	});
 }
 

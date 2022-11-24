@@ -12,12 +12,10 @@ export type GetInventoryErrorResponse = unknown;
 export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function getInventory(props: GetInventoryProps): Promise<GetInventoryOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<GetInventoryOkResponse, unknown, unknown>({
 		url: `/store/inventory`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 

@@ -21,12 +21,10 @@ export interface CreateUsersWithListInputProps
 export function createUsersWithListInput(
 	props: CreateUsersWithListInputProps,
 ): Promise<CreateUsersWithListInputOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<CreateUsersWithListInputOkResponse, unknown, CreateUsersWithListInputRequestBody>({
 		url: `/user/createWithList`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

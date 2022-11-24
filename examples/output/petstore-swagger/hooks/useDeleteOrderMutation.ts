@@ -22,12 +22,10 @@ export interface DeleteOrderProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderOkResponse> {
-	const { orderId, ...rest } = props;
-
 	return fetcher<DeleteOrderOkResponse, unknown, unknown>({
-		url: `/store/order/${orderId}`,
+		url: `/store/order/${props.orderId}`,
 		method: 'DELETE',
-		...rest,
+		...props,
 	});
 }
 

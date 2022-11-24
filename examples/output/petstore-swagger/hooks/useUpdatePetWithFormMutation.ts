@@ -28,12 +28,10 @@ export interface UpdatePetWithFormProps
 export function updatePetWithForm(
 	props: UpdatePetWithFormProps,
 ): Promise<UpdatePetWithFormOkResponse> {
-	const { petId, ...rest } = props;
-
 	return fetcher<UpdatePetWithFormOkResponse, unknown, UpdatePetWithFormRequestBody>({
-		url: `/pet/${petId}`,
+		url: `/pet/${props.petId}`,
 		method: 'POST',
-		...rest,
+		...props,
 	});
 }
 

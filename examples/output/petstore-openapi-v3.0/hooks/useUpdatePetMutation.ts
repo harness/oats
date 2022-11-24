@@ -17,12 +17,10 @@ export interface UpdatePetProps extends Omit<FetcherOptions<unknown, UpdatePetRe
 }
 
 export function updatePet(props: UpdatePetProps): Promise<UpdatePetOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<UpdatePetOkResponse, unknown, UpdatePetRequestBody>({
 		url: `/pet`,
 		method: 'PUT',
-		...rest,
+		...props,
 	});
 }
 

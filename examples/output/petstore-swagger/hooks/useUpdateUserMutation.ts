@@ -24,12 +24,10 @@ export interface UpdateUserProps
 }
 
 export function updateUser(props: UpdateUserProps): Promise<UpdateUserOkResponse> {
-	const { username, ...rest } = props;
-
 	return fetcher<UpdateUserOkResponse, unknown, UpdateUserRequestBody>({
-		url: `/user/${username}`,
+		url: `/user/${props.username}`,
 		method: 'PUT',
-		...rest,
+		...props,
 	});
 }
 

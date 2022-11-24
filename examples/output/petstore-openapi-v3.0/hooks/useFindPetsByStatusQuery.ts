@@ -25,12 +25,10 @@ export interface FindPetsByStatusProps
 export function findPetsByStatus(
 	props: FindPetsByStatusProps,
 ): Promise<FindPetsByStatusOkResponse> {
-	const { ...rest } = props;
-
 	return fetcher<FindPetsByStatusOkResponse, FindPetsByStatusQueryQueryParams, unknown>({
 		url: `/pet/findByStatus`,
 		method: 'GET',
-		...rest,
+		...props,
 	});
 }
 
