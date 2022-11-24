@@ -1,5 +1,13 @@
 # @harnessio/oats-cli
 
+## 2.1.2
+
+### Patch Changes
+
+- cf2a119: Handle '\*/' within comments
+- ea3742a: Handle req/res with no definition
+- cf2fcd1: print messages on new line
+
 ## 2.1.1
 
 ### Patch Changes
