@@ -6,7 +6,10 @@
   "private": "true",
   "scripts": {
     "build": "oats import --clean",
-    "postbuild": "exit 0 && tsc --noEmit"
+    "postbuild": "exit 0 && tsc --noEmit",
+    "lint": "eslint 'output/**/*.{mts,ts}'",
+    "fmtc": "prettier --check 'output/**/*.{mts,ts}'",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=16.0.0"

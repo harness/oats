@@ -21,6 +21,6 @@
     "noUnusedParameters": true,
     "jsx": "preserve"
   },
-  "include": ["packages/*/src/*", "packages/*/tests/*", "examples", "vitest.config.ts"],
+  "include": ["packages/*/src/*", "packages/*/tests/*", "examples/**/*", "vitest.config.ts"],
   "exclude": ["node_modules"]
 }
