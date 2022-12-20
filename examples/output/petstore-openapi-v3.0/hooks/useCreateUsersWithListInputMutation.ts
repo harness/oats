@@ -27,18 +27,30 @@ export function createUsersWithListInput(
 	});
 }
 
+export type CreateUsersWithListInputMutationProps<T extends keyof CreateUsersWithListInputProps> =
+	Omit<CreateUsersWithListInputProps, T> & Partial<Pick<CreateUsersWithListInputProps, T>>;
+
 /**
  * Creates list of users with given input array
  */
-export function useCreateUsersWithListInputMutation(
-	props: CreateUsersWithListInputProps,
+export function useCreateUsersWithListInputMutation<T extends keyof CreateUsersWithListInputProps>(
+	props: Pick<Partial<CreateUsersWithListInputProps>, T>,
 	options?: Omit<
-		UseMutationOptions<CreateUsersWithListInputOkResponse, CreateUsersWithListInputErrorResponse>,
+		UseMutationOptions<
+			CreateUsersWithListInputOkResponse,
+			CreateUsersWithListInputErrorResponse,
+			CreateUsersWithListInputMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUsersWithListInputOkResponse, CreateUsersWithListInputErrorResponse>(
-		() => createUsersWithListInput(props),
+	return useMutation<
+		CreateUsersWithListInputOkResponse,
+		CreateUsersWithListInputErrorResponse,
+		CreateUsersWithListInputMutationProps<T>
+	>(
+		(mutateProps: CreateUsersWithListInputMutationProps<T>) =>
+			createUsersWithListInput({ ...props, ...mutateProps } as CreateUsersWithListInputProps),
 		options,
 	);
 }

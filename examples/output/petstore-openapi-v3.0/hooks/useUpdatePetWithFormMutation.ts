@@ -37,18 +37,33 @@ export function updatePetWithForm(
 	});
 }
 
+export type UpdatePetWithFormMutationProps<T extends keyof UpdatePetWithFormProps> = Omit<
+	UpdatePetWithFormProps,
+	T
+> &
+	Partial<Pick<UpdatePetWithFormProps, T>>;
+
 /**
  *
  */
-export function useUpdatePetWithFormMutation(
-	props: UpdatePetWithFormProps,
+export function useUpdatePetWithFormMutation<T extends keyof UpdatePetWithFormProps>(
+	props: Pick<Partial<UpdatePetWithFormProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UpdatePetWithFormOkResponse, UpdatePetWithFormErrorResponse>,
+		UseMutationOptions<
+			UpdatePetWithFormOkResponse,
+			UpdatePetWithFormErrorResponse,
+			UpdatePetWithFormMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdatePetWithFormOkResponse, UpdatePetWithFormErrorResponse>(
-		() => updatePetWithForm(props),
+	return useMutation<
+		UpdatePetWithFormOkResponse,
+		UpdatePetWithFormErrorResponse,
+		UpdatePetWithFormMutationProps<T>
+	>(
+		(mutateProps: UpdatePetWithFormMutationProps<T>) =>
+			updatePetWithForm({ ...props, ...mutateProps } as UpdatePetWithFormProps),
 		options,
 	);
 }

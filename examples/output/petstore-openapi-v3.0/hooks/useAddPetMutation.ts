@@ -24,15 +24,21 @@ export function addPet(props: AddPetProps): Promise<AddPetOkResponse> {
 	});
 }
 
+export type AddPetMutationProps<T extends keyof AddPetProps> = Omit<AddPetProps, T> &
+	Partial<Pick<AddPetProps, T>>;
+
 /**
  * Add a new pet to the store
  */
-export function useAddPetMutation(
-	props: AddPetProps,
+export function useAddPetMutation<T extends keyof AddPetProps>(
+	props: Pick<Partial<AddPetProps>, T>,
 	options?: Omit<
-		UseMutationOptions<AddPetOkResponse, AddPetErrorResponse>,
+		UseMutationOptions<AddPetOkResponse, AddPetErrorResponse, AddPetMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<AddPetOkResponse, AddPetErrorResponse>(() => addPet(props), options);
+	return useMutation<AddPetOkResponse, AddPetErrorResponse, AddPetMutationProps<T>>(
+		(mutateProps: AddPetMutationProps<T>) => addPet({ ...props, ...mutateProps } as AddPetProps),
+		options,
+	);
 }

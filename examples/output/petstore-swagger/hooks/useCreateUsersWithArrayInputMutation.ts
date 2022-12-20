@@ -32,18 +32,32 @@ export function createUsersWithArrayInput(
 	});
 }
 
+export type CreateUsersWithArrayInputMutationProps<T extends keyof CreateUsersWithArrayInputProps> =
+	Omit<CreateUsersWithArrayInputProps, T> & Partial<Pick<CreateUsersWithArrayInputProps, T>>;
+
 /**
  *
  */
-export function useCreateUsersWithArrayInputMutation(
-	props: CreateUsersWithArrayInputProps,
+export function useCreateUsersWithArrayInputMutation<
+	T extends keyof CreateUsersWithArrayInputProps,
+>(
+	props: Pick<Partial<CreateUsersWithArrayInputProps>, T>,
 	options?: Omit<
-		UseMutationOptions<CreateUsersWithArrayInputOkResponse, CreateUsersWithArrayInputErrorResponse>,
+		UseMutationOptions<
+			CreateUsersWithArrayInputOkResponse,
+			CreateUsersWithArrayInputErrorResponse,
+			CreateUsersWithArrayInputMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUsersWithArrayInputOkResponse, CreateUsersWithArrayInputErrorResponse>(
-		() => createUsersWithArrayInput(props),
+	return useMutation<
+		CreateUsersWithArrayInputOkResponse,
+		CreateUsersWithArrayInputErrorResponse,
+		CreateUsersWithArrayInputMutationProps<T>
+	>(
+		(mutateProps: CreateUsersWithArrayInputMutationProps<T>) =>
+			createUsersWithArrayInput({ ...props, ...mutateProps } as CreateUsersWithArrayInputProps),
 		options,
 	);
 }

@@ -31,18 +31,22 @@ export function updateUser(props: UpdateUserProps): Promise<UpdateUserOkResponse
 	});
 }
 
+export type UpdateUserMutationProps<T extends keyof UpdateUserProps> = Omit<UpdateUserProps, T> &
+	Partial<Pick<UpdateUserProps, T>>;
+
 /**
  * This can only be done by the logged in user.
  */
-export function useUpdateUserMutation(
-	props: UpdateUserProps,
+export function useUpdateUserMutation<T extends keyof UpdateUserProps>(
+	props: Pick<Partial<UpdateUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UpdateUserOkResponse, UpdateUserErrorResponse>,
+		UseMutationOptions<UpdateUserOkResponse, UpdateUserErrorResponse, UpdateUserMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdateUserOkResponse, UpdateUserErrorResponse>(
-		() => updateUser(props),
+	return useMutation<UpdateUserOkResponse, UpdateUserErrorResponse, UpdateUserMutationProps<T>>(
+		(mutateProps: UpdateUserMutationProps<T>) =>
+			updateUser({ ...props, ...mutateProps } as UpdateUserProps),
 		options,
 	);
 }

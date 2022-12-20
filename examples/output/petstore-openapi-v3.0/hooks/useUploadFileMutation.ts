@@ -38,18 +38,22 @@ export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse
 	});
 }
 
+export type UploadFileMutationProps<T extends keyof UploadFileProps> = Omit<UploadFileProps, T> &
+	Partial<Pick<UploadFileProps, T>>;
+
 /**
  *
  */
-export function useUploadFileMutation(
-	props: UploadFileProps,
+export function useUploadFileMutation<T extends keyof UploadFileProps>(
+	props: Pick<Partial<UploadFileProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UploadFileOkResponse, UploadFileErrorResponse>,
+		UseMutationOptions<UploadFileOkResponse, UploadFileErrorResponse, UploadFileMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UploadFileOkResponse, UploadFileErrorResponse>(
-		() => uploadFile(props),
+	return useMutation<UploadFileOkResponse, UploadFileErrorResponse, UploadFileMutationProps<T>>(
+		(mutateProps: UploadFileMutationProps<T>) =>
+			uploadFile({ ...props, ...mutateProps } as UploadFileProps),
 		options,
 	);
 }

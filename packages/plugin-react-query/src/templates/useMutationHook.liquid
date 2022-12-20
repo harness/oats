@@ -1,6 +1,17 @@
-export function {{hookName}}(
-  props: {{fetcherPropsName}},
-  options?: Omit<UseMutationOptions<{{okResponseName}}, {{errorResponseName}}>, 'mutationKey' | 'mutationFn'>
+export type {{mutationPropsName}}<T extends keyof {{fetcherPropsName}}> = Omit<{{fetcherPropsName}}, T> &
+	Partial<Pick<{{fetcherPropsName}}, T>>
+
+{{description}}
+export function {{hookName}}<T extends keyof {{fetcherPropsName}}>(
+  props: Pick<Partial<{{fetcherPropsName}}>, T>,
+  options?: Omit<UseMutationOptions<{{okResponseName}}, {{errorResponseName}},  {{mutationPropsName}}<T>>, 'mutationKey' | 'mutationFn'>
 ) {
-  return useMutation<{{okResponseName}}, {{errorResponseName}}>(() => {{fetcherName}}(props), options)
+  return useMutation<
+    {{okResponseName}},
+    {{errorResponseName}},
+    {{mutationPropsName}}<T>
+  >(
+    (mutateProps:  {{mutationPropsName}}<T>) => {{fetcherName}}({ ...props, ...mutateProps } as {{fetcherPropsName}}),
+    options
+  )
 }
