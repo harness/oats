@@ -25,15 +25,22 @@ export function updatePet(props: UpdatePetProps): Promise<UpdatePetOkResponse> {
 	});
 }
 
+export type UpdatePetMutationProps<T extends keyof UpdatePetProps> = Omit<UpdatePetProps, T> &
+	Partial<Pick<UpdatePetProps, T>>;
+
 /**
  *
  */
-export function useUpdatePetMutation(
-	props: UpdatePetProps,
+export function useUpdatePetMutation<T extends keyof UpdatePetProps>(
+	props: Pick<Partial<UpdatePetProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UpdatePetOkResponse, UpdatePetErrorResponse>,
+		UseMutationOptions<UpdatePetOkResponse, UpdatePetErrorResponse, UpdatePetMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdatePetOkResponse, UpdatePetErrorResponse>(() => updatePet(props), options);
+	return useMutation<UpdatePetOkResponse, UpdatePetErrorResponse, UpdatePetMutationProps<T>>(
+		(mutateProps: UpdatePetMutationProps<T>) =>
+			updatePet({ ...props, ...mutateProps } as UpdatePetProps),
+		options,
+	);
 }

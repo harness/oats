@@ -29,15 +29,22 @@ export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {
 	});
 }
 
+export type DeletePetMutationProps<T extends keyof DeletePetProps> = Omit<DeletePetProps, T> &
+	Partial<Pick<DeletePetProps, T>>;
+
 /**
  *
  */
-export function useDeletePetMutation(
-	props: DeletePetProps,
+export function useDeletePetMutation<T extends keyof DeletePetProps>(
+	props: Pick<Partial<DeletePetProps>, T>,
 	options?: Omit<
-		UseMutationOptions<DeletePetOkResponse, DeletePetErrorResponse>,
+		UseMutationOptions<DeletePetOkResponse, DeletePetErrorResponse, DeletePetMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeletePetOkResponse, DeletePetErrorResponse>(() => deletePet(props), options);
+	return useMutation<DeletePetOkResponse, DeletePetErrorResponse, DeletePetMutationProps<T>>(
+		(mutateProps: DeletePetMutationProps<T>) =>
+			deletePet({ ...props, ...mutateProps } as DeletePetProps),
+		options,
+	);
 }

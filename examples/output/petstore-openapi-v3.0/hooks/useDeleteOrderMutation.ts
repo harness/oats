@@ -28,18 +28,26 @@ export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderOkRespo
 	});
 }
 
+export type DeleteOrderMutationProps<T extends keyof DeleteOrderProps> = Omit<DeleteOrderProps, T> &
+	Partial<Pick<DeleteOrderProps, T>>;
+
 /**
  * For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
  */
-export function useDeleteOrderMutation(
-	props: DeleteOrderProps,
+export function useDeleteOrderMutation<T extends keyof DeleteOrderProps>(
+	props: Pick<Partial<DeleteOrderProps>, T>,
 	options?: Omit<
-		UseMutationOptions<DeleteOrderOkResponse, DeleteOrderErrorResponse>,
+		UseMutationOptions<
+			DeleteOrderOkResponse,
+			DeleteOrderErrorResponse,
+			DeleteOrderMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeleteOrderOkResponse, DeleteOrderErrorResponse>(
-		() => deleteOrder(props),
+	return useMutation<DeleteOrderOkResponse, DeleteOrderErrorResponse, DeleteOrderMutationProps<T>>(
+		(mutateProps: DeleteOrderMutationProps<T>) =>
+			deleteOrder({ ...props, ...mutateProps } as DeleteOrderProps),
 		options,
 	);
 }

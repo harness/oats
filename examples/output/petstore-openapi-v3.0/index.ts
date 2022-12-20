@@ -1,5 +1,6 @@
 export type {
 	AddPetErrorResponse,
+	AddPetMutationProps,
 	AddPetOkResponse,
 	AddPetProps,
 	AddPetRequestBody,
@@ -7,6 +8,7 @@ export type {
 export { addPet, useAddPetMutation } from './hooks/useAddPetMutation';
 export type {
 	CreateUserErrorResponse,
+	CreateUserMutationProps,
 	CreateUserOkResponse,
 	CreateUserProps,
 	CreateUserRequestBody,
@@ -14,6 +16,7 @@ export type {
 export { createUser, useCreateUserMutation } from './hooks/useCreateUserMutation';
 export type {
 	CreateUsersWithListInputErrorResponse,
+	CreateUsersWithListInputMutationProps,
 	CreateUsersWithListInputOkResponse,
 	CreateUsersWithListInputProps,
 	CreateUsersWithListInputRequestBody,
@@ -25,6 +28,7 @@ export {
 export type {
 	DeleteOrderErrorResponse,
 	DeleteOrderMutationPathParams,
+	DeleteOrderMutationProps,
 	DeleteOrderOkResponse,
 	DeleteOrderProps,
 } from './hooks/useDeleteOrderMutation';
@@ -32,6 +36,7 @@ export { deleteOrder, useDeleteOrderMutation } from './hooks/useDeleteOrderMutat
 export type {
 	DeletePetErrorResponse,
 	DeletePetMutationPathParams,
+	DeletePetMutationProps,
 	DeletePetOkResponse,
 	DeletePetProps,
 } from './hooks/useDeletePetMutation';
@@ -39,6 +44,7 @@ export { deletePet, useDeletePetMutation } from './hooks/useDeletePetMutation';
 export type {
 	DeleteUserErrorResponse,
 	DeleteUserMutationPathParams,
+	DeleteUserMutationProps,
 	DeleteUserOkResponse,
 	DeleteUserProps,
 } from './hooks/useDeleteUserMutation';
@@ -99,6 +105,7 @@ export type {
 export { logoutUser, useLogoutUserQuery } from './hooks/useLogoutUserQuery';
 export type {
 	PlaceOrderErrorResponse,
+	PlaceOrderMutationProps,
 	PlaceOrderOkResponse,
 	PlaceOrderProps,
 	PlaceOrderRequestBody,
@@ -106,6 +113,7 @@ export type {
 export { placeOrder, usePlaceOrderMutation } from './hooks/usePlaceOrderMutation';
 export type {
 	UpdatePetErrorResponse,
+	UpdatePetMutationProps,
 	UpdatePetOkResponse,
 	UpdatePetProps,
 	UpdatePetRequestBody,
@@ -114,6 +122,7 @@ export { updatePet, useUpdatePetMutation } from './hooks/useUpdatePetMutation';
 export type {
 	UpdatePetWithFormErrorResponse,
 	UpdatePetWithFormMutationPathParams,
+	UpdatePetWithFormMutationProps,
 	UpdatePetWithFormMutationQueryParams,
 	UpdatePetWithFormOkResponse,
 	UpdatePetWithFormProps,
@@ -125,6 +134,7 @@ export {
 export type {
 	UpdateUserErrorResponse,
 	UpdateUserMutationPathParams,
+	UpdateUserMutationProps,
 	UpdateUserOkResponse,
 	UpdateUserProps,
 	UpdateUserRequestBody,
@@ -133,6 +143,7 @@ export { updateUser, useUpdateUserMutation } from './hooks/useUpdateUserMutation
 export type {
 	UploadFileErrorResponse,
 	UploadFileMutationPathParams,
+	UploadFileMutationProps,
 	UploadFileMutationQueryParams,
 	UploadFileOkResponse,
 	UploadFileProps,

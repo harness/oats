@@ -76,6 +76,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 			const hookName = `use${typeName}${suffix}`;
 			const fetcherName = `${camelCase(operation.operationId)}`;
 			const fetcherPropsName = `${typeName}Props`;
+			const mutationPropsName = `${typeName}MutationProps`;
 			const pathParamsName = `${typeName}${suffix}PathParams`;
 			const queryParamsName = `${typeName}${suffix}QueryParams`;
 			const requestBodyName = getNameForRequestBody(operation.operationId);
@@ -107,6 +108,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 			const templateProps = {
 				hookName,
 				fetcherPropsName,
+				mutationPropsName,
 				fetcherName,
 				requestBodyName,
 				requestBodyCode,
@@ -123,13 +125,13 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				queryParamsName,
 				queryParamsCode,
 				pathParamsNamesList: params.path.map((p) => p.name),
+				description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 			};
 
 			const code = [
 				liquid.renderSync(COMMON_TEMPLATE, templateProps).trim(),
-				liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 				liquid.renderSync(useUseQuery ? QUERY_TEMPLATE : MUTATION_TEMPLATE, templateProps).trim(),
-			].join('\n');
+			].join('\n\n');
 
 			const typeExports = [fetcherPropsName, okResponseName, errorResponseName];
 			const jsExports = [hookName, fetcherName];
@@ -153,6 +155,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 					...imports,
 				]);
 			} else {
+				typeExports.push(mutationPropsName);
 				imports = new Set([
 					'import { useMutation, UseMutationOptions } from "@tanstack/react-query";',
 					'',

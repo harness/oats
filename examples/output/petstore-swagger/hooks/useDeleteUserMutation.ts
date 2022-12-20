@@ -26,18 +26,22 @@ export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse
 	});
 }
 
+export type DeleteUserMutationProps<T extends keyof DeleteUserProps> = Omit<DeleteUserProps, T> &
+	Partial<Pick<DeleteUserProps, T>>;
+
 /**
  * This can only be done by the logged in user.
  */
-export function useDeleteUserMutation(
-	props: DeleteUserProps,
+export function useDeleteUserMutation<T extends keyof DeleteUserProps>(
+	props: Pick<Partial<DeleteUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<DeleteUserOkResponse, DeleteUserErrorResponse>,
+		UseMutationOptions<DeleteUserOkResponse, DeleteUserErrorResponse, DeleteUserMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeleteUserOkResponse, DeleteUserErrorResponse>(
-		() => deleteUser(props),
+	return useMutation<DeleteUserOkResponse, DeleteUserErrorResponse, DeleteUserMutationProps<T>>(
+		(mutateProps: DeleteUserMutationProps<T>) =>
+			deleteUser({ ...props, ...mutateProps } as DeleteUserProps),
 		options,
 	);
 }

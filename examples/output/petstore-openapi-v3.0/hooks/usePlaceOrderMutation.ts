@@ -25,18 +25,22 @@ export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderOkResponse
 	});
 }
 
+export type PlaceOrderMutationProps<T extends keyof PlaceOrderProps> = Omit<PlaceOrderProps, T> &
+	Partial<Pick<PlaceOrderProps, T>>;
+
 /**
  * Place a new order in the store
  */
-export function usePlaceOrderMutation(
-	props: PlaceOrderProps,
+export function usePlaceOrderMutation<T extends keyof PlaceOrderProps>(
+	props: Pick<Partial<PlaceOrderProps>, T>,
 	options?: Omit<
-		UseMutationOptions<PlaceOrderOkResponse, PlaceOrderErrorResponse>,
+		UseMutationOptions<PlaceOrderOkResponse, PlaceOrderErrorResponse, PlaceOrderMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<PlaceOrderOkResponse, PlaceOrderErrorResponse>(
-		() => placeOrder(props),
+	return useMutation<PlaceOrderOkResponse, PlaceOrderErrorResponse, PlaceOrderMutationProps<T>>(
+		(mutateProps: PlaceOrderMutationProps<T>) =>
+			placeOrder({ ...props, ...mutateProps } as PlaceOrderProps),
 		options,
 	);
 }

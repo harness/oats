@@ -25,18 +25,22 @@ export function createUser(props: CreateUserProps): Promise<CreateUserOkResponse
 	});
 }
 
+export type CreateUserMutationProps<T extends keyof CreateUserProps> = Omit<CreateUserProps, T> &
+	Partial<Pick<CreateUserProps, T>>;
+
 /**
  * This can only be done by the logged in user.
  */
-export function useCreateUserMutation(
-	props: CreateUserProps,
+export function useCreateUserMutation<T extends keyof CreateUserProps>(
+	props: Pick<Partial<CreateUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<CreateUserOkResponse, CreateUserErrorResponse>,
+		UseMutationOptions<CreateUserOkResponse, CreateUserErrorResponse, CreateUserMutationProps<T>>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUserOkResponse, CreateUserErrorResponse>(
-		() => createUser(props),
+	return useMutation<CreateUserOkResponse, CreateUserErrorResponse, CreateUserMutationProps<T>>(
+		(mutateProps: CreateUserMutationProps<T>) =>
+			createUser({ ...props, ...mutateProps } as CreateUserProps),
 		options,
 	);
 }
