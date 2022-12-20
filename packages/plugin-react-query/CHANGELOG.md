@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query
 
+## 2.2.0
+
+### Minor Changes
+
+- ad9d937: Mutate function now accepts arguments
+
 ## 2.1.2
 
 ### Patch Changes
