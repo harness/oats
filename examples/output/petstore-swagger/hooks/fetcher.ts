@@ -1,20 +1,28 @@
 /* This is a sample header */
-export interface FetcherOptions<TQueryParams = never, TBody = never>
-	extends Omit<RequestInit, 'body'> {
+export interface FetcherOptions<TQueryParams = never, TBody = never, THeaderParams = HeadersInit>
+	extends Omit<RequestInit, 'body' | 'headers'> {
 	url: string;
 	queryParams?: TQueryParams extends never ? undefined : TQueryParams;
 	body?: TBody extends never ? undefined : TBody;
+	headers?: THeaderParams;
 }
 
 const JSON_HEADERS = ['application/json'];
 
-export async function fetcher<TResponse = unknown, TQueryParams = never, TBody = never>(
-	options: FetcherOptions<TQueryParams, TBody>,
-): Promise<TResponse> {
-	const { body, url, queryParams, ...rest } = options;
+export async function fetcher<
+	TResponse = unknown,
+	TQueryParams = never,
+	TBody = never,
+	THeaderParams = HeadersInit,
+>(options: FetcherOptions<TQueryParams, TBody, THeaderParams>): Promise<TResponse> {
+	const { body, url, queryParams, headers, ...rest } = options;
 
 	const response = await fetch(url, {
 		body: body ? JSON.stringify(body) : undefined,
+		headers: {
+			'Content-Type': JSON_HEADERS[0],
+			...(headers as HeadersInit),
+		},
 		...rest,
 	});
 

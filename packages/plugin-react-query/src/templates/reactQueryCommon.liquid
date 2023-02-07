@@ -6,6 +6,10 @@ export interface {{pathParamsName}} {{pathParamsCode}}
 export interface {{queryParamsName}} {{queryParamsCode}}
 {% endif %}
 
+{% if headerParamsCode %}
+export interface {{headerParamsName}} {{headerParamsCode}}
+{% endif %}
+
 {% if requestBodyCode %}
 export type {{requestBodyName}} = {{requestBodyCode}};
 {% endif %}
@@ -25,6 +29,7 @@ export interface {{fetcherPropsName}} extends
 Omit<FetcherOptions<
   {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
   {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+  {% if headerParamsCode %},{{headerParamsName}}{%- endif %}
 >, 'url'> {
   {% if queryParamsCode -%}
   queryParams: {{queryParamsName}};
@@ -39,6 +44,7 @@ export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okRespon
     {{okResponseName}},
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
+    {% if headerParamsCode %},{{headerParamsName}}{%- endif %}
   >({
     url: `{{route | path_to_template}}`,
     method: {{verb | upcase | json}},
