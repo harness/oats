@@ -79,6 +79,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 			const mutationPropsName = `${typeName}MutationProps`;
 			const pathParamsName = `${typeName}${suffix}PathParams`;
 			const queryParamsName = `${typeName}${suffix}QueryParams`;
+			const headerParamsName = `${typeName}${suffix}HeaderParams`;
 			const requestBodyName = getNameForRequestBody(operation.operationId);
 			const okResponseName = getNameForOkResponse(operation.operationId);
 			const errorResponseName = getNameForErrorResponse(operation.operationId);
@@ -100,10 +101,15 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 
 			const pathParams = params.path.map(processParams);
 			const queryParams = params.query.map(processParams);
+			const headerParams = params.header.map(processParams);
 			const pathParamsCode =
 				pathParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: pathParams }) : null;
 			const queryParamsCode =
 				queryParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: queryParams }) : null;
+			const headerParamsCode =
+				headerParams.length > 0
+					? liquid.renderSync(OBJECT_TEMPLATE, { props: headerParams })
+					: null;
 
 			const templateProps = {
 				hookName,
@@ -124,6 +130,8 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				pathParamsCode,
 				queryParamsName,
 				queryParamsCode,
+				headerParamsName,
+				headerParamsCode,
 				pathParamsNamesList: params.path.map((p) => p.name),
 				description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 			};
