@@ -1,0 +1,23 @@
+{% if pathParamsCode %}
+export interface {{pathParamsName}} {{pathParamsCode}}
+{% endif %}
+
+{% if queryParamsCode %}
+export interface {{queryParamsName}} {{queryParamsCode}}
+{% endif %}
+
+{% if headerParamsCode %}
+export interface {{headerParamsName}} {{headerParamsCode}}
+{% endif %}
+
+{% if requestBodyCode %}
+export type {{requestBodyName}} = {{requestBodyCode}};
+{% endif %}
+
+{% if bodyCode %}
+{{bodyCode}}
+{% endif %}
+
+export type {{okResponseName}} = {{okResponseCode}};
+
+export type {{errorResponseName}} = {{errorResponseCode}};

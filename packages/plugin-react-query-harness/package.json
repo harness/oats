@@ -1,0 +1,48 @@
+{
+  "name": "@harnessio/oats-plugin-react-query-harness",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harness/oats.git",
+    "directory": "packages/plugin-react-query"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.mjs",
+  "exports": {
+    ".": "./dist/index.mjs"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "tsc --outDir dist && cp -R src/templates dist/",
+    "prepublishOnly": "pnpm run build",
+    "test": "exit 0",
+    "lint": "eslint src/**/*.mts",
+    "fmtc": "prettier --check src/**/*.mts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "peerDependencies": {
+    "@harnessio/oats-cli": "workspace:^",
+    "@tanstack/react-query": "^4.0.0",
+    "react": ">=16.8.0 <17.0.0 || >=17.0.0 <18.0.0 || >=18.0.0 <19.0.0"
+  },
+  "dependencies": {
+    "change-case": "^4.1.2",
+    "liquidjs": "^10.3.3",
+    "openapi-types": "^12.1.0",
+    "zod": "^3.19.1"
+  },
+  "devDependencies": {
+    "@harnessio/oats-cli": "workspace:^",
+    "@tanstack/react-query": "^4.20.4",
+    "react": "^18.2.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.8.4"
+  }
+}
