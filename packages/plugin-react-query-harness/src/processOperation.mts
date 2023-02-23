@@ -1,68 +1,45 @@
-import type { OpenAPIV3 } from 'openapi-types';
 import { camelCase } from 'change-case';
-import type { ICodeOutput, IObjectProps } from '@harnessio/oats-cli';
+import { groupByParamType, ICodeOutput } from '@harnessio/oats-cli';
 import {
 	getErrorResponses,
 	getOkResponses,
 	getReqResTypes,
+	getNameForErrorResponse,
+	getNameForRequestBody,
+	getNameForOkResponse,
 	getNameForType,
-	resolveValue,
+	CODE_WITH_IMPORTS_TEMPLATE,
 	COMMENTS_TEMPLATE,
 	OBJECT_TEMPLATE,
-	groupByParamType,
 } from '@harnessio/oats-cli';
-import { _readTemplate, liquid } from './helpers.mjs';
 
-const COMMON_TEMPLATE = liquid.parse(_readTemplate('commonGroupedTypes.liquid'));
-const METHODS_WITH_BODY = ['post', 'put', 'patch'];
+import { _readTemplate, liquid, METHODS_WITH_BODY, processParams } from './helpers.mjs';
+import type { IOperation } from './processScopedOperations.mjs';
+import type { IConfig } from './config.mjs';
 
-export type IParameterLocation = 'query' | 'header' | 'path' | 'cookie';
+const COMMON_TEMPLATE = liquid.parse(_readTemplate('reactQueryCommon.liquid'));
+const QUERY_TEMPLATE = liquid.parse(_readTemplate('useQueryHook.liquid'));
+const MUTATION_TEMPLATE = liquid.parse(_readTemplate('useMutationHook.liquid'));
 
-export function processParams(param: OpenAPIV3.ParameterObject): IObjectProps {
-	const resolvedValue = param.schema ? resolveValue(param.schema, '') : undefined;
+processOperation;
 
-	return {
-		key: param.name,
-		value: resolvedValue?.code || 'unknown',
-		comment: liquid.renderSync(COMMENTS_TEMPLATE, { schema: param.schema }),
-		required: param.in === 'path' ? true : !!param.required,
-		dependencies: resolvedValue?.dependencies || [],
-		imports: resolvedValue?.imports || [],
-	};
-}
-
-export interface IProcessOperationProps {
-	route: string;
-	verb: string;
-	operation: OpenAPIV3.OperationObject;
-	params: OpenAPIV3.ParameterObject[];
-	suffix: string;
-	operationId: string;
-}
-
-export interface IProcessOperationReturn extends ICodeOutput {
-	imports: Set<string>;
-	okResponseName: string;
-	errorResponseName: string;
-	pathParamsName: string;
-}
-
-export function processOperation(props: IProcessOperationProps): IProcessOperationReturn {
-	const { operationId, operation, params, suffix, verb, route } = props;
-
+export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
+	const { operation, method, params, path } = op;
+	const useUseQuery = method === 'get' || config?.overrides?.[operation.operationId]?.useQuery;
+	const suffix = useUseQuery ? 'Query' : 'Mutation';
 	const dependencies: string[] = [];
-	const imports = new Set<string>();
-	const typeName = getNameForType(operationId);
+	let imports = new Set<string>();
+	const typeName = getNameForType(operation.operationId);
 	const hookName = `use${typeName}${suffix}`;
-	const fetcherName = `${camelCase(operationId)}`;
+	const fetcherName = `${camelCase(operation.operationId)}`;
 	const fetcherPropsName = `${typeName}Props`;
 	const mutationPropsName = `${typeName}MutationProps`;
 	const pathParamsName = `${typeName}${suffix}PathParams`;
 	const queryParamsName = `${typeName}${suffix}QueryParams`;
 	const headerParamsName = `${typeName}${suffix}HeaderParams`;
-	const requestBodyName = `${typeName}${suffix}RequestBody`;
-	const okResponseName = `${typeName}${suffix}OKResponse`;
-	const errorResponseName = `${typeName}${suffix}ErrorResponse`;
+	const requestBodyName = getNameForRequestBody(operation.operationId);
+	const okResponseName = getNameForOkResponse(operation.operationId);
+	const errorResponseName = getNameForErrorResponse(operation.operationId);
 	const okResponseCode = getOkResponses(operation.responses, '');
 	const errorResponseCode = getErrorResponses(operation.responses, '');
 	let requestBodyCode: string | null = null;
@@ -71,7 +48,7 @@ export function processOperation(props: IProcessOperationProps): IProcessOperati
 	errorResponseCode.imports.forEach((imp) => imports.add(imp));
 	dependencies.push(...okResponseCode.dependencies, ...errorResponseCode.dependencies);
 
-	if (METHODS_WITH_BODY.includes(verb) && operation.requestBody) {
+	if (METHODS_WITH_BODY.includes(method) && operation.requestBody) {
 		const bodyCode = getReqResTypes([['body', operation.requestBody]], '');
 
 		requestBodyCode = bodyCode.code;
@@ -80,7 +57,6 @@ export function processOperation(props: IProcessOperationProps): IProcessOperati
 	}
 
 	const groupedParams = groupByParamType(params);
-
 	const pathParams = groupedParams.path.map(processParams);
 	const queryParams = groupedParams.query.map(processParams);
 	const headerParams = groupedParams.header.map(processParams);
@@ -102,8 +78,8 @@ export function processOperation(props: IProcessOperationProps): IProcessOperati
 		okResponseName,
 		errorResponseCode: errorResponseCode.code,
 		errorResponseName,
-		route,
-		verb,
+		route: path,
+		verb: method,
 		operation,
 		params,
 		pathParamsName,
@@ -116,7 +92,10 @@ export function processOperation(props: IProcessOperationProps): IProcessOperati
 		description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 	};
 
-	const code = liquid.renderSync(COMMON_TEMPLATE, templateProps).trim();
+	const code = [
+		liquid.renderSync(COMMON_TEMPLATE, templateProps).trim(),
+		liquid.renderSync(useUseQuery ? QUERY_TEMPLATE : MUTATION_TEMPLATE, templateProps).trim(),
+	].join('\n\n');
 
 	const typeExports = [fetcherPropsName, okResponseName, errorResponseName];
 	const jsExports = [hookName, fetcherName];
@@ -133,16 +112,32 @@ export function processOperation(props: IProcessOperationProps): IProcessOperati
 		typeExports.push(requestBodyName);
 	}
 
+	if (useUseQuery) {
+		imports = new Set([
+			'import { useQuery, UseQueryOptions } from "@tanstack/react-query";',
+			'',
+			...imports,
+		]);
+	} else {
+		typeExports.push(mutationPropsName);
+		imports = new Set([
+			'import { useMutation, UseMutationOptions } from "@tanstack/react-query";',
+			'',
+			...imports,
+		]);
+	}
+
+	imports.add(`import { fetcher, FetcherOptions } from "${config?.customFetcher || './fetcher'}";`);
+
 	return {
-		code,
-		filepath: ``,
+		code: liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, {
+			imports,
+			code,
+		}),
+		filepath: `hooks/${hookName}.ts`,
 		ref: '',
 		dependencies,
 		jsExports,
 		typeExports,
-		imports,
-		okResponseName,
-		errorResponseName,
-		pathParamsName,
 	};
 }

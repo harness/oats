@@ -3,6 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { Liquid } from 'liquidjs';
+import type { OpenAPIV3 } from 'openapi-types';
+import type { IObjectProps } from '@harnessio/oats-cli';
+import { resolveValue, COMMENTS_TEMPLATE } from '@harnessio/oats-cli';
 
 const DIR_NAME = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,4 +29,21 @@ export function pathToTemplate(tpl: string): string {
 
 export function propertyAccessor(name: string): string {
 	return name.match(VAR_NAME_REGEX) ? `.${name}` : `['${name}']`;
+}
+
+export const METHODS_WITH_BODY = ['post', 'put', 'patch'];
+
+export type IParameterLocation = 'query' | 'header' | 'path' | 'cookie';
+
+export function processParams(param: OpenAPIV3.ParameterObject): IObjectProps {
+	const resolvedValue = param.schema ? resolveValue(param.schema, '') : undefined;
+
+	return {
+		key: param.name,
+		value: resolvedValue?.code || 'unknown',
+		comment: liquid.renderSync(COMMENTS_TEMPLATE, { schema: param.schema }),
+		required: param.in === 'path' ? true : !!param.required,
+		dependencies: resolvedValue?.dependencies || [],
+		imports: resolvedValue?.imports || [],
+	};
 }

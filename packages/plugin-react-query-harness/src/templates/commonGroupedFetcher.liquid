@@ -4,6 +4,12 @@ export type {{okResponseName}}<T> = T extends {{project.pathParamsName}}
   ? {{org.okResponseName}}
   : {{account.okResponseName}};
 
+export type {{errorResponseName}}<T> = T extends {{project.pathParamsName}}
+    ? {{project.errorResponseName}}
+    : T extends {{org.pathParamsName}}
+    ? {{org.errorResponseName}}
+    : {{account.errorResponseName}};
+
 export interface {{fetcherPropsName}} extends
   Omit<FetcherOptions<
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
