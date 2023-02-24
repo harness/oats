@@ -249,6 +249,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 
 	code.push(liquid.renderSync(GROUPED_QUERY_HOOK_TEMPLATE, templateProps));
 
+	imports.add(`import type { GetPathParamsType, ResponseWithPagination } from "../helpers";`);
 	imports.add(`import { fetcher, FetcherOptions } from "${customFetcher || './fetcher'}";`);
 
 	if (queryOrMutation === 'Query') {

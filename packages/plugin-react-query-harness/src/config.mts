@@ -29,6 +29,22 @@ export const ScopeGroupingOptions = z.object({
 
 export type IScopeGroupingOptions = z.infer<typeof ScopeGroupingOptions>;
 
+export const ScopeGroupingSchema = z
+	.union([
+		z.array(z.string()).length(3),
+		z.object({
+			operations: z.object({
+				account: ScopeGroupingOptions.optional(),
+				organisation: ScopeGroupingOptions.optional(),
+				project: ScopeGroupingOptions.optional(),
+			}),
+			useMutation: z.boolean().optional(),
+		}),
+	])
+	.optional();
+
+export type IScopeGroupingSchema = z.infer<typeof ScopeGroupingSchema>;
+
 export const Config = z
 	.object({
 		/**
@@ -64,19 +80,7 @@ export const Config = z
 		/**
 		 *
 		 */
-		scopeGroups: z
-			.record(
-				z.string(),
-				z.object({
-					operations: z.object({
-						account: ScopeGroupingOptions.optional(),
-						organisation: ScopeGroupingOptions.optional(),
-						project: ScopeGroupingOptions.optional(),
-					}),
-					useMutation: z.boolean().optional(),
-				}),
-			)
-			.optional(),
+		scopeGroups: z.record(z.string(), ScopeGroupingSchema),
 	})
 	.optional();
 

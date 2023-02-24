@@ -2,7 +2,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import type { ICodeOutput, IPlugin, IPluginReturn } from '@harnessio/oats-cli';
 import { isReferenceObject } from '@harnessio/oats-cli';
 
-import type { IConfig } from './config.mjs';
+import type { IConfig, IScopeGroupingSchema } from './config.mjs';
 import { Config } from './config.mjs';
 import { _readTemplate, liquid } from './helpers.mjs';
 import { IOperation, processScopedOperations } from './processScopedOperations.mjs';
@@ -10,6 +10,7 @@ import { processOperation } from './processOperation.mjs';
 
 const ALLOWED_VERBS: Array<OpenAPIV3.HttpMethods> = Object.values(OpenAPIV3.HttpMethods);
 const DEFAULT_FETCHER_TEMPLATE = liquid.parse(_readTemplate('defaultFetcher.liquid'));
+const HELPERS_TEMPLATE = liquid.parse(_readTemplate('helpers.liquid'));
 
 export type IOperationMap = Map<string, IOperation>;
 
@@ -18,7 +19,28 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 		// validate config
 		const config = Config.parse(unsafeConfig);
 
-		const files: ICodeOutput[] = [];
+		const files: ICodeOutput[] = [
+			{
+				code: liquid.renderSync(HELPERS_TEMPLATE),
+				filepath: 'helpers.ts',
+				ref: '',
+				dependencies: [],
+				jsExports: [],
+				typeExports: ['GetPathParamsType', 'ResponseWithPagination'],
+			},
+		];
+
+		if (!config?.customFetcher) {
+			files.push({
+				code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
+				filepath: 'hooks/fetcher.ts',
+				ref: '',
+				dependencies: [],
+				jsExports: [],
+				typeExports: [],
+			});
+		}
+
 		const operationIdMap: IOperationMap = Object.entries(spec.paths).reduce(
 			(accumulator, [route, routeObj]) => {
 				if (routeObj) {
@@ -79,43 +101,42 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 
 		// Generate code for scoped groups
 		if (config?.scopeGroups) {
-			Object.entries(config.scopeGroups).forEach(([key, groupConfig]) => {
-				const { account, organisation, project } = groupConfig.operations;
-				const getOpAndDelete = (operationId: string): IOperation | undefined => {
-					const temp = operationIdMap.get(operationId);
-					operationIdMap.delete(operationId);
-					return temp;
-				};
-				const accountOperation = account && getOpAndDelete(account.operationId);
-				const orgOperation = organisation && getOpAndDelete(organisation.operationId);
-				const projectOperation = project && getOpAndDelete(project.operationId);
+			Object.entries(config.scopeGroups).forEach(
+				([key, groupConfig]: [string, IScopeGroupingSchema]) => {
+					const { account, organisation, project } = Array.isArray(groupConfig)
+						? {
+								account: { operationId: groupConfig[0] },
+								organisation: { operationId: groupConfig[1] },
+								project: { operationId: groupConfig[2] },
+						  }
+						: groupConfig?.operations || {};
 
-				files.push(
-					processScopedOperations({
-						operationId: key,
-						accountOperation,
-						orgOperation,
-						projectOperation,
-					}),
-				);
-			});
+					const getOpAndDelete = (operationId: string): IOperation | undefined => {
+						const temp = operationIdMap.get(operationId);
+						operationIdMap.delete(operationId);
+						return temp;
+					};
+
+					const accountOperation = account && getOpAndDelete(account.operationId);
+					const orgOperation = organisation && getOpAndDelete(organisation.operationId);
+					const projectOperation = project && getOpAndDelete(project.operationId);
+
+					files.push(
+						processScopedOperations({
+							operationId: key,
+							accountOperation,
+							orgOperation,
+							projectOperation,
+						}),
+					);
+				},
+			);
 		}
 
 		// generate code for rest of the operations
 		operationIdMap.forEach((op) => {
 			files.push(processOperation(op, config));
 		});
-
-		if (!config?.customFetcher) {
-			files.push({
-				code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
-				filepath: 'hooks/fetcher.ts',
-				ref: '',
-				dependencies: [],
-				jsExports: [],
-				typeExports: [],
-			});
-		}
 
 		return { files };
 	};

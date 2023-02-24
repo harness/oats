@@ -1,0 +1,10 @@
+export type GetPathParamsType<T> = T extends { pathParams: infer R } ? R : never;
+
+export interface ResponseWithPagination<T> {
+  content: T
+  pagination?: {
+    total?: number
+    pageSize?: number
+    pageNumber?: number
+  }
+}

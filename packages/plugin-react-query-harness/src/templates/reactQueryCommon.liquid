@@ -39,14 +39,14 @@ Omit<FetcherOptions<
   {%- endif %}
 }
 
-export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
+export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<ResponseWithPagination<{{okResponseName}}>> {
   return fetcher<
-    {{okResponseName}},
+    ResponseWithPagination<{{okResponseName}}>,
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
     {% if headerParamsCode %},{{headerParamsName}}{%- endif %}
   >({
-    url,
+    url:  `{{route | path_to_template}}`,
     method: {{verb | upcase | json}},
     ...props
   })

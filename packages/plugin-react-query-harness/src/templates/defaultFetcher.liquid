@@ -31,7 +31,7 @@ export async function fetcher<
 	const data = await (asJson ? response.json() : response.text());
 
 	if (response.ok) {
-		return data;
+		return { content: data };
 	}
 
 	throw data;

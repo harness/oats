@@ -25,11 +25,9 @@ export interface {{fetcherPropsName}} extends
     {%- endif %}
 }
 
-export type GetPathParamsType<T> = T extends { pathParams: infer R } ? R : never;
-
 export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsName}}>(
   props: T
-): Promise<{{okResponseName}}<GetPathParamsType<T>>> {
+): Promise<ResponseWithPagination<{{okResponseName}}<GetPathParamsType<T>>>> {
   const { org, project } = props.pathParams as {{project.pathParamsName}};
 
   let url = `{{accountPath}}`
@@ -44,7 +42,7 @@ export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsN
   }
 
   return fetcher<
-    {{okResponseName}}<GetPathParamsType<T>>,
+    ResponseWithPagination<{{okResponseName}}<GetPathParamsType<T>>>,
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
     {% if headerParamsCode %},{{headerParamsName}}{%- endif %}

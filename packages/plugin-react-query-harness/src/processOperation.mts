@@ -127,6 +127,7 @@ export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 		]);
 	}
 
+	imports.add(`import type { ResponseWithPagination } from "../helpers";`);
 	imports.add(`import { fetcher, FetcherOptions } from "${config?.customFetcher || './fetcher'}";`);
 
 	return {
