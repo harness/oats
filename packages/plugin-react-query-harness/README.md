@@ -1,22 +1,22 @@
 # React Query Plugin
 
-![@harnessio/oats-plugin-react-query](https://img.shields.io/npm/v/@harnessio/oats-plugin-react-query.svg?style=flat-square)
+![@harnessio/oats-plugin-react-query-harness](https://img.shields.io/npm/v/@harnessio/oats-plugin-react-query-harness.svg?style=flat-square)
 
 Plugin for `oats` cli, for generating react query hooks. This will generate hooks
-using `react-query`.
+using `react-query` which are specific to Harness use cases.
 
 ## Installation
 
 Using NPM:
 
 ```
-npm i -D @harnessio/oats-cli @harnessio/oats-plugin-react-query
+npm i -D @harnessio/oats-cli @harnessio/oats-plugin-react-query-harness
 ```
 
 Using Yarn:
 
 ```
-yarn add -D @harnessio/oats-cli @harnessio/oats-plugin-react-query
+yarn add -D @harnessio/oats-cli @harnessio/oats-plugin-react-query-harness
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ yarn add -D @harnessio/oats-cli @harnessio/oats-plugin-react-query
 ```ts
 // oats.config.ts
 import { defineConfig } from '@harnessio/oats-cli/config';
-import reactQueryPlugin from '@harnessio/oats-plugin-react-query';
+import reactQueryPlugin from '@harnessio/oats-plugin-react-query-harness';
 
 export default defineConfig({
   plugins: [
@@ -62,6 +62,50 @@ export default defineConfig({
            * generated using `useQuery`.
            */
           useQuery: true,
+        },
+      },
+      /**
+       * Config for logically grouping APIs together
+       * This can is map/record, where the key is a string
+       * and value can an array of length 3
+       * or  an object (for advanced configuration) as shown below
+       *
+       * The key will be used as the operation Id for the new hook.
+       *
+       * If the value is an array, it must be of length 3 and should
+       * give operationIds in order: account, organisation, project.
+       *
+       * For value as object, please read the inline documentation below.
+       */
+      scopeGroups: {
+        'test-connector': [
+          'test-account-scoped-connector',
+          'test-org-scoped-connector',
+          'test-project-scoped-connector',
+        ],
+        'get-connectors': {
+          /**
+           * This is used to define advanced settings
+           */
+          operations: {
+            /**
+             * OperationId for account scope
+             */
+            account: 'get-account-scoped-connectors',
+            /**
+             *  OperationId for organisation scope
+             */
+            organisation: 'get-org-scoped-connectors',
+            /**
+             *  OperationId for project scope
+             */
+            project: 'get-project-scoped-connectors',
+          },
+          /**
+           * By default the codegen will generate hooks using `useQuery` in case of grouping.
+           * If you want to use `useMutation`, set this to `true`
+           */
+          useMutation: false,
         },
       },
     }),

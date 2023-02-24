@@ -1,8 +1,8 @@
 export type {{okResponseName}}<T> = T extends {{project.pathParamsName}}
-  ? {{project.okResponseName}}
+  ? ResponseWithPagination<{{project.okResponseName}}>
   : T extends {{org.pathParamsName}}
-  ? {{org.okResponseName}}
-  : {{account.okResponseName}};
+  ? ResponseWithPagination<{{org.okResponseName}}>
+  : ResponseWithPagination<{{account.okResponseName}}>;
 
 export type {{errorResponseName}}<T> = T extends {{project.pathParamsName}}
     ? {{project.errorResponseName}}
@@ -27,7 +27,7 @@ export interface {{fetcherPropsName}} extends
 
 export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsName}}>(
   props: T
-): Promise<ResponseWithPagination<{{okResponseName}}<GetPathParamsType<T>>>> {
+): Promise<{{okResponseName}}<GetPathParamsType<T>>> {
   const { org, project } = props.pathParams as {{project.pathParamsName}};
 
   let url = `{{accountPath}}`
@@ -42,7 +42,7 @@ export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsN
   }
 
   return fetcher<
-    ResponseWithPagination<{{okResponseName}}<GetPathParamsType<T>>>,
+    {{okResponseName}}<GetPathParamsType<T>>,
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
     {% if headerParamsCode %},{{headerParamsName}}{%- endif %}

@@ -15,6 +15,7 @@ import { _readTemplate, liquid, METHODS_WITH_BODY, processParams } from './helpe
 
 const COMMON_GROUPED_FETCHER_TEMPLATE = liquid.parse(_readTemplate('commonGroupedFetcher.liquid'));
 const GROUPED_QUERY_HOOK_TEMPLATE = liquid.parse(_readTemplate('groupedQueryHook.liquid'));
+const GROUPED_MUTATION_HOOK_TEMPLATE = liquid.parse(_readTemplate('groupedMutationHook.liquid'));
 const COMMON_GROUPED_TYPES_TEMPLATE = liquid.parse(_readTemplate('commonGroupedTypes.liquid'));
 
 export interface IOperation {
@@ -167,6 +168,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 	const typeName = getNameForType(operationId);
 	const code: string[] = [];
 	const hookName = `use${typeName}${queryOrMutation}`;
+	const mutationPropsName = `${typeName}MutationProps`;
 	const scopedParams: Record<string, any> = {};
 
 	if (accountOperation) {
@@ -242,12 +244,17 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		fetcherPropsName,
 		okResponseName,
 		errorResponseName,
+		mutationPropsName,
 		...scopedParams,
 	};
 
 	code.push(liquid.renderSync(COMMON_GROUPED_FETCHER_TEMPLATE, templateProps));
 
-	code.push(liquid.renderSync(GROUPED_QUERY_HOOK_TEMPLATE, templateProps));
+	if (useMutation) {
+		code.push(liquid.renderSync(GROUPED_MUTATION_HOOK_TEMPLATE, templateProps));
+	} else {
+		code.push(liquid.renderSync(GROUPED_QUERY_HOOK_TEMPLATE, templateProps));
+	}
 
 	imports.add(`import type { GetPathParamsType, ResponseWithPagination } from "../helpers";`);
 	imports.add(`import { fetcher, FetcherOptions } from "${customFetcher || './fetcher'}";`);

@@ -18,25 +18,14 @@ export const OverrideOptions = z.object({
 
 export type IOverrideOptions = z.infer<typeof OverrideOptions>;
 
-/**
- * Options for grouping operations
- */
-export const ScopeGroupingOptions = z.object({
-	operationId: z.string(),
-	orgParam: z.string().optional(),
-	projectParam: z.string().optional(),
-});
-
-export type IScopeGroupingOptions = z.infer<typeof ScopeGroupingOptions>;
-
 export const ScopeGroupingSchema = z
 	.union([
 		z.array(z.string()).length(3),
 		z.object({
 			operations: z.object({
-				account: ScopeGroupingOptions.optional(),
-				organisation: ScopeGroupingOptions.optional(),
-				project: ScopeGroupingOptions.optional(),
+				account: z.string(),
+				organisation: z.string(),
+				project: z.string(),
 			}),
 			useMutation: z.boolean().optional(),
 		}),
@@ -78,7 +67,7 @@ export const Config = z
 		 */
 		allowedOperationIds: z.array(z.string()).optional(),
 		/**
-		 *
+		 * Config for logically grouping APIs together
 		 */
 		scopeGroups: z.record(z.string(), ScopeGroupingSchema),
 	})

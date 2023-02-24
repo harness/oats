@@ -8,3 +8,7 @@ export interface ResponseWithPagination<T> {
     pageNumber?: number
   }
 }
+
+export type WithOptional<TInput, Tkeys extends keyof TInput> = Omit<TInput, Tkeys> & Partial<Pick<TInput, Tkeys>>
+
+export type PickPartial<TInput, Tkeys extends keyof TInput> = Pick<Partial<TInput>, Tkeys>

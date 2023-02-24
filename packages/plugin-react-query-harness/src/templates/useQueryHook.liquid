@@ -1,9 +1,9 @@
 {{description}}
 export function {{hookName}}(
   props: {{fetcherPropsName}},
-  options?: Omit<UseQueryOptions<ResponseWithPagination<{{okResponseName}}>, {{errorResponseName}}>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<{{okResponseName}}, {{errorResponseName}}>, 'queryKey' | 'queryFn'>
 ) {
-  return useQuery<ResponseWithPagination<{{okResponseName}}>, {{errorResponseName}}>(
+  return useQuery<{{okResponseName}}, {{errorResponseName}}>(
     [
       {{operation.operationId | json}}
       {% if pathParamsCode -%}

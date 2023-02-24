@@ -57,9 +57,9 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 						}
 
 						// check if operationId is already used
-						if (operation.operationId in accumulator) {
+						if (accumulator.has(operation.operationId)) {
 							throw new Error(
-								`"${operation.operationId}" is duplicated in your schema definition!`,
+								`Operation with operationId "${operation.operationId}" already exists, Please provide a unique key.`,
 							);
 						}
 
@@ -103,13 +103,21 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 		if (config?.scopeGroups) {
 			Object.entries(config.scopeGroups).forEach(
 				([key, groupConfig]: [string, IScopeGroupingSchema]) => {
+					// check if operationId is already used
+					if (operationIdMap.has(key)) {
+						throw new Error(
+							`Operation with operationId "${key}" already exists, Please provide a unique key.`,
+						);
+					}
 					const { account, organisation, project } = Array.isArray(groupConfig)
 						? {
-								account: { operationId: groupConfig[0] },
-								organisation: { operationId: groupConfig[1] },
-								project: { operationId: groupConfig[2] },
+								account: groupConfig[0],
+								organisation: groupConfig[1],
+								project: groupConfig[2],
 						  }
 						: groupConfig?.operations || {};
+
+					const useMutation = Array.isArray(groupConfig) ? false : !!groupConfig?.useMutation;
 
 					const getOpAndDelete = (operationId: string): IOperation | undefined => {
 						const temp = operationIdMap.get(operationId);
@@ -117,16 +125,25 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 						return temp;
 					};
 
-					const accountOperation = account && getOpAndDelete(account.operationId);
-					const orgOperation = organisation && getOpAndDelete(organisation.operationId);
-					const projectOperation = project && getOpAndDelete(project.operationId);
+					if (!account || !operationIdMap.has(account)) {
+						throw new Error(`Could not find account level operation with id: "${account}"`);
+					}
+
+					if (!organisation || !operationIdMap.has(organisation)) {
+						throw new Error(`Could not find organisation level operation with id: "${account}"`);
+					}
+
+					if (!project || !operationIdMap.has(project)) {
+						throw new Error(`Could not find project level operation with id: "${account}"`);
+					}
 
 					files.push(
 						processScopedOperations({
 							operationId: key,
-							accountOperation,
-							orgOperation,
-							projectOperation,
+							accountOperation: getOpAndDelete(account),
+							orgOperation: getOpAndDelete(organisation),
+							projectOperation: getOpAndDelete(project),
+							useMutation,
 						}),
 					);
 				},

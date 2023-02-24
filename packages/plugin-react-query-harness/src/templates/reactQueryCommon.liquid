@@ -18,7 +18,7 @@ export type {{requestBodyName}} = {{requestBodyCode}};
 {{bodyCode}}
 {% endif %}
 
-export type {{okResponseName}} = {{okResponseCode}};
+export type {{okResponseName}} = ResponseWithPagination<{{okResponseCode}}>;
 
 export type {{errorResponseName}} = {{errorResponseCode}};
 
@@ -39,9 +39,9 @@ Omit<FetcherOptions<
   {%- endif %}
 }
 
-export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<ResponseWithPagination<{{okResponseName}}>> {
+export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
   return fetcher<
-    ResponseWithPagination<{{okResponseName}}>,
+    {{okResponseName}},
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
     {% if headerParamsCode %},{{headerParamsName}}{%- endif %}
