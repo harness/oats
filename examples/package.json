@@ -17,6 +17,7 @@
   "dependencies": {
     "@harnessio/oats-cli": "workspace:^",
     "@harnessio/oats-plugin-react-query": "workspace:^",
+    "@harnessio/oats-plugin-react-query-harness": "workspace:^",
     "@tanstack/react-query": "^4.20.4",
     "react": "^18.2.0",
     "typescript": "^4.8.4"
