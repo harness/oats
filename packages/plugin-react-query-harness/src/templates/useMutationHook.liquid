@@ -1,0 +1,20 @@
+{{description}}
+export function {{hookName}}(
+  options?: Omit<
+    UseMutationOptions<
+      {{okResponseName}},
+      {{errorResponseName}},
+      {{fetcherPropsName}}
+    >,
+    'mutationKey' | 'mutationFn'
+  >
+) {
+  return useMutation<
+    {{okResponseName}},
+    {{errorResponseName}},
+    {{fetcherPropsName}}
+  >(
+  (mutateProps: {{fetcherPropsName}}) => {{fetcherName}}(mutateProps),
+    options
+  )
+}
