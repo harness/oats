@@ -16,7 +16,7 @@ export interface {{fetcherPropsName}} extends
     {% if requestBodyCode %}{{requestBodyName}}{% else %}unknown{%- endif %}
     {% if headerParamsCode %},{{headerParamsName}}{%- endif %}
   >, 'url'> {
-    pathParams: {{org.pathParamsName}} | {{project.pathParamsName}};
+    pathParams: {{account.pathParamsName}} | {{org.pathParamsName}} | {{project.pathParamsName}};
     {% if queryParamsCode -%}
     queryParams: {{queryParamsName}};
     {%- endif %}
@@ -25,21 +25,32 @@ export interface {{fetcherPropsName}} extends
     {%- endif %}
 }
 
+function isProjectPathParams(pathParams: {{fetcherPropsName}}['pathParams']): pathParams is {{project.pathParamsName}} {
+  return !!(
+    (pathParams as {{project.pathParamsName}}).org &&
+    (pathParams as {{project.pathParamsName}}).project
+  )
+}
+
+function isOrgPathParams(pathParams: {{fetcherPropsName}}['pathParams']): pathParams is {{org.pathParamsName}} {
+  return !!(
+    (pathParams as {{org.pathParamsName}}).org &&
+    !(pathParams as {{project.pathParamsName}}).project
+  )
+}
+
+
 export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsName}}>(
   props: T
 ): Promise<{{okResponseName}}<GetPathParamsType<T>>> {
-  const {
-    {% for name in pathParamsNamesList -%}{{name}},{%- endfor %}
-   } = props.pathParams as {{project.pathParamsName}};
-
-  let url = `{{accountPath}}`
+  let url = `{{accountPath | path_to_template: ".pathParams"}}`
   let method = "{{accountOperation.method | upcase}}"
 
-  if (org && project) {
-    url = `{{projectPath}}`
+  if (isProjectPathParams(props.pathParams)) {
+    url = `{{projectPath | path_to_template: ".pathParams"}}`
     method = "{{projectOperation.method | upcase}}"
-  } else if (org) {
-    url = `{{orgPath}}`
+  } else if (isOrgPathParams(props.pathParams)) {
+    url = `{{orgPath | path_to_template: ".pathParams"}}`
     method = "{{orgOperation.method | upcase}}"
   }
 

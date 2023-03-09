@@ -192,7 +192,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...accountOutput.typeExports);
 		scopedParams.account = accountOutput;
 		scopedParams.accountOperation = accountOperation;
-		scopedParams.accountPath = accountOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		scopedParams.accountPath = accountOperation.path;
 		pathParamsNamesList.push(...accountOutput.pathParamsNamesList);
 	}
 
@@ -213,7 +213,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...orgOutput.typeExports);
 		scopedParams.org = orgOutput;
 		scopedParams.orgOperation = orgOperation;
-		scopedParams.orgPath = orgOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		scopedParams.orgPath = orgOperation.path;
 		pathParamsNamesList.push(...orgOutput.pathParamsNamesList);
 	}
 
@@ -234,7 +234,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...projOutput.typeExports);
 		scopedParams.project = projOutput;
 		scopedParams.projectOperation = projectOperation;
-		scopedParams.projectPath = projectOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		scopedParams.projectPath = projectOperation.path;
 		pathParamsNamesList.push(...projOutput.pathParamsNamesList);
 	}
 
