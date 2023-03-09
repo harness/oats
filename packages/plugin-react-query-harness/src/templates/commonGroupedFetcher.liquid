@@ -28,7 +28,9 @@ export interface {{fetcherPropsName}} extends
 export function {{fetcherName}}<T extends {{fetcherPropsName}} = {{fetcherPropsName}}>(
   props: T
 ): Promise<{{okResponseName}}<GetPathParamsType<T>>> {
-  const { org, project } = props.pathParams as {{project.pathParamsName}};
+  const {
+    {% for name in pathParamsNamesList -%}{{name}},{%- endfor %}
+   } = props.pathParams as {{project.pathParamsName}};
 
   let url = `{{accountPath}}`
   let method = "{{accountOperation.method | upcase}}"

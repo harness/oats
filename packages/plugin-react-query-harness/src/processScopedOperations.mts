@@ -39,6 +39,7 @@ export interface IProcessOperationReturn extends ICodeOutput {
 	okResponseName: string;
 	errorResponseName: string;
 	pathParamsName: string;
+	pathParamsNamesList: string[];
 }
 
 export function processSingleGroupedOperation(
@@ -86,6 +87,7 @@ export function processSingleGroupedOperation(
 		queryParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: queryParams }) : null;
 	const headerParamsCode =
 		headerParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: headerParams }) : null;
+	const pathParamsNamesList = groupedParams.path.map((p) => p.name);
 
 	const templateProps = {
 		hookName,
@@ -108,7 +110,7 @@ export function processSingleGroupedOperation(
 		queryParamsCode,
 		headerParamsName,
 		headerParamsCode,
-		pathParamsNamesList: groupedParams.path.map((p) => p.name),
+		pathParamsNamesList,
 		description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 	};
 
@@ -139,6 +141,7 @@ export function processSingleGroupedOperation(
 		okResponseName,
 		errorResponseName,
 		pathParamsName,
+		pathParamsNamesList,
 	};
 }
 
@@ -170,6 +173,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 	const hookName = `use${typeName}${queryOrMutation}`;
 	const mutationPropsName = `${typeName}MutationProps`;
 	const scopedParams: Record<string, any> = {};
+	const pathParamsNamesList: string[] = [];
 
 	if (accountOperation) {
 		const accountOutput = processSingleGroupedOperation({
@@ -188,7 +192,8 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...accountOutput.typeExports);
 		scopedParams.account = accountOutput;
 		scopedParams.accountOperation = accountOperation;
-		scopedParams.accountPath = accountOperation.path;
+		scopedParams.accountPath = accountOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		pathParamsNamesList.push(...accountOutput.pathParamsNamesList);
 	}
 
 	if (orgOperation) {
@@ -208,7 +213,8 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...orgOutput.typeExports);
 		scopedParams.org = orgOutput;
 		scopedParams.orgOperation = orgOperation;
-		scopedParams.orgPath = orgOperation.path.replace(`{org}`, '${org}');
+		scopedParams.orgPath = orgOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		pathParamsNamesList.push(...orgOutput.pathParamsNamesList);
 	}
 
 	if (projectOperation) {
@@ -228,9 +234,8 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		typeExports.push(...projOutput.typeExports);
 		scopedParams.project = projOutput;
 		scopedParams.projectOperation = projectOperation;
-		scopedParams.projectPath = projectOperation.path
-			.replace(`{org}`, '${org}')
-			.replace(`{project}`, '${project}');
+		scopedParams.projectPath = projectOperation.path.replace(/\{(.+?)\}/g, '${$1}');
+		pathParamsNamesList.push(...projOutput.pathParamsNamesList);
 	}
 
 	const fetcherName = `${camelCase(operationId)}`;
@@ -245,6 +250,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		okResponseName,
 		errorResponseName,
 		mutationPropsName,
+		pathParamsNamesList: [...new Set(pathParamsNamesList)],
 		...scopedParams,
 	};
 
