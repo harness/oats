@@ -21,9 +21,9 @@ export function _readTemplate(name: string): string {
 	return fs.readFileSync(path.resolve(DIR_NAME, `./templates/${name}`), 'utf8');
 }
 
-export function pathToTemplate(tpl: string): string {
+export function pathToTemplate(tpl: string, suffix = ''): string {
 	return tpl.replace(/\{([\w\W]+?)\}/g, (_, p1) => {
-		return '${props' + propertyAccessor(p1) + '}';
+		return '${props' + suffix + propertyAccessor(p1) + '}';
 	});
 }
 

@@ -33,7 +33,6 @@ export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 	const hookName = `use${typeName}${suffix}`;
 	const fetcherName = `${camelCase(operation.operationId)}`;
 	const fetcherPropsName = `${typeName}Props`;
-	const mutationPropsName = `${typeName}MutationProps`;
 	const pathParamsName = `${typeName}${suffix}PathParams`;
 	const queryParamsName = `${typeName}${suffix}QueryParams`;
 	const headerParamsName = `${typeName}${suffix}HeaderParams`;
@@ -70,7 +69,6 @@ export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 	const templateProps = {
 		hookName,
 		fetcherPropsName,
-		mutationPropsName,
 		fetcherName,
 		requestBodyName,
 		requestBodyCode,
@@ -119,7 +117,6 @@ export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 			...imports,
 		]);
 	} else {
-		typeExports.push(mutationPropsName);
 		imports = new Set([
 			'import { useMutation, UseMutationOptions } from "@tanstack/react-query";',
 			'',
