@@ -151,6 +151,12 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 		}
 
 		// generate code for rest of the operations
+		if (config && Array.isArray(config.allowedOperationIds)) {
+			config.allowedOperationIds.forEach((opId) => {
+				operationIdMap.delete(opId);
+			});
+		}
+
 		operationIdMap.forEach((op) => {
 			files.push(processOperation(op, config));
 		});
