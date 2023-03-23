@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query-harness
 
+## 0.5.0
+
+### Minor Changes
+
+- e4229d1: added pageCount in the interface "ResponseWithPagination"
+
 ## 0.4.0
 
 ### Minor Changes
