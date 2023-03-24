@@ -144,7 +144,7 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 							orgOperation: getOpAndDelete(organisation),
 							projectOperation: getOpAndDelete(project),
 							useMutation,
-							customFetcher: config?.customFetcher
+							customFetcher: config?.customFetcher,
 						}),
 					);
 				},
