@@ -82,7 +82,7 @@ export function processSingleGroupedOperation(
 	const queryParams = groupedParams.query.map(processParams);
 	const headerParams = groupedParams.header.map(processParams);
 	const pathParamsCode =
-		pathParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: pathParams }) : null;
+		pathParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: pathParams }) : '{}';
 	const queryParamsCode =
 		queryParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: queryParams }) : null;
 	const headerParamsCode =
