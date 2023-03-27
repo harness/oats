@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query-harness
 
+## 0.6.0
+
+### Minor Changes
+
+- 76d2516: fixed scopeGroups issues: path of custom fetcher, and AccountPathParams generation
+
 ## 0.5.0
 
 ### Minor Changes
