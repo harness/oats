@@ -89,7 +89,8 @@ export async function importSpec(argv: ICLIConfig): Promise<void> {
 			}
 		} catch (e) {
 			logInfo(`Deleting transpiled config file due to error: ${builtConfigPath}`);
-			logInfo(e);
+			// eslint-disable-next-line no-console
+			console.log(e);
 			if (!configFileDeleted) {
 				await fs.promises.unlink(builtConfigPath);
 			}
