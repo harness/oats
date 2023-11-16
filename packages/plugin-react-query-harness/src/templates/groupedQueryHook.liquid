@@ -14,7 +14,7 @@ export function {{hookName}}<T extends {{fetcherPropsName}} = {{fetcherPropsName
     {{errorResponseName}}<GetPathParamsType<T>>
   >(
     [
-      {{operation.operationId | json}}
+      {{fetcherName | json}}
       {% if pathParamsCode -%}
       {% for name in pathParamsNamesList -%}
       , props{{name | property_accessor}}
