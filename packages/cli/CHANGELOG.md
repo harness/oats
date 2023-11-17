@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 2.2.0
+
+### Minor Changes
+
+- 1b747f4: Added log statement when import spec failed
+
 ## 2.1.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @harnessio/oats-plugin-react-query-harness
 
+## 1.0.0
+
+### Minor Changes
+
+- 29a6bcf: added unique operation id for grouped query hook
+
+### Patch Changes
+
+- Updated dependencies [1b747f4]
+  - @harnessio/oats-cli@2.2.0
+
 ## 0.6.0
 
 ### Minor Changes
