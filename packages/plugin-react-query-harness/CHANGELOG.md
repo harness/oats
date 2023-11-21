@@ -1,5 +1,16 @@
 # @harnessio/oats-plugin-react-query-harness
 
+## 1.1.0
+
+### Minor Changes
+
+- d08a43a: Added queryParams to the creation of the queryKey
+
+### Patch Changes
+
+- Updated dependencies [d08a43a]
+  - @harnessio/oats-cli@2.3.0
+
 ## 1.0.0
 
 ### Minor Changes
