@@ -40,6 +40,7 @@ export interface IProcessOperationReturn extends ICodeOutput {
 	errorResponseName: string;
 	pathParamsName: string;
 	pathParamsNamesList: string[];
+	queryParamsCode: string | null;
 }
 
 export function processSingleGroupedOperation(
@@ -142,6 +143,7 @@ export function processSingleGroupedOperation(
 		errorResponseName,
 		pathParamsName,
 		pathParamsNamesList,
+		queryParamsCode,
 	};
 }
 
@@ -174,6 +176,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 	const mutationPropsName = `${typeName}MutationProps`;
 	const scopedParams: Record<string, any> = {};
 	const pathParamsNamesList: string[] = [];
+	let queryParamsCode: string | null = null;
 
 	if (accountOperation) {
 		const accountOutput = processSingleGroupedOperation({
@@ -194,6 +197,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		scopedParams.accountOperation = accountOperation;
 		scopedParams.accountPath = accountOperation.path;
 		pathParamsNamesList.push(...accountOutput.pathParamsNamesList);
+		queryParamsCode = queryParamsCode || accountOutput.queryParamsCode;
 	}
 
 	if (orgOperation) {
@@ -215,6 +219,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		scopedParams.orgOperation = orgOperation;
 		scopedParams.orgPath = orgOperation.path;
 		pathParamsNamesList.push(...orgOutput.pathParamsNamesList);
+		queryParamsCode = queryParamsCode || orgOutput.queryParamsCode;
 	}
 
 	if (projectOperation) {
@@ -236,6 +241,7 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 		scopedParams.projectOperation = projectOperation;
 		scopedParams.projectPath = projectOperation.path;
 		pathParamsNamesList.push(...projOutput.pathParamsNamesList);
+		queryParamsCode = queryParamsCode || projOutput.queryParamsCode;
 	}
 
 	const fetcherName = `${camelCase(operationId)}`;
@@ -259,7 +265,12 @@ export function processScopedOperations(props: IProcessScopedOperationsProps): I
 	if (useMutation) {
 		code.push(liquid.renderSync(GROUPED_MUTATION_HOOK_TEMPLATE, templateProps));
 	} else {
-		code.push(liquid.renderSync(GROUPED_QUERY_HOOK_TEMPLATE, templateProps));
+		code.push(
+			liquid.renderSync(GROUPED_QUERY_HOOK_TEMPLATE, {
+				...templateProps,
+				queryParamsCode,
+			}),
+		);
 	}
 
 	imports.add(`import type { GetPathParamsType, ResponseWithPagination } from "../helpers";`);

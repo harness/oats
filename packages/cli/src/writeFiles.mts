@@ -86,6 +86,7 @@ export async function writeFiles(
 			logInfo(`Writing file: ${file.filepath}`);
 			await fs.promises.writeFile(path.resolve(output, file.filepath), formattedCode, 'utf8');
 		} catch (e) {
+			logError(`Error :  ${e}`);
 			logError(`Tried formatting and write the following code: ${file.code}`);
 			process.exit(1);
 		}
