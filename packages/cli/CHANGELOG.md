@@ -1,11 +1,5 @@
 # @harnessio/oats-cli
 
-## 2.3.0
-
-### Minor Changes
-
-- d08a43a: Added queryParams to the creation of the queryKey
-
 ## 2.2.0
 
 ### Minor Changes
