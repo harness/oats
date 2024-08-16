@@ -6,7 +6,13 @@ import type { OpenAPIV3 } from 'openapi-types';
 import yaml from 'js-yaml';
 
 import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
-import { _convertToOpenAPI, logInfo } from './helpers.mjs';
+import {
+	GITHUB_API_ENDPOINT_URL,
+	GITHUB_PAT,
+	_convertToOpenAPI,
+	b64DecodeUnicode,
+	logInfo,
+} from './helpers.mjs';
 import type { IServiceConfig } from './config.mjs';
 import type { IPluginReturn } from './plugin.mjs';
 
@@ -38,15 +44,26 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 
 		// transform the spec using given transformer
 	} else if (config.url) {
+		const abcd = '120-ng-manager/contracts/openapi/v1/openapi.yaml';
 		// read from URL
 		logInfo('Fetching data from URL');
-		const response = await fetch(config.url);
+		const response = await fetch(GITHUB_API_ENDPOINT_URL(abcd), {
+			headers: {
+				Authorization: `Bearer ${GITHUB_PAT}`,
+			},
+		});
 		const contentType = response.headers.get('Content-Type');
 		try {
 			logInfo('Parsing data from API');
 
-			if (contentType === 'application/json') {
-				spec = (await response.json()) as OpenAPIV3.Document;
+			if (contentType === 'application/json; charset=utf-8') {
+				const responseJson: any = await response.json();
+				const yamlContent = responseJson.content;
+				spec = yaml.load(b64DecodeUnicode(yamlContent), {
+					json: true,
+					schema: yaml.JSON_SCHEMA,
+				}) as OpenAPIV3.Document;
+
 				logInfo(`Detected format: JSON`);
 			} else {
 				const txt = await response.text();
