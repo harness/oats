@@ -39,23 +39,30 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 					? yaml.load(content, { json: true, schema: yaml.JSON_SCHEMA })
 					: JSON.parse(content);
 		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents');
+			throw new Error('Something went wrong while trying to parse contents from FILE');
 		}
 
 		// transform the spec using given transformer
 	} else if (config.url) {
-		const abcd = '120-ng-manager/contracts/openapi/v1/openapi.yaml';
 		// read from URL
 		logInfo('Fetching data from URL');
-		const response = await fetch(GITHUB_API_ENDPOINT_URL(abcd), {
-			headers: {
-				Authorization: `Bearer ${GITHUB_PAT}`,
-			},
+
+		if (!GITHUB_PAT) {
+			throw new Error('GITHUB PAT is not defined, please set GITHUB_PAT environment variable');
+		}
+
+		const configUrl = process.env.CI ? config.url : GITHUB_API_ENDPOINT_URL(config.url);
+		const configHeaders = process.env.CI
+			? {}
+			: { headers: { Authorization: `Bearer ${GITHUB_PAT}` } };
+
+		const response = await fetch(configUrl, {
+			...configHeaders,
 		});
+
 		const contentType = response.headers.get('Content-Type');
 		try {
 			logInfo('Parsing data from API');
-
 			if (contentType === 'application/json; charset=utf-8') {
 				const responseJson: any = await response.json();
 				const yamlContent = responseJson.content;
@@ -68,10 +75,11 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 			} else {
 				const txt = await response.text();
 				spec = yaml.load(txt) as OpenAPIV3.Document;
+
 				logInfo(`Detected format: YAML`);
 			}
 		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents');
+			throw new Error('Something went wrong while trying to parse contents from URL');
 		}
 	} else {
 		throw new Error('Neither file nor url provided');

@@ -10,10 +10,11 @@ import { has } from 'lodash-es';
 
 const DIR_NAME = getDirNameForCurrentFile(import.meta);
 
-export const GITHUB_PAT = process.env.GITHUB_PAT;
+// helpers when when working with url to generate service
 const DEFAULT_BRANCH = 'develop';
 const URL_PREFIX = 'https://api.github.com/repos/harness/harness-core/contents/';
-// const yamlPath = '120-ng-manager/contracts/openapi/v1/openapi.yaml';
+
+export const GITHUB_PAT = process.env.GITHUB_PAT;
 export const GITHUB_API_ENDPOINT_URL = (yamlPath: string) =>
 	`${URL_PREFIX}${yamlPath}?ref=${DEFAULT_BRANCH}`;
 
@@ -59,26 +60,6 @@ export function getDirNameForCurrentFile(meta: ImportMeta): string {
 
 export function pathToTemplate(val: string): string {
 	return val.replace(/\{/g, '${');
-}
-
-export async function readStreamContent(stream: any): Promise<string> {
-	const reader = stream.getReader();
-	let decoder = new TextDecoder(); // Use TextDecoder for text data
-
-	let result = '';
-	let done = false;
-
-	while (!done) {
-		const { value, done: streamDone } = await reader.read();
-		done = streamDone;
-
-		if (value) {
-			result += decoder.decode(value, { stream: !done });
-		}
-	}
-
-	reader.releaseLock();
-	return result;
 }
 
 export function b64DecodeUnicode(str: any) {
