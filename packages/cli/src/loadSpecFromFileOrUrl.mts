@@ -47,7 +47,7 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 		// read from URL
 		logInfo('Fetching data from URL');
 
-		if (!GITHUB_PAT && process.env.CI) {
+		if (!GITHUB_PAT && !process.env.CI) {
 			throw new Error('GITHUB PAT is not defined, please set GITHUB_PAT environment variable');
 		}
 
