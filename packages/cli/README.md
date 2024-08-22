@@ -39,14 +39,18 @@ Options:
 
 #### Environment Variables
 
-Consumer needs to pass these Environment Variables to fetch OpenAPI yaml of respective service from respective repository.
+Consumer needs to pass these environment variables to fetch OpenAPI yaml of respective service from respective repository.
+These should be kept in a .env file and keep the file in the root folder of consumer.
 
 **GITHUB_PAT**=GITHUB_PAT // Github Personal Access Token
-**ORGANIZATION**=ORGANIZATION //
-**REPO**=REPO //
-**DEFAULT_BRANCH**=DEFAULT_BRANCH //
 
-These variables are values to be passed in
+**ORGANIZATION**=ORGANIZATION // 'harness', 'wings-software' etc.
+
+**REPO**=REPO // 'harness-core' etc.
+
+**DEFAULT_BRANCH**=DEFAULT_BRANCH
+
+Use .env.example file in the current folder to quick start.
 
 ### import
 
