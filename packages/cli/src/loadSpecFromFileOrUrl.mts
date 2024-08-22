@@ -68,10 +68,7 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 			if (contentType === 'application/json; charset=utf-8') {
 				const responseJson: any = await response.json();
 				const yamlContent = responseJson.content;
-				spec = yaml.load(b64DecodeUnicode(yamlContent), {
-					json: true,
-					schema: yaml.JSON_SCHEMA,
-				}) as OpenAPIV3.Document;
+				spec = yaml.load(b64DecodeUnicode(yamlContent)) as OpenAPIV3.Document;
 
 				logInfo(`Detected format: JSON`);
 			} else {
