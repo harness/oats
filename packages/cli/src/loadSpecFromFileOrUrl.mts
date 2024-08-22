@@ -7,7 +7,7 @@ import yaml from 'js-yaml';
 
 import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
 import {
-	GITHUB_API_ENDPOINT_URL,
+	generateGithubApiEndpointUrl,
 	GITHUB_PAT,
 	_convertToOpenAPI,
 	b64DecodeUnicode,
@@ -48,10 +48,12 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 		logInfo('Fetching data from URL');
 
 		if (!GITHUB_PAT && !process.env.CI) {
-			throw new Error('GITHUB PAT is not defined, please set GITHUB_PAT environment variable');
+			throw new Error(
+				'GITHUB_PAT (Personal Access Token) is not defined, please set GITHUB_PAT environment variable',
+			);
 		}
 
-		const configUrl = process.env.CI ? config.url : GITHUB_API_ENDPOINT_URL(config.url);
+		const configUrl = process.env.CI ? config.url : generateGithubApiEndpointUrl(config.url);
 		const configHeaders = process.env.CI
 			? {}
 			: { headers: { Authorization: `Bearer ${GITHUB_PAT}` } };

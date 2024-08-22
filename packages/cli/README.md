@@ -37,6 +37,17 @@ Options:
 
 ### Available commands
 
+#### Environment Variables
+
+Consumer needs to pass these Environment Variables to fetch OpenAPI yaml of respective service from respective repository.
+
+**GITHUB_PAT**=GITHUB_PAT // Github Personal Access Token
+**ORGANIZATION**=ORGANIZATION //
+**REPO**=REPO //
+**DEFAULT_BRANCH**=DEFAULT_BRANCH //
+
+These variables are values to be passed in
+
 ### import
 
 ```

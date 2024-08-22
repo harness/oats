@@ -11,11 +11,14 @@ import { has } from 'lodash-es';
 const DIR_NAME = getDirNameForCurrentFile(import.meta);
 
 // helpers when when working with url to generate service
-const DEFAULT_BRANCH = 'develop';
-const URL_PREFIX = 'https://api.github.com/repos/harness/harness-core/contents/';
-
 export const GITHUB_PAT = process.env.GITHUB_PAT;
-export const GITHUB_API_ENDPOINT_URL = (yamlPath: string) =>
+const ORGANIZATION = process.env.ORGANIZATION || 'harness';
+const REPO = process.env.REPO || 'harness-core';
+const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || 'develop';
+
+const URL_PREFIX = `https://api.github.com/repos/${ORGANIZATION}/${REPO}/contents/`;
+
+export const generateGithubApiEndpointUrl = (yamlPath: string) =>
 	`${URL_PREFIX}${yamlPath}?ref=${DEFAULT_BRANCH}`;
 
 // internal function
