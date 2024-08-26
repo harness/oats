@@ -44,11 +44,11 @@ These should be kept in a .env file and keep the file in the root folder of cons
 
 **GITHUB_PAT**=GITHUB_PAT // Github Personal Access Token
 
-**ORGANIZATION**=ORGANIZATION // 'harness', 'wings-software' etc.
+**ORGANIZATION**=ORGANIZATION // harness, wings-software etc.
 
-**REPO**=REPO // 'harness-core' etc.
+**REPO**=REPO // harness-core etc.
 
-**DEFAULT_BRANCH**=DEFAULT_BRANCH
+**BRANCH**=BRANCH // develop, master etc.
 
 Use .env.example file in the current folder to quick start.
 

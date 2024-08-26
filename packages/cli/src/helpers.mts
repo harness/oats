@@ -14,12 +14,12 @@ const DIR_NAME = getDirNameForCurrentFile(import.meta);
 export const GITHUB_PAT = process.env.GITHUB_PAT;
 const ORGANIZATION = process.env.ORGANIZATION || 'harness';
 const REPO = process.env.REPO || 'harness-core';
-const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || 'develop';
+const BRANCH = process.env.BRANCH || 'develop';
 
 const URL_PREFIX = `https://api.github.com/repos/${ORGANIZATION}/${REPO}/contents/`;
 
 export const generateGithubApiEndpointUrl = (yamlPath: string) =>
-	`${URL_PREFIX}${yamlPath}?ref=${DEFAULT_BRANCH}`;
+	`${URL_PREFIX}${yamlPath}?ref=${BRANCH}`;
 
 // internal function
 export function _convertToOpenAPI(schema: unknown): Promise<OpenAPIV3.Document> {
