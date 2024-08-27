@@ -67,14 +67,18 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 			logInfo('Parsing data from API');
 			if (contentType === 'application/json; charset=utf-8') {
 				const responseJson: any = await response.json();
-				const yamlContent = responseJson.content;
-				spec = yaml.load(b64DecodeUnicode(yamlContent)) as OpenAPIV3.Document;
-
-				logInfo(`Detected format: JSON`);
+				const responseContent = responseJson.content;
+				const responseContentDecoded = b64DecodeUnicode(responseContent);
+				try {
+					spec = yaml.load(responseContentDecoded) as OpenAPIV3.Document;
+					logInfo(`Detected format: YAML`);
+				} catch (_) {
+					spec = JSON.parse(responseContentDecoded) as OpenAPIV3.Document;
+					logInfo(`Detected format: JSON`);
+				}
 			} else {
 				const txt = await response.text();
 				spec = yaml.load(txt) as OpenAPIV3.Document;
-
 				logInfo(`Detected format: YAML`);
 			}
 		} catch (_) {
