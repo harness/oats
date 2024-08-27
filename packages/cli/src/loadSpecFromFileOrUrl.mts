@@ -38,8 +38,8 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 				format === 'yaml'
 					? yaml.load(content, { json: true, schema: yaml.JSON_SCHEMA })
 					: JSON.parse(content);
-		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents from FILE');
+		} catch (error) {
+			throw new Error('Something went wrong while trying to parse contents from FILE' + error);
 		}
 
 		// transform the spec using given transformer
@@ -81,8 +81,8 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 				spec = yaml.load(txt) as OpenAPIV3.Document;
 				logInfo(`Detected format: YAML`);
 			}
-		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents from URL');
+		} catch (error) {
+			throw new Error('Something went wrong while trying to parse contents from URL' + error);
 		}
 	} else {
 		throw new Error('Neither file nor url provided');
