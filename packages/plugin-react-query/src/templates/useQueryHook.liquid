@@ -18,7 +18,10 @@ export function {{hookName}}(
     , props.body
     {%- endif %}
     ],
-    ({ signal }) => {{fetcherName}}({ ...props, signal }),
+    ({ signal }) => {
+      return {{fetcherName}}({ ...props, signal })
+        .then((response) => response);
+    },
     options
   );
 }
