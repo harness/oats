@@ -39,7 +39,12 @@ Omit<FetcherOptions<
   {%- endif %}
 }
 
-export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{okResponseName}}> {
+export interface {{fetcherPropsName}}ReturnValue {
+  content: {{okResponseName}}
+  headers: Record<string, any>
+}
+
+export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{fetcherPropsName}}ReturnValue> {
   return fetcher<
     {{okResponseName}},
     {% if queryParamsCode -%}{{queryParamsName}}{% else %}unknown{%- endif %},
