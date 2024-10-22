@@ -5,7 +5,7 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import type { PetRequestBody } from '../requestBodies/PetRequestBody';
-import { fetcher, FetcherOptions } from './fetcher';
+import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
 
 export type UpdatePetRequestBody = PetRequestBody;
 

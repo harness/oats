@@ -150,12 +150,8 @@ export type {
 	UploadFileRequestBody,
 } from './hooks/useUploadFileMutation';
 export { uploadFile, useUploadFileMutation } from './hooks/useUploadFileMutation';
-export type { PetRequestBody } from './requestBodies/PetRequestBody';
-export type { UserArrayRequestBody } from './requestBodies/UserArrayRequestBody';
-export type { Address } from './schemas/Address';
 export type { ApiResponse } from './schemas/ApiResponse';
 export type { Category } from './schemas/Category';
-export type { Customer } from './schemas/Customer';
 export type { Order } from './schemas/Order';
 export type { Pet } from './schemas/Pet';
 export type { Tag } from './schemas/Tag';

@@ -4,7 +4,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import type { User } from '../schemas/User';
-import { fetcher, FetcherOptions } from './fetcher';
+import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
 
 export interface GetUserByNameQueryPathParams {
 	username: string;
