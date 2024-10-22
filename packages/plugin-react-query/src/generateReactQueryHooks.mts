@@ -134,6 +134,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				headerParamsCode,
 				pathParamsNamesList: params.path.map((p) => p.name),
 				description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
+				typeName,
 			};
 
 			const code = [

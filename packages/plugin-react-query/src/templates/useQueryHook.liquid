@@ -1,9 +1,9 @@
 {{description}}
 export function {{hookName}}(
   props: {{fetcherPropsName}},
-  options?: Omit<UseQueryOptions<{{fetcherName}}ResponseContainer, {{errorResponseName}}>, 'queryKey' | 'queryFn'>
+  options?: Omit<UseQueryOptions<{{typeName}}ResponseContainer, {{errorResponseName}}>, 'queryKey' | 'queryFn'>
 ) {
-  return useQuery<{{fetcherName}}ResponseContainer, {{errorResponseName}}>(
+  return useQuery<{{typeName}}ResponseContainer, {{errorResponseName}}>(
     [
       {{operation.operationId | json}}
       {% if pathParamsCode -%}
