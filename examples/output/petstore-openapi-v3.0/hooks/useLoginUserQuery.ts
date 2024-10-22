@@ -19,7 +19,12 @@ export interface LoginUserProps
 	queryParams: LoginUserQueryQueryParams;
 }
 
-export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
+export interface LoginUserResponseContainer {
+	content: LoginUserOkResponse;
+	headers: Record<string, any>;
+}
+
+export function loginUser(props: LoginUserProps): Promise<LoginUserResponseContainer> {
 	return fetcher<LoginUserOkResponse, LoginUserQueryQueryParams, unknown>({
 		url: `/user/login`,
 		method: 'GET',
@@ -33,11 +38,11 @@ export function loginUser(props: LoginUserProps): Promise<LoginUserOkResponse> {
 export function useLoginUserQuery(
 	props: LoginUserProps,
 	options?: Omit<
-		UseQueryOptions<LoginUserOkResponse, LoginUserErrorResponse>,
+		UseQueryOptions<LoginUserResponseContainer, LoginUserErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<LoginUserOkResponse, LoginUserErrorResponse>(
+	return useQuery<LoginUserResponseContainer, LoginUserErrorResponse>(
 		['loginUser', props.queryParams],
 		({ signal }) => loginUser({ ...props, signal }),
 		options,

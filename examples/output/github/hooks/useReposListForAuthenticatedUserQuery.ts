@@ -59,9 +59,14 @@ export interface ReposListForAuthenticatedUserProps
 	queryParams: ReposListForAuthenticatedUserQueryQueryParams;
 }
 
+export interface ReposListForAuthenticatedUserResponseContainer {
+	content: ReposListForAuthenticatedUserOkResponse;
+	headers: Record<string, any>;
+}
+
 export function reposListForAuthenticatedUser(
 	props: ReposListForAuthenticatedUserProps,
-): Promise<ReposListForAuthenticatedUserOkResponse> {
+): Promise<ReposListForAuthenticatedUserResponseContainer> {
 	return fetcher<
 		ReposListForAuthenticatedUserOkResponse,
 		ReposListForAuthenticatedUserQueryQueryParams,
@@ -82,14 +87,14 @@ export function useReposListForAuthenticatedUserQuery(
 	props: ReposListForAuthenticatedUserProps,
 	options?: Omit<
 		UseQueryOptions<
-			ReposListForAuthenticatedUserOkResponse,
+			ReposListForAuthenticatedUserResponseContainer,
 			ReposListForAuthenticatedUserErrorResponse
 		>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
 	return useQuery<
-		ReposListForAuthenticatedUserOkResponse,
+		ReposListForAuthenticatedUserResponseContainer,
 		ReposListForAuthenticatedUserErrorResponse
 	>(
 		['repos/list-for-authenticated-user', props.queryParams],

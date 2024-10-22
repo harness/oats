@@ -11,7 +11,12 @@ export type GetInventoryErrorResponse = unknown;
 
 export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getInventory(props: GetInventoryProps): Promise<GetInventoryOkResponse> {
+export interface GetInventoryResponseContainer {
+	content: GetInventoryOkResponse;
+	headers: Record<string, any>;
+}
+
+export function getInventory(props: GetInventoryProps): Promise<GetInventoryResponseContainer> {
 	return fetcher<GetInventoryOkResponse, unknown, unknown>({
 		url: `/store/inventory`,
 		method: 'GET',
@@ -25,11 +30,11 @@ export function getInventory(props: GetInventoryProps): Promise<GetInventoryOkRe
 export function useGetInventoryQuery(
 	props: GetInventoryProps,
 	options?: Omit<
-		UseQueryOptions<GetInventoryOkResponse, GetInventoryErrorResponse>,
+		UseQueryOptions<GetInventoryResponseContainer, GetInventoryErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<GetInventoryOkResponse, GetInventoryErrorResponse>(
+	return useQuery<GetInventoryResponseContainer, GetInventoryErrorResponse>(
 		['getInventory'],
 		({ signal }) => getInventory({ ...props, signal }),
 		options,

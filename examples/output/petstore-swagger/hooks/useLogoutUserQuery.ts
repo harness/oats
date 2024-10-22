@@ -12,7 +12,12 @@ export type LogoutUserErrorResponse = unknown;
 
 export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function logoutUser(props: LogoutUserProps): Promise<LogoutUserOkResponse> {
+export interface LogoutUserResponseContainer {
+	content: LogoutUserOkResponse;
+	headers: Record<string, any>;
+}
+
+export function logoutUser(props: LogoutUserProps): Promise<LogoutUserResponseContainer> {
 	return fetcher<LogoutUserOkResponse, unknown, unknown>({
 		url: `/user/logout`,
 		method: 'GET',
@@ -26,11 +31,11 @@ export function logoutUser(props: LogoutUserProps): Promise<LogoutUserOkResponse
 export function useLogoutUserQuery(
 	props: LogoutUserProps,
 	options?: Omit<
-		UseQueryOptions<LogoutUserOkResponse, LogoutUserErrorResponse>,
+		UseQueryOptions<LogoutUserResponseContainer, LogoutUserErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<LogoutUserOkResponse, LogoutUserErrorResponse>(
+	return useQuery<LogoutUserResponseContainer, LogoutUserErrorResponse>(
 		['logoutUser'],
 		({ signal }) => logoutUser({ ...props, signal }),
 		options,

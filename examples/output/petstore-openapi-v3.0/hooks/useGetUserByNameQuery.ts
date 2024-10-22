@@ -18,7 +18,12 @@ export interface GetUserByNameProps
 	extends GetUserByNameQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameOkResponse> {
+export interface GetUserByNameResponseContainer {
+	content: GetUserByNameOkResponse;
+	headers: Record<string, any>;
+}
+
+export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameResponseContainer> {
 	return fetcher<GetUserByNameOkResponse, unknown, unknown>({
 		url: `/user/${props.username}`,
 		method: 'GET',
@@ -32,11 +37,11 @@ export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameO
 export function useGetUserByNameQuery(
 	props: GetUserByNameProps,
 	options?: Omit<
-		UseQueryOptions<GetUserByNameOkResponse, GetUserByNameErrorResponse>,
+		UseQueryOptions<GetUserByNameResponseContainer, GetUserByNameErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<GetUserByNameOkResponse, GetUserByNameErrorResponse>(
+	return useQuery<GetUserByNameResponseContainer, GetUserByNameErrorResponse>(
 		['getUserByName', props.username],
 		({ signal }) => getUserByName({ ...props, signal }),
 		options,

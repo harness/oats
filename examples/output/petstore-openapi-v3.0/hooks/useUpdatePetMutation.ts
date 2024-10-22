@@ -16,7 +16,12 @@ export interface UpdatePetProps extends Omit<FetcherOptions<unknown, UpdatePetRe
 	body: UpdatePetRequestBody;
 }
 
-export function updatePet(props: UpdatePetProps): Promise<UpdatePetOkResponse> {
+export interface UpdatePetResponseContainer {
+	content: UpdatePetOkResponse;
+	headers: Record<string, any>;
+}
+
+export function updatePet(props: UpdatePetProps): Promise<UpdatePetResponseContainer> {
 	return fetcher<UpdatePetOkResponse, unknown, UpdatePetRequestBody>({
 		url: `/pet`,
 		method: 'PUT',
@@ -33,11 +38,15 @@ export type UpdatePetMutationProps<T extends keyof UpdatePetProps> = Omit<Update
 export function useUpdatePetMutation<T extends keyof UpdatePetProps>(
 	props: Pick<Partial<UpdatePetProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UpdatePetOkResponse, UpdatePetErrorResponse, UpdatePetMutationProps<T>>,
+		UseMutationOptions<
+			UpdatePetResponseContainer,
+			UpdatePetErrorResponse,
+			UpdatePetMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdatePetOkResponse, UpdatePetErrorResponse, UpdatePetMutationProps<T>>(
+	return useMutation<UpdatePetResponseContainer, UpdatePetErrorResponse, UpdatePetMutationProps<T>>(
 		(mutateProps: UpdatePetMutationProps<T>) =>
 			updatePet({ ...props, ...mutateProps } as UpdatePetProps),
 		options,

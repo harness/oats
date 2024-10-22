@@ -18,7 +18,12 @@ export interface DeleteUserProps
 	extends DeleteUserMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function deleteUser(props: DeleteUserProps): Promise<DeleteUserOkResponse> {
+export interface DeleteUserResponseContainer {
+	content: DeleteUserOkResponse;
+	headers: Record<string, any>;
+}
+
+export function deleteUser(props: DeleteUserProps): Promise<DeleteUserResponseContainer> {
 	return fetcher<DeleteUserOkResponse, unknown, unknown>({
 		url: `/user/${props.username}`,
 		method: 'DELETE',
@@ -35,11 +40,19 @@ export type DeleteUserMutationProps<T extends keyof DeleteUserProps> = Omit<Dele
 export function useDeleteUserMutation<T extends keyof DeleteUserProps>(
 	props: Pick<Partial<DeleteUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<DeleteUserOkResponse, DeleteUserErrorResponse, DeleteUserMutationProps<T>>,
+		UseMutationOptions<
+			DeleteUserResponseContainer,
+			DeleteUserErrorResponse,
+			DeleteUserMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeleteUserOkResponse, DeleteUserErrorResponse, DeleteUserMutationProps<T>>(
+	return useMutation<
+		DeleteUserResponseContainer,
+		DeleteUserErrorResponse,
+		DeleteUserMutationProps<T>
+	>(
 		(mutateProps: DeleteUserMutationProps<T>) =>
 			deleteUser({ ...props, ...mutateProps } as DeleteUserProps),
 		options,

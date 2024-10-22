@@ -20,7 +20,12 @@ export interface DeleteOrderProps
 	extends DeleteOrderMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderOkResponse> {
+export interface DeleteOrderResponseContainer {
+	content: DeleteOrderOkResponse;
+	headers: Record<string, any>;
+}
+
+export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderResponseContainer> {
 	return fetcher<DeleteOrderOkResponse, unknown, unknown>({
 		url: `/store/order/${props.orderId}`,
 		method: 'DELETE',
@@ -38,14 +43,18 @@ export function useDeleteOrderMutation<T extends keyof DeleteOrderProps>(
 	props: Pick<Partial<DeleteOrderProps>, T>,
 	options?: Omit<
 		UseMutationOptions<
-			DeleteOrderOkResponse,
+			DeleteOrderResponseContainer,
 			DeleteOrderErrorResponse,
 			DeleteOrderMutationProps<T>
 		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeleteOrderOkResponse, DeleteOrderErrorResponse, DeleteOrderMutationProps<T>>(
+	return useMutation<
+		DeleteOrderResponseContainer,
+		DeleteOrderErrorResponse,
+		DeleteOrderMutationProps<T>
+	>(
 		(mutateProps: DeleteOrderMutationProps<T>) =>
 			deleteOrder({ ...props, ...mutateProps } as DeleteOrderProps),
 		options,

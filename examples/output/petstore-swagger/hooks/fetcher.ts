@@ -9,12 +9,29 @@ export interface FetcherOptions<TQueryParams = never, TBody = never, THeaderPara
 
 const JSON_HEADERS = ['application/json'];
 
+export interface PaginationHeaders {
+	total?: number | null;
+	totalPages?: number | null;
+	perPage?: number | null;
+	nextPage?: number | null;
+	prevPage?: number | null;
+}
+
+interface ResponseContainer<TResponse> {
+	content: TResponse;
+	headers: {
+		pagination: PaginationHeaders;
+	};
+}
+
 export async function fetcher<
 	TResponse = unknown,
 	TQueryParams = never,
 	TBody = never,
 	THeaderParams = HeadersInit,
->(options: FetcherOptions<TQueryParams, TBody, THeaderParams>): Promise<TResponse> {
+>(
+	options: FetcherOptions<TQueryParams, TBody, THeaderParams>,
+): Promise<ResponseContainer<TResponse>> {
 	const { body, url, queryParams, headers, ...rest } = options;
 
 	const response = await fetch(url, {

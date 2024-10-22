@@ -17,9 +17,14 @@ export interface CreateUsersWithListInputProps
 	body: CreateUsersWithListInputRequestBody;
 }
 
+export interface CreateUsersWithListInputResponseContainer {
+	content: CreateUsersWithListInputOkResponse;
+	headers: Record<string, any>;
+}
+
 export function createUsersWithListInput(
 	props: CreateUsersWithListInputProps,
-): Promise<CreateUsersWithListInputOkResponse> {
+): Promise<CreateUsersWithListInputResponseContainer> {
 	return fetcher<CreateUsersWithListInputOkResponse, unknown, CreateUsersWithListInputRequestBody>({
 		url: `/user/createWithList`,
 		method: 'POST',
@@ -37,7 +42,7 @@ export function useCreateUsersWithListInputMutation<T extends keyof CreateUsersW
 	props: Pick<Partial<CreateUsersWithListInputProps>, T>,
 	options?: Omit<
 		UseMutationOptions<
-			CreateUsersWithListInputOkResponse,
+			CreateUsersWithListInputResponseContainer,
 			CreateUsersWithListInputErrorResponse,
 			CreateUsersWithListInputMutationProps<T>
 		>,
@@ -45,7 +50,7 @@ export function useCreateUsersWithListInputMutation<T extends keyof CreateUsersW
 	>,
 ) {
 	return useMutation<
-		CreateUsersWithListInputOkResponse,
+		CreateUsersWithListInputResponseContainer,
 		CreateUsersWithListInputErrorResponse,
 		CreateUsersWithListInputMutationProps<T>
 	>(
