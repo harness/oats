@@ -4,7 +4,7 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import type { User } from '../schemas/User';
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export type CreateUsersWithListInputRequestBody = User[];
 

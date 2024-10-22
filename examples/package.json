@@ -5,7 +5,7 @@
   "type": "module",
   "private": "true",
   "scripts": {
-    "build": "oats import  --clean --config='./oats.config.ts'",
+    "build": "oats import  --clean",
     "postbuild": "exit 0 && tsc --noEmit",
     "lint": "eslint 'output/**/*.{mts,ts}'",
     "fmtc": "prettier --check 'output/**/*.{mts,ts}'",

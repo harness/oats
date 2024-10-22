@@ -3,7 +3,7 @@
 // Please do not modify this code directly.
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export interface DeleteUserMutationPathParams {
 	username: string;

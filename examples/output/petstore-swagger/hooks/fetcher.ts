@@ -1,3 +1,4 @@
+/* This is a sample header */
 export interface FetcherOptions<TQueryParams = never, TBody = never, THeaderParams = HeadersInit>
 	extends Omit<RequestInit, 'body' | 'headers'> {
 	url: string;
@@ -18,7 +19,9 @@ export async function fetcher<
 	TQueryParams = never,
 	TBody = never,
 	THeaderParams = HeadersInit,
->(options: FetcherOptions<TQueryParams, TBody, THeaderParams>): Promise<ResponseContainer<TResponse, Record<string, any>>> {
+>(
+	options: FetcherOptions<TQueryParams, TBody, THeaderParams>,
+): Promise<ResponseContainer<TResponse, Record<string, any>>> {
 	const { body, url, queryParams, headers, ...rest } = options;
 
 	const response = await fetch(url, {
@@ -37,8 +40,8 @@ export async function fetcher<
 
 	if (response.ok) {
 		return {
-			content: data, 
-			headers: {}
+			content: data,
+			headers: {},
 		};
 	}
 

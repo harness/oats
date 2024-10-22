@@ -4,7 +4,7 @@
 // Please do not modify this code directly.
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export type GetInventoryOkResponse = { [key: string]: number };
 

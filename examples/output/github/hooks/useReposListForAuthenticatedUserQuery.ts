@@ -8,7 +8,7 @@ import type { NotModifiedResponse } from '../responses/NotModifiedResponse';
 import type { RequiresAuthenticationResponse } from '../responses/RequiresAuthenticationResponse';
 import type { ForbiddenResponse } from '../responses/ForbiddenResponse';
 import type { ValidationFailedResponse } from '../responses/ValidationFailedResponse';
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export interface ReposListForAuthenticatedUserQueryQueryParams {
 	/**

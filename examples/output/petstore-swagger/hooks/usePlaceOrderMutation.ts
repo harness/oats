@@ -5,7 +5,7 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import type { Order } from '../schemas/Order';
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export type PlaceOrderRequestBody = Order;
 

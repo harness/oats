@@ -5,7 +5,7 @@
 import { useMutation, UseMutationOptions } from '@tanstack/react-query';
 
 import type { ApiResponse } from '../schemas/ApiResponse';
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export interface UploadFileMutationPathParams {
 	/**

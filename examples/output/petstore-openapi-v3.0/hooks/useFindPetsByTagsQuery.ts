@@ -4,7 +4,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
 import type { Pet } from '../schemas/Pet';
-import { fetcher, FetcherOptions } from '../../../../custom-fetcher/index.js';
+import { fetcher, FetcherOptions } from './fetcher';
 
 export interface FindPetsByTagsQueryQueryParams {
 	tags?: string[];
