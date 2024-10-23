@@ -41,7 +41,7 @@ Omit<FetcherOptions<
 
 export interface {{typeName}}ResponseContainer {
   content: {{okResponseName}}
-  headers: Record<string, any>
+  headers: HeadersInit
 }
 
 export function {{fetcherName}}(props: {{fetcherPropsName}}): Promise<{{typeName}}ResponseContainer> {
