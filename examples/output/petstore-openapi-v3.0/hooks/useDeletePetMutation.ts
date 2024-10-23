@@ -24,7 +24,12 @@ export interface DeletePetProps
 	extends DeletePetMutationPathParams,
 		Omit<FetcherOptions<unknown, unknown, DeletePetMutationHeaderParams>, 'url'> {}
 
-export function deletePet(props: DeletePetProps): Promise<DeletePetOkResponse> {
+export interface DeletePetResponseContainer {
+	content: DeletePetOkResponse;
+	headers: Record<string, any>;
+}
+
+export function deletePet(props: DeletePetProps): Promise<DeletePetResponseContainer> {
 	return fetcher<DeletePetOkResponse, unknown, unknown, DeletePetMutationHeaderParams>({
 		url: `/pet/${props.petId}`,
 		method: 'DELETE',
@@ -41,11 +46,15 @@ export type DeletePetMutationProps<T extends keyof DeletePetProps> = Omit<Delete
 export function useDeletePetMutation<T extends keyof DeletePetProps>(
 	props: Pick<Partial<DeletePetProps>, T>,
 	options?: Omit<
-		UseMutationOptions<DeletePetOkResponse, DeletePetErrorResponse, DeletePetMutationProps<T>>,
+		UseMutationOptions<
+			DeletePetResponseContainer,
+			DeletePetErrorResponse,
+			DeletePetMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<DeletePetOkResponse, DeletePetErrorResponse, DeletePetMutationProps<T>>(
+	return useMutation<DeletePetResponseContainer, DeletePetErrorResponse, DeletePetMutationProps<T>>(
 		(mutateProps: DeletePetMutationProps<T>) =>
 			deletePet({ ...props, ...mutateProps } as DeletePetProps),
 		options,

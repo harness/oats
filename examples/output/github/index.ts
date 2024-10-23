@@ -14,7 +14,6 @@ export type { RequiresAuthenticationResponse } from './responses/RequiresAuthent
 export type { ValidationFailedResponse } from './responses/ValidationFailedResponse';
 export type { BasicError } from './schemas/BasicError';
 export type { NullableLicenseSimple } from './schemas/NullableLicenseSimple';
-export type { NullableSimpleUser } from './schemas/NullableSimpleUser';
 export type { Repository } from './schemas/Repository';
 export type { SimpleUser } from './schemas/SimpleUser';
 export type { ValidationError } from './schemas/ValidationError';

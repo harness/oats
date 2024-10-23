@@ -40,6 +40,7 @@ export interface SimpleUser {
 	 */
 	html_url: string;
 	/**
+	 * @format int64
 	 * @example 1
 	 */
 	id: number;
@@ -90,4 +91,8 @@ export interface SimpleUser {
 	 * @example "https://api.github.com/users/octocat"
 	 */
 	url: string;
+	/**
+	 * @example "public"
+	 */
+	user_view_type?: string;
 }

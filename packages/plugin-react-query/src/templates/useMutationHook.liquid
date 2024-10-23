@@ -4,10 +4,10 @@ export type {{mutationPropsName}}<T extends keyof {{fetcherPropsName}}> = Omit<{
 {{description}}
 export function {{hookName}}<T extends keyof {{fetcherPropsName}}>(
   props: Pick<Partial<{{fetcherPropsName}}>, T>,
-  options?: Omit<UseMutationOptions<{{okResponseName}}, {{errorResponseName}},  {{mutationPropsName}}<T>>, 'mutationKey' | 'mutationFn'>
+  options?: Omit<UseMutationOptions<{{typeName}}ResponseContainer, {{errorResponseName}},  {{mutationPropsName}}<T>>, 'mutationKey' | 'mutationFn'>
 ) {
   return useMutation<
-    {{okResponseName}},
+    {{typeName}}ResponseContainer,
     {{errorResponseName}},
     {{mutationPropsName}}<T>
   >(

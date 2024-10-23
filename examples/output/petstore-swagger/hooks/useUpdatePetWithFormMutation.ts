@@ -25,9 +25,14 @@ export interface UpdatePetWithFormProps
 	body: UpdatePetWithFormRequestBody;
 }
 
+export interface UpdatePetWithFormResponseContainer {
+	content: UpdatePetWithFormOkResponse;
+	headers: Record<string, any>;
+}
+
 export function updatePetWithForm(
 	props: UpdatePetWithFormProps,
-): Promise<UpdatePetWithFormOkResponse> {
+): Promise<UpdatePetWithFormResponseContainer> {
 	return fetcher<UpdatePetWithFormOkResponse, unknown, UpdatePetWithFormRequestBody>({
 		url: `/pet/${props.petId}`,
 		method: 'POST',
@@ -48,7 +53,7 @@ export function useUpdatePetWithFormMutation<T extends keyof UpdatePetWithFormPr
 	props: Pick<Partial<UpdatePetWithFormProps>, T>,
 	options?: Omit<
 		UseMutationOptions<
-			UpdatePetWithFormOkResponse,
+			UpdatePetWithFormResponseContainer,
 			UpdatePetWithFormErrorResponse,
 			UpdatePetWithFormMutationProps<T>
 		>,
@@ -56,7 +61,7 @@ export function useUpdatePetWithFormMutation<T extends keyof UpdatePetWithFormPr
 	>,
 ) {
 	return useMutation<
-		UpdatePetWithFormOkResponse,
+		UpdatePetWithFormResponseContainer,
 		UpdatePetWithFormErrorResponse,
 		UpdatePetWithFormMutationProps<T>
 	>(

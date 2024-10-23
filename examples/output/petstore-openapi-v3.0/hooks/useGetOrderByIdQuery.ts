@@ -21,7 +21,12 @@ export interface GetOrderByIdProps
 	extends GetOrderByIdQueryPathParams,
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
-export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkResponse> {
+export interface GetOrderByIdResponseContainer {
+	content: GetOrderByIdOkResponse;
+	headers: Record<string, any>;
+}
+
+export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdResponseContainer> {
 	return fetcher<GetOrderByIdOkResponse, unknown, unknown>({
 		url: `/store/order/${props.orderId}`,
 		method: 'GET',
@@ -35,11 +40,11 @@ export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdOkRe
 export function useGetOrderByIdQuery(
 	props: GetOrderByIdProps,
 	options?: Omit<
-		UseQueryOptions<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>,
+		UseQueryOptions<GetOrderByIdResponseContainer, GetOrderByIdErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<GetOrderByIdOkResponse, GetOrderByIdErrorResponse>(
+	return useQuery<GetOrderByIdResponseContainer, GetOrderByIdErrorResponse>(
 		['getOrderById', props.orderId],
 		({ signal }) => getOrderById({ ...props, signal }),
 		options,

@@ -18,7 +18,12 @@ export interface PlaceOrderProps
 	body: PlaceOrderRequestBody;
 }
 
-export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderOkResponse> {
+export interface PlaceOrderResponseContainer {
+	content: PlaceOrderOkResponse;
+	headers: Record<string, any>;
+}
+
+export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderResponseContainer> {
 	return fetcher<PlaceOrderOkResponse, unknown, PlaceOrderRequestBody>({
 		url: `/store/order`,
 		method: 'POST',
@@ -35,11 +40,19 @@ export type PlaceOrderMutationProps<T extends keyof PlaceOrderProps> = Omit<Plac
 export function usePlaceOrderMutation<T extends keyof PlaceOrderProps>(
 	props: Pick<Partial<PlaceOrderProps>, T>,
 	options?: Omit<
-		UseMutationOptions<PlaceOrderOkResponse, PlaceOrderErrorResponse, PlaceOrderMutationProps<T>>,
+		UseMutationOptions<
+			PlaceOrderResponseContainer,
+			PlaceOrderErrorResponse,
+			PlaceOrderMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<PlaceOrderOkResponse, PlaceOrderErrorResponse, PlaceOrderMutationProps<T>>(
+	return useMutation<
+		PlaceOrderResponseContainer,
+		PlaceOrderErrorResponse,
+		PlaceOrderMutationProps<T>
+	>(
 		(mutateProps: PlaceOrderMutationProps<T>) =>
 			placeOrder({ ...props, ...mutateProps } as PlaceOrderProps),
 		options,

@@ -26,7 +26,12 @@ export interface UploadFileProps
 	body: UploadFileRequestBody;
 }
 
-export function uploadFile(props: UploadFileProps): Promise<UploadFileOkResponse> {
+export interface UploadFileResponseContainer {
+	content: UploadFileOkResponse;
+	headers: Record<string, any>;
+}
+
+export function uploadFile(props: UploadFileProps): Promise<UploadFileResponseContainer> {
 	return fetcher<UploadFileOkResponse, unknown, UploadFileRequestBody>({
 		url: `/pet/${props.petId}/uploadImage`,
 		method: 'POST',
@@ -43,11 +48,19 @@ export type UploadFileMutationProps<T extends keyof UploadFileProps> = Omit<Uplo
 export function useUploadFileMutation<T extends keyof UploadFileProps>(
 	props: Pick<Partial<UploadFileProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UploadFileOkResponse, UploadFileErrorResponse, UploadFileMutationProps<T>>,
+		UseMutationOptions<
+			UploadFileResponseContainer,
+			UploadFileErrorResponse,
+			UploadFileMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UploadFileOkResponse, UploadFileErrorResponse, UploadFileMutationProps<T>>(
+	return useMutation<
+		UploadFileResponseContainer,
+		UploadFileErrorResponse,
+		UploadFileMutationProps<T>
+	>(
 		(mutateProps: UploadFileMutationProps<T>) =>
 			uploadFile({ ...props, ...mutateProps } as UploadFileProps),
 		options,

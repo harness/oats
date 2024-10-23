@@ -22,9 +22,14 @@ export interface FindPetsByStatusProps
 	queryParams: FindPetsByStatusQueryQueryParams;
 }
 
+export interface FindPetsByStatusResponseContainer {
+	content: FindPetsByStatusOkResponse;
+	headers: Record<string, any>;
+}
+
 export function findPetsByStatus(
 	props: FindPetsByStatusProps,
-): Promise<FindPetsByStatusOkResponse> {
+): Promise<FindPetsByStatusResponseContainer> {
 	return fetcher<FindPetsByStatusOkResponse, FindPetsByStatusQueryQueryParams, unknown>({
 		url: `/pet/findByStatus`,
 		method: 'GET',
@@ -38,11 +43,11 @@ export function findPetsByStatus(
 export function useFindPetsByStatusQuery(
 	props: FindPetsByStatusProps,
 	options?: Omit<
-		UseQueryOptions<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>,
+		UseQueryOptions<FindPetsByStatusResponseContainer, FindPetsByStatusErrorResponse>,
 		'queryKey' | 'queryFn'
 	>,
 ) {
-	return useQuery<FindPetsByStatusOkResponse, FindPetsByStatusErrorResponse>(
+	return useQuery<FindPetsByStatusResponseContainer, FindPetsByStatusErrorResponse>(
 		['findPetsByStatus', props.queryParams],
 		({ signal }) => findPetsByStatus({ ...props, signal }),
 		options,

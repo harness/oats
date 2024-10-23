@@ -17,7 +17,12 @@ export interface CreateUserProps
 	body: CreateUserRequestBody;
 }
 
-export function createUser(props: CreateUserProps): Promise<CreateUserOkResponse> {
+export interface CreateUserResponseContainer {
+	content: CreateUserOkResponse;
+	headers: Record<string, any>;
+}
+
+export function createUser(props: CreateUserProps): Promise<CreateUserResponseContainer> {
 	return fetcher<CreateUserOkResponse, unknown, CreateUserRequestBody>({
 		url: `/user`,
 		method: 'POST',
@@ -34,11 +39,19 @@ export type CreateUserMutationProps<T extends keyof CreateUserProps> = Omit<Crea
 export function useCreateUserMutation<T extends keyof CreateUserProps>(
 	props: Pick<Partial<CreateUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<CreateUserOkResponse, CreateUserErrorResponse, CreateUserMutationProps<T>>,
+		UseMutationOptions<
+			CreateUserResponseContainer,
+			CreateUserErrorResponse,
+			CreateUserMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<CreateUserOkResponse, CreateUserErrorResponse, CreateUserMutationProps<T>>(
+	return useMutation<
+		CreateUserResponseContainer,
+		CreateUserErrorResponse,
+		CreateUserMutationProps<T>
+	>(
 		(mutateProps: CreateUserMutationProps<T>) =>
 			createUser({ ...props, ...mutateProps } as CreateUserProps),
 		options,

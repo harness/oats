@@ -23,7 +23,12 @@ export interface UpdateUserProps
 	body: UpdateUserRequestBody;
 }
 
-export function updateUser(props: UpdateUserProps): Promise<UpdateUserOkResponse> {
+export interface UpdateUserResponseContainer {
+	content: UpdateUserOkResponse;
+	headers: Record<string, any>;
+}
+
+export function updateUser(props: UpdateUserProps): Promise<UpdateUserResponseContainer> {
 	return fetcher<UpdateUserOkResponse, unknown, UpdateUserRequestBody>({
 		url: `/user/${props.username}`,
 		method: 'PUT',
@@ -40,11 +45,19 @@ export type UpdateUserMutationProps<T extends keyof UpdateUserProps> = Omit<Upda
 export function useUpdateUserMutation<T extends keyof UpdateUserProps>(
 	props: Pick<Partial<UpdateUserProps>, T>,
 	options?: Omit<
-		UseMutationOptions<UpdateUserOkResponse, UpdateUserErrorResponse, UpdateUserMutationProps<T>>,
+		UseMutationOptions<
+			UpdateUserResponseContainer,
+			UpdateUserErrorResponse,
+			UpdateUserMutationProps<T>
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) {
-	return useMutation<UpdateUserOkResponse, UpdateUserErrorResponse, UpdateUserMutationProps<T>>(
+	return useMutation<
+		UpdateUserResponseContainer,
+		UpdateUserErrorResponse,
+		UpdateUserMutationProps<T>
+	>(
 		(mutateProps: UpdateUserMutationProps<T>) =>
 			updateUser({ ...props, ...mutateProps } as UpdateUserProps),
 		options,

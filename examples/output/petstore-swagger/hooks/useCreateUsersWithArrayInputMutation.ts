@@ -18,9 +18,14 @@ export interface CreateUsersWithArrayInputProps
 	body: CreateUsersWithArrayInputRequestBody;
 }
 
+export interface CreateUsersWithArrayInputResponseContainer {
+	content: CreateUsersWithArrayInputOkResponse;
+	headers: Record<string, any>;
+}
+
 export function createUsersWithArrayInput(
 	props: CreateUsersWithArrayInputProps,
-): Promise<CreateUsersWithArrayInputOkResponse> {
+): Promise<CreateUsersWithArrayInputResponseContainer> {
 	return fetcher<
 		CreateUsersWithArrayInputOkResponse,
 		unknown,
@@ -44,7 +49,7 @@ export function useCreateUsersWithArrayInputMutation<
 	props: Pick<Partial<CreateUsersWithArrayInputProps>, T>,
 	options?: Omit<
 		UseMutationOptions<
-			CreateUsersWithArrayInputOkResponse,
+			CreateUsersWithArrayInputResponseContainer,
 			CreateUsersWithArrayInputErrorResponse,
 			CreateUsersWithArrayInputMutationProps<T>
 		>,
@@ -52,7 +57,7 @@ export function useCreateUsersWithArrayInputMutation<
 	>,
 ) {
 	return useMutation<
-		CreateUsersWithArrayInputOkResponse,
+		CreateUsersWithArrayInputResponseContainer,
 		CreateUsersWithArrayInputErrorResponse,
 		CreateUsersWithArrayInputMutationProps<T>
 	>(
