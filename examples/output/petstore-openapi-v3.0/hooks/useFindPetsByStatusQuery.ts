@@ -24,7 +24,7 @@ export interface FindPetsByStatusProps
 
 export interface FindPetsByStatusResponseContainer {
 	content: FindPetsByStatusOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function findPetsByStatus(

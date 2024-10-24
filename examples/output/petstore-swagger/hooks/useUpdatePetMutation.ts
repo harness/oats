@@ -19,7 +19,7 @@ export interface UpdatePetProps extends Omit<FetcherOptions<unknown, UpdatePetRe
 
 export interface UpdatePetResponseContainer {
 	content: UpdatePetOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function updatePet(props: UpdatePetProps): Promise<UpdatePetResponseContainer> {

@@ -20,7 +20,7 @@ export interface PlaceOrderProps
 
 export interface PlaceOrderResponseContainer {
 	content: PlaceOrderOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function placeOrder(props: PlaceOrderProps): Promise<PlaceOrderResponseContainer> {

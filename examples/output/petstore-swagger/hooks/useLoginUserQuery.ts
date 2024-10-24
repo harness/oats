@@ -22,7 +22,7 @@ export interface LoginUserProps
 
 export interface LoginUserResponseContainer {
 	content: LoginUserOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function loginUser(props: LoginUserProps): Promise<LoginUserResponseContainer> {
