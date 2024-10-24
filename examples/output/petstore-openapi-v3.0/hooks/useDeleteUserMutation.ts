@@ -19,7 +19,7 @@ export interface DeleteUserProps
 
 export interface DeleteUserResponseContainer {
 	content: DeleteUserOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function deleteUser(props: DeleteUserProps): Promise<DeleteUserResponseContainer> {

@@ -13,7 +13,7 @@ export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 
 
 export interface LogoutUserResponseContainer {
 	content: LogoutUserOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function logoutUser(props: LogoutUserProps): Promise<LogoutUserResponseContainer> {

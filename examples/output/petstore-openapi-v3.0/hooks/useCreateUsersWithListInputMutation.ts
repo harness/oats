@@ -19,7 +19,7 @@ export interface CreateUsersWithListInputProps
 
 export interface CreateUsersWithListInputResponseContainer {
 	content: CreateUsersWithListInputOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function createUsersWithListInput(

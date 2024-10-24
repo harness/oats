@@ -25,7 +25,7 @@ export interface UpdateUserProps
 
 export interface UpdateUserResponseContainer {
 	content: UpdateUserOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function updateUser(props: UpdateUserProps): Promise<UpdateUserResponseContainer> {

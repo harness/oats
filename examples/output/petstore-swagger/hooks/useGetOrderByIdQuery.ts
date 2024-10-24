@@ -24,7 +24,7 @@ export interface GetOrderByIdProps
 
 export interface GetOrderByIdResponseContainer {
 	content: GetOrderByIdOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdResponseContainer> {

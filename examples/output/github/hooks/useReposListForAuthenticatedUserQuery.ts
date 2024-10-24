@@ -61,7 +61,7 @@ export interface ReposListForAuthenticatedUserProps
 
 export interface ReposListForAuthenticatedUserResponseContainer {
 	content: ReposListForAuthenticatedUserOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function reposListForAuthenticatedUser(

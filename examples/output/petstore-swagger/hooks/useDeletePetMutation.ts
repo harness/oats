@@ -27,7 +27,7 @@ export interface DeletePetProps
 
 export interface DeletePetResponseContainer {
 	content: DeletePetOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function deletePet(props: DeletePetProps): Promise<DeletePetResponseContainer> {

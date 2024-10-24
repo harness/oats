@@ -24,7 +24,7 @@ export interface GetPetByIdProps
 
 export interface GetPetByIdResponseContainer {
 	content: GetPetByIdOkResponse;
-	headers: Record<string, any>;
+	headers: HeadersInit;
 }
 
 export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdResponseContainer> {
