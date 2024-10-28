@@ -18,7 +18,7 @@ export interface CreateUserProps
 }
 
 export interface CreateUserResponseContainer {
-	content: CreateUserOkResponse;
+	body: CreateUserOkResponse;
 	headers: Headers;
 }
 

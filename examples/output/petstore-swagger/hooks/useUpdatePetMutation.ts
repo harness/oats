@@ -18,7 +18,7 @@ export interface UpdatePetProps extends Omit<FetcherOptions<unknown, UpdatePetRe
 }
 
 export interface UpdatePetResponseContainer {
-	content: UpdatePetOkResponse;
+	body: UpdatePetOkResponse;
 	headers: Headers;
 }
 

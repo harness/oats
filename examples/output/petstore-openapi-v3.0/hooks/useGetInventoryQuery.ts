@@ -12,7 +12,7 @@ export type GetInventoryErrorResponse = unknown;
 export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetInventoryResponseContainer {
-	content: GetInventoryOkResponse;
+	body: GetInventoryOkResponse;
 	headers: Headers;
 }
 

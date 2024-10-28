@@ -19,7 +19,7 @@ export interface CreateUsersWithArrayInputProps
 }
 
 export interface CreateUsersWithArrayInputResponseContainer {
-	content: CreateUsersWithArrayInputOkResponse;
+	body: CreateUsersWithArrayInputOkResponse;
 	headers: Headers;
 }
 

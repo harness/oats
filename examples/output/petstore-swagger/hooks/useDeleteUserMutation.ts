@@ -19,7 +19,7 @@ export interface DeleteUserProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface DeleteUserResponseContainer {
-	content: DeleteUserOkResponse;
+	body: DeleteUserOkResponse;
 	headers: Headers;
 }
 

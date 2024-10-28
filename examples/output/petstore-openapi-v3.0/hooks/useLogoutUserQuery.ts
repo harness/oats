@@ -12,7 +12,7 @@ export type LogoutUserErrorResponse = unknown;
 export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface LogoutUserResponseContainer {
-	content: LogoutUserOkResponse;
+	body: LogoutUserOkResponse;
 	headers: Headers;
 }
 

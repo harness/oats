@@ -21,7 +21,7 @@ export interface LoginUserProps
 }
 
 export interface LoginUserResponseContainer {
-	content: LoginUserOkResponse;
+	body: LoginUserOkResponse;
 	headers: Headers;
 }
 

@@ -23,7 +23,7 @@ export interface GetOrderByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetOrderByIdResponseContainer {
-	content: GetOrderByIdOkResponse;
+	body: GetOrderByIdOkResponse;
 	headers: Headers;
 }
 

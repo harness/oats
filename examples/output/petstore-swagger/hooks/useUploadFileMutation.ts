@@ -27,7 +27,7 @@ export interface UploadFileProps
 }
 
 export interface UploadFileResponseContainer {
-	content: UploadFileOkResponse;
+	body: UploadFileOkResponse;
 	headers: Headers;
 }
 

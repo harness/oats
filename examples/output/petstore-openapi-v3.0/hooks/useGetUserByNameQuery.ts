@@ -19,7 +19,7 @@ export interface GetUserByNameProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetUserByNameResponseContainer {
-	content: GetUserByNameOkResponse;
+	body: GetUserByNameOkResponse;
 	headers: Headers;
 }
 

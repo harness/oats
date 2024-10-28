@@ -22,7 +22,7 @@ export interface GetPetByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetPetByIdResponseContainer {
-	content: GetPetByIdOkResponse;
+	body: GetPetByIdOkResponse;
 	headers: Headers;
 }
 

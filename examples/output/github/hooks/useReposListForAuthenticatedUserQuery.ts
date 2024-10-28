@@ -60,7 +60,7 @@ export interface ReposListForAuthenticatedUserProps
 }
 
 export interface ReposListForAuthenticatedUserResponseContainer {
-	content: ReposListForAuthenticatedUserOkResponse;
+	body: ReposListForAuthenticatedUserOkResponse;
 	headers: Headers;
 }
 

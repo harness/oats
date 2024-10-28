@@ -28,7 +28,7 @@ export interface UpdatePetWithFormProps
 }
 
 export interface UpdatePetWithFormResponseContainer {
-	content: UpdatePetWithFormOkResponse;
+	body: UpdatePetWithFormOkResponse;
 	headers: Headers;
 }
 

@@ -21,7 +21,7 @@ export interface FindPetsByTagsProps
 }
 
 export interface FindPetsByTagsResponseContainer {
-	content: FindPetsByTagsOkResponse;
+	body: FindPetsByTagsOkResponse;
 	headers: Headers;
 }
 

@@ -21,7 +21,7 @@ export interface DeleteOrderProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface DeleteOrderResponseContainer {
-	content: DeleteOrderOkResponse;
+	body: DeleteOrderOkResponse;
 	headers: Headers;
 }
 

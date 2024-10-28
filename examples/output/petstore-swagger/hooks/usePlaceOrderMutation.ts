@@ -19,7 +19,7 @@ export interface PlaceOrderProps
 }
 
 export interface PlaceOrderResponseContainer {
-	content: PlaceOrderOkResponse;
+	body: PlaceOrderOkResponse;
 	headers: Headers;
 }
 

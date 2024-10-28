@@ -9,7 +9,7 @@ export interface FetcherOptions<TQueryParams = never, TBody = never, THeaderPara
 const JSON_HEADERS = ['application/json'];
 
 interface ResponseContainer<TResponse, TResponseHeaders> {
-	content: TResponse;
+	body: TResponse;
 	headers: TResponseHeaders;
 }
 
@@ -39,7 +39,7 @@ export async function fetcher<
 
 	if (response.ok) {
 		return {
-			content: data,
+			body: data,
 			headers: response.headers,
 		};
 	}

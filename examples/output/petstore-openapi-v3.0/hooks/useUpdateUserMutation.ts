@@ -23,7 +23,7 @@ export interface UpdateUserProps
 }
 
 export interface UpdateUserResponseContainer {
-	content: UpdateUserOkResponse;
+	body: UpdateUserOkResponse;
 	headers: Headers;
 }
 

@@ -25,7 +25,7 @@ export interface DeletePetProps
 		Omit<FetcherOptions<unknown, unknown, DeletePetMutationHeaderParams>, 'url'> {}
 
 export interface DeletePetResponseContainer {
-	content: DeletePetOkResponse;
+	body: DeletePetOkResponse;
 	headers: Headers;
 }
 
