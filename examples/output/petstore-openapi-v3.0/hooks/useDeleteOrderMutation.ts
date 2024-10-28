@@ -22,7 +22,7 @@ export interface DeleteOrderProps
 
 export interface DeleteOrderResponseContainer {
 	content: DeleteOrderOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function deleteOrder(props: DeleteOrderProps): Promise<DeleteOrderResponseContainer> {

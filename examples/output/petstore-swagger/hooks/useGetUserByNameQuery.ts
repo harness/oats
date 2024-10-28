@@ -21,7 +21,7 @@ export interface GetUserByNameProps
 
 export interface GetUserByNameResponseContainer {
 	content: GetUserByNameOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameResponseContainer> {

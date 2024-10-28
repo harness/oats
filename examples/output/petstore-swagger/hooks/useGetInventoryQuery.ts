@@ -14,7 +14,7 @@ export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>
 
 export interface GetInventoryResponseContainer {
 	content: GetInventoryOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function getInventory(props: GetInventoryProps): Promise<GetInventoryResponseContainer> {

@@ -32,7 +32,7 @@ export interface UploadFileProps
 
 export interface UploadFileResponseContainer {
 	content: UploadFileOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function uploadFile(props: UploadFileProps): Promise<UploadFileResponseContainer> {

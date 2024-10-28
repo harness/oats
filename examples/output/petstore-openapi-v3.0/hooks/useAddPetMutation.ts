@@ -18,7 +18,7 @@ export interface AddPetProps extends Omit<FetcherOptions<unknown, AddPetRequestB
 
 export interface AddPetResponseContainer {
 	content: AddPetOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function addPet(props: AddPetProps): Promise<AddPetResponseContainer> {

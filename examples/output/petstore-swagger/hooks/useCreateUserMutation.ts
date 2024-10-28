@@ -20,7 +20,7 @@ export interface CreateUserProps
 
 export interface CreateUserResponseContainer {
 	content: CreateUserOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function createUser(props: CreateUserProps): Promise<CreateUserResponseContainer> {

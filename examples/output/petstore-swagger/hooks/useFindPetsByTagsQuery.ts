@@ -22,7 +22,7 @@ export interface FindPetsByTagsProps
 
 export interface FindPetsByTagsResponseContainer {
 	content: FindPetsByTagsOkResponse;
-	headers: HeadersInit;
+	headers: Headers;
 }
 
 export function findPetsByTags(

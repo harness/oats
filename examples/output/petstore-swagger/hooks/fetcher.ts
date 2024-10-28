@@ -21,7 +21,7 @@ export async function fetcher<
 	THeaderParams = HeadersInit,
 >(
 	options: FetcherOptions<TQueryParams, TBody, THeaderParams>,
-): Promise<ResponseContainer<TResponse, Record<string, any>>> {
+): Promise<ResponseContainer<TResponse, Headers>> {
 	const { body, url, queryParams, headers, ...rest } = options;
 
 	const response = await fetch(url, {
@@ -41,7 +41,7 @@ export async function fetcher<
 	if (response.ok) {
 		return {
 			content: data,
-			headers: {},
+			headers: response.headers,
 		};
 	}
 
