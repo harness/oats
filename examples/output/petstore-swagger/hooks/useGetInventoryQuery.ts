@@ -13,8 +13,8 @@ export type GetInventoryErrorResponse = unknown;
 export interface GetInventoryProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetInventoryResponseContainer {
-	content: GetInventoryOkResponse;
-	headers: Record<string, any>;
+	body: GetInventoryOkResponse;
+	headers: Headers;
 }
 
 export function getInventory(props: GetInventoryProps): Promise<GetInventoryResponseContainer> {

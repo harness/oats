@@ -21,8 +21,8 @@ export interface LoginUserProps
 }
 
 export interface LoginUserResponseContainer {
-	content: LoginUserOkResponse;
-	headers: Record<string, any>;
+	body: LoginUserOkResponse;
+	headers: Headers;
 }
 
 export function loginUser(props: LoginUserProps): Promise<LoginUserResponseContainer> {

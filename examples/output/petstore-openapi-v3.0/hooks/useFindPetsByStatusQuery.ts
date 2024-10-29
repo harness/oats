@@ -23,8 +23,8 @@ export interface FindPetsByStatusProps
 }
 
 export interface FindPetsByStatusResponseContainer {
-	content: FindPetsByStatusOkResponse;
-	headers: Record<string, any>;
+	body: FindPetsByStatusOkResponse;
+	headers: Headers;
 }
 
 export function findPetsByStatus(

@@ -22,8 +22,8 @@ export interface GetOrderByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetOrderByIdResponseContainer {
-	content: GetOrderByIdOkResponse;
-	headers: Record<string, any>;
+	body: GetOrderByIdOkResponse;
+	headers: Headers;
 }
 
 export function getOrderById(props: GetOrderByIdProps): Promise<GetOrderByIdResponseContainer> {

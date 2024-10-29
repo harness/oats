@@ -1,6 +1,6 @@
 {
   "name": "@harnessio/oats-plugin-react-query",
-  "version": "4.0.3",
+  "version": "5.0.0",
   "license": "MIT",
   "type": "module",
   "repository": {

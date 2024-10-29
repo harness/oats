@@ -23,8 +23,8 @@ export interface GetPetByIdProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetPetByIdResponseContainer {
-	content: GetPetByIdOkResponse;
-	headers: Record<string, any>;
+	body: GetPetByIdOkResponse;
+	headers: Headers;
 }
 
 export function getPetById(props: GetPetByIdProps): Promise<GetPetByIdResponseContainer> {

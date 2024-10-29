@@ -21,8 +21,8 @@ export interface FindPetsByTagsProps
 }
 
 export interface FindPetsByTagsResponseContainer {
-	content: FindPetsByTagsOkResponse;
-	headers: Record<string, any>;
+	body: FindPetsByTagsOkResponse;
+	headers: Headers;
 }
 
 export function findPetsByTags(

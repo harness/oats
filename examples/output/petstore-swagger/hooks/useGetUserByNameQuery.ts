@@ -20,8 +20,8 @@ export interface GetUserByNameProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface GetUserByNameResponseContainer {
-	content: GetUserByNameOkResponse;
-	headers: Record<string, any>;
+	body: GetUserByNameOkResponse;
+	headers: Headers;
 }
 
 export function getUserByName(props: GetUserByNameProps): Promise<GetUserByNameResponseContainer> {

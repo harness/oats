@@ -10,7 +10,7 @@ export interface FetcherOptions<TQueryParams = never, TBody = never, THeaderPara
 const JSON_HEADERS = ['application/json'];
 
 interface ResponseContainer<TResponse, TResponseHeaders> {
-	content: TResponse;
+	body: TResponse;
 	headers: TResponseHeaders;
 }
 
@@ -21,7 +21,7 @@ export async function fetcher<
 	THeaderParams = HeadersInit,
 >(
 	options: FetcherOptions<TQueryParams, TBody, THeaderParams>,
-): Promise<ResponseContainer<TResponse, Record<string, any>>> {
+): Promise<ResponseContainer<TResponse, Headers>> {
 	const { body, url, queryParams, headers, ...rest } = options;
 
 	const response = await fetch(url, {
@@ -40,8 +40,8 @@ export async function fetcher<
 
 	if (response.ok) {
 		return {
-			content: data,
-			headers: {},
+			body: data,
+			headers: response.headers,
 		};
 	}
 

@@ -26,8 +26,8 @@ export interface DeletePetProps
 		Omit<FetcherOptions<unknown, unknown, DeletePetMutationHeaderParams>, 'url'> {}
 
 export interface DeletePetResponseContainer {
-	content: DeletePetOkResponse;
-	headers: Record<string, any>;
+	body: DeletePetOkResponse;
+	headers: Headers;
 }
 
 export function deletePet(props: DeletePetProps): Promise<DeletePetResponseContainer> {

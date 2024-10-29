@@ -19,8 +19,8 @@ export interface CreateUsersWithArrayInputProps
 }
 
 export interface CreateUsersWithArrayInputResponseContainer {
-	content: CreateUsersWithArrayInputOkResponse;
-	headers: Record<string, any>;
+	body: CreateUsersWithArrayInputOkResponse;
+	headers: Headers;
 }
 
 export function createUsersWithArrayInput(

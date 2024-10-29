@@ -19,8 +19,8 @@ export interface DeleteUserProps
 		Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface DeleteUserResponseContainer {
-	content: DeleteUserOkResponse;
-	headers: Record<string, any>;
+	body: DeleteUserOkResponse;
+	headers: Headers;
 }
 
 export function deleteUser(props: DeleteUserProps): Promise<DeleteUserResponseContainer> {

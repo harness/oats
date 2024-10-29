@@ -23,8 +23,8 @@ export interface UpdateUserProps
 }
 
 export interface UpdateUserResponseContainer {
-	content: UpdateUserOkResponse;
-	headers: Record<string, any>;
+	body: UpdateUserOkResponse;
+	headers: Headers;
 }
 
 export function updateUser(props: UpdateUserProps): Promise<UpdateUserResponseContainer> {

@@ -60,8 +60,8 @@ export interface ReposListForAuthenticatedUserProps
 }
 
 export interface ReposListForAuthenticatedUserResponseContainer {
-	content: ReposListForAuthenticatedUserOkResponse;
-	headers: Record<string, any>;
+	body: ReposListForAuthenticatedUserOkResponse;
+	headers: Headers;
 }
 
 export function reposListForAuthenticatedUser(

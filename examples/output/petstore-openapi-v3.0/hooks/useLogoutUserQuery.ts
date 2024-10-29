@@ -12,8 +12,8 @@ export type LogoutUserErrorResponse = unknown;
 export interface LogoutUserProps extends Omit<FetcherOptions<unknown, unknown>, 'url'> {}
 
 export interface LogoutUserResponseContainer {
-	content: LogoutUserOkResponse;
-	headers: Record<string, any>;
+	body: LogoutUserOkResponse;
+	headers: Headers;
 }
 
 export function logoutUser(props: LogoutUserProps): Promise<LogoutUserResponseContainer> {

@@ -19,8 +19,8 @@ export interface CreateUserProps
 }
 
 export interface CreateUserResponseContainer {
-	content: CreateUserOkResponse;
-	headers: Record<string, any>;
+	body: CreateUserOkResponse;
+	headers: Headers;
 }
 
 export function createUser(props: CreateUserProps): Promise<CreateUserResponseContainer> {
