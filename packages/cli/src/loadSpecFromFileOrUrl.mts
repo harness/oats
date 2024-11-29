@@ -6,7 +6,13 @@ import type { OpenAPIV3 } from 'openapi-types';
 import yaml from 'js-yaml';
 
 import { generateOpenAPISpec } from './generateOpenAPISpec.mjs';
-import { _convertToOpenAPI, logInfo } from './helpers.mjs';
+import {
+	generateGithubApiEndpointUrl,
+	GITHUB_PAT,
+	_convertToOpenAPI,
+	b64DecodeUnicode,
+	logInfo,
+} from './helpers.mjs';
 import type { IServiceConfig } from './config.mjs';
 import type { IPluginReturn } from './plugin.mjs';
 
@@ -32,29 +38,51 @@ export async function loadSpecFromFileOrUrl(config: IServiceConfig): Promise<IPl
 				format === 'yaml'
 					? yaml.load(content, { json: true, schema: yaml.JSON_SCHEMA })
 					: JSON.parse(content);
-		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents');
+		} catch (error) {
+			throw new Error('Something went wrong while trying to parse contents from FILE' + error);
 		}
 
 		// transform the spec using given transformer
 	} else if (config.url) {
 		// read from URL
 		logInfo('Fetching data from URL');
-		const response = await fetch(config.url);
+
+		if (!GITHUB_PAT && !process.env.CI) {
+			throw new Error(
+				'GITHUB_PAT (Personal Access Token) is not defined, please set GITHUB_PAT environment variable',
+			);
+		}
+
+		const configUrl = process.env.CI ? config.url : generateGithubApiEndpointUrl(config.url);
+		const configHeaders = process.env.CI
+			? {}
+			: { headers: { Authorization: `Bearer ${GITHUB_PAT}` } };
+
+		const response = await fetch(configUrl, {
+			...configHeaders,
+		});
+
 		const contentType = response.headers.get('Content-Type');
 		try {
 			logInfo('Parsing data from API');
-
-			if (contentType === 'application/json') {
-				spec = (await response.json()) as OpenAPIV3.Document;
-				logInfo(`Detected format: JSON`);
+			if (contentType === 'application/json; charset=utf-8') {
+				const responseJson: any = await response.json();
+				const responseContent = responseJson.content;
+				const responseContentDecoded = b64DecodeUnicode(responseContent);
+				try {
+					spec = yaml.load(responseContentDecoded) as OpenAPIV3.Document;
+					logInfo(`Detected format: YAML`);
+				} catch (_) {
+					spec = JSON.parse(responseContentDecoded) as OpenAPIV3.Document;
+					logInfo(`Detected format: JSON`);
+				}
 			} else {
 				const txt = await response.text();
 				spec = yaml.load(txt) as OpenAPIV3.Document;
 				logInfo(`Detected format: YAML`);
 			}
-		} catch (_) {
-			throw new Error('Something went wrong while trying to parse contents');
+		} catch (error) {
+			throw new Error('Something went wrong while trying to parse contents from URL' + error);
 		}
 	} else {
 		throw new Error('Neither file nor url provided');

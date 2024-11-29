@@ -5,6 +5,8 @@ on:
       - opened
       - reopened
       - synchronize
+env:
+  CI: true
 jobs:
   eslint:
     name: ESLint
