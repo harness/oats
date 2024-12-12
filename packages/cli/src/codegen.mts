@@ -199,46 +199,47 @@ export function createObject(
 	originalRef: string,
 	components: IComponentsObject = {},
 ): ICodeWithMetadata {
+	const code: string[] = [];
+	const dependencies: string[] = [];
+	const imports: string[] = [];
+
 	if (isReferenceObject(item)) {
 		return createReferenceNode(item.$ref, originalRef);
 	}
 
-	if (Array.isArray(item.allOf)) {
-		const code: string[] = [];
-		const dependencies: string[] = [];
-		const imports: string[] = [];
-
+	if (Array.isArray(item.allOf) && item.allOf.length) {
+		const allOfCode: string[] = []
 		item.allOf.forEach((entry) => {
 			const resolvedValue = resolveValue(entry, originalRef);
-			code.push(resolvedValue.code);
+			allOfCode.push(resolvedValue.code);
 			dependencies.push(...resolvedValue.dependencies);
 			imports.push(...resolvedValue.imports);
 		});
-
-		return { code: code.join(' | '), dependencies, imports: uniq(imports) };
+		code.push(`(${allOfCode.join(' & ')})`);
 	}
 
-	if (Array.isArray(item.oneOf)) {
-		const code: string[] = [];
-		const dependencies: string[] = [];
-		const imports: string[] = [];
-
+	if (Array.isArray(item.oneOf) && item.oneOf.length) {
+		const oneOfCode: string[] = []
 		item.oneOf.forEach((entry) => {
 			const resolvedValue = resolveValue(entry, originalRef);
-			code.push(resolvedValue.code);
+			oneOfCode.push(resolvedValue.code);
 			dependencies.push(...resolvedValue.dependencies);
 			imports.push(...resolvedValue.imports);
 		});
-
-		return { code: code.join(' & '), dependencies, imports: uniq(imports) };
+		code.push(`(${oneOfCode.join(' | ')})`);
 	}
 
-	const props = createObjectProperties(item, originalRef, components);
+	if (item.type || has(item, 'properties') || has(item, 'additionalProperties')) {
+		const props = createObjectProperties(item, originalRef, components);
+		code.push(liquid.renderSync(OBJECT_TEMPLATE, { props }))
+		dependencies.push(... props.flatMap((p) => p.dependencies))
+		imports.push(...props.flatMap((p) => p.imports))
+	}
 
 	return {
-		code: liquid.renderSync(OBJECT_TEMPLATE, { props }),
-		imports: uniq(props.flatMap((p) => p.imports)),
-		dependencies: uniq(props.flatMap((p) => p.dependencies)),
+		code: code.join(' & '),
+		imports: uniq(imports),
+		dependencies: uniq(dependencies),
 	};
 }
 
