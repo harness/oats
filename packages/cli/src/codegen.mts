@@ -208,7 +208,7 @@ export function createObject(
 	}
 
 	if (Array.isArray(item.allOf) && item.allOf.length) {
-		const allOfCode: string[] = []
+		const allOfCode: string[] = [];
 		item.allOf.forEach((entry) => {
 			const resolvedValue = resolveValue(entry, originalRef);
 			allOfCode.push(resolvedValue.code);
@@ -219,7 +219,7 @@ export function createObject(
 	}
 
 	if (Array.isArray(item.oneOf) && item.oneOf.length) {
-		const oneOfCode: string[] = []
+		const oneOfCode: string[] = [];
 		item.oneOf.forEach((entry) => {
 			const resolvedValue = resolveValue(entry, originalRef);
 			oneOfCode.push(resolvedValue.code);
@@ -231,9 +231,9 @@ export function createObject(
 
 	if (item.type || has(item, 'properties') || has(item, 'additionalProperties')) {
 		const props = createObjectProperties(item, originalRef, components);
-		code.push(liquid.renderSync(OBJECT_TEMPLATE, { props }))
-		dependencies.push(... props.flatMap((p) => p.dependencies))
-		imports.push(...props.flatMap((p) => p.imports))
+		code.push(liquid.renderSync(OBJECT_TEMPLATE, { props }));
+		dependencies.push(...props.flatMap((p) => p.dependencies));
+		imports.push(...props.flatMap((p) => p.imports));
 	}
 
 	return {
