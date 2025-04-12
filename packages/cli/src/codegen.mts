@@ -560,7 +560,7 @@ export function getOkResponses(
 	responses: IResponsesObject,
 	originalRef: string,
 ): ICodeWithMetadata {
-	const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2'));
+	const okResponses = Object.entries(responses).filter(([key]) => key.startsWith('2') || key === 'default');
 	return getReqResTypes(okResponses, originalRef);
 }
 
@@ -570,7 +570,7 @@ export function getErrorResponses(
 ): ICodeWithMetadata {
 	const errorResponses = Object.entries(responses).filter(
 		([key]) =>
-			key.startsWith('3') || key.startsWith('4') || key.startsWith('5') || key === 'default',
+			key.startsWith('3') || key.startsWith('4') || key.startsWith('5'),
 	);
 	return getReqResTypes(errorResponses, originalRef);
 }

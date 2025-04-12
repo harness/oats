@@ -111,6 +111,10 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 					? liquid.renderSync(OBJECT_TEMPLATE, { props: headerParams })
 					: null;
 
+			queryParams.forEach(queryParam => queryParam.imports.forEach((imp) => imports.add(imp)));
+			pathParams.forEach(pathParam => pathParam.imports.forEach((imp) => imports.add(imp)));
+			headerParams.forEach(headerParam => headerParam.imports.forEach((imp) => imports.add(imp)));
+
 			const templateProps = {
 				hookName,
 				fetcherPropsName,
