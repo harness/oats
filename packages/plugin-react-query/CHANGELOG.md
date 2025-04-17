@@ -1,5 +1,13 @@
 # @harnessio/oats-plugin-react-query
 
+## 6.0.0
+
+### Patch Changes
+
+- eae1b15: Assume default status to be 200, fix imports generation for params
+- Updated dependencies [eae1b15]
+  - @harnessio/oats-cli@4.0.0
+
 ## 3.1.0
 
 ### Patch Changes

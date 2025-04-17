@@ -1,5 +1,11 @@
 # @harnessio/oats-cli
 
+## 4.0.0
+
+### Major Changes
+
+- eae1b15: Assume default status to be 200, fix imports generation for params
+
 ## 2.3.0
 
 ### Minor Changes
