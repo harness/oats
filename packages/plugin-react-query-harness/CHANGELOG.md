@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query-harness
 
+## 2.1.0
+
+### Minor Changes
+
+- 78b2d77: Fixed the issue where imports from params were not being added to the global set of imports
+
 ## 2.0.0
 
 ### Patch Changes
