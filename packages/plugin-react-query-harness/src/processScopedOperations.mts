@@ -90,6 +90,11 @@ export function processSingleGroupedOperation(
 		headerParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: headerParams }) : null;
 	const pathParamsNamesList = groupedParams.path.map((p) => p.name);
 
+	[...pathParams, ...queryParams, ...headerParams].forEach((param) => {
+		param.imports.forEach((imp) => imports.add(imp));
+		dependencies.push(...param.dependencies);
+	});
+
 	const templateProps = {
 		hookName,
 		fetcherPropsName,
