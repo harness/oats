@@ -66,10 +66,10 @@ export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 	const headerParamsCode =
 		headerParams.length > 0 ? liquid.renderSync(OBJECT_TEMPLATE, { props: headerParams }) : null;
 
-		[...pathParams, ...queryParams, ...headerParams].forEach((param) => {
-			param.imports.forEach((imp) => imports.add(imp));
-			dependencies.push(...param.dependencies);
-		})
+	[...pathParams, ...queryParams, ...headerParams].forEach((param) => {
+		param.imports.forEach((imp) => imports.add(imp));
+		dependencies.push(...param.dependencies);
+	});
 
 	const templateProps = {
 		hookName,
