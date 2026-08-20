@@ -1,5 +1,11 @@
 # @harnessio/oats-plugin-react-query
 
+## 6.1.0
+
+### Minor Changes
+
+- 487d0b9: Fixed an issue where dependencies of the input params were not being passed correctly, which results in files not being created
+
 ## 6.0.0
 
 ### Patch Changes
