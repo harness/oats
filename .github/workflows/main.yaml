@@ -164,7 +164,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm exec changeset version
-          # publish: pnpm publish -r
+          publish: pnpm publish -r
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
