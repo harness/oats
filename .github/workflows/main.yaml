@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   eslint:
@@ -156,14 +157,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Build All packages
         run: pnpm run -r build
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
-          version: npx changeset version
+          version: pnpm exec changeset version
           publish: pnpm publish -r
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
