@@ -156,7 +156,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
       - name: Build All packages
         run: pnpm run -r build
       - name: Create Release Pull Request or Publish to npm
