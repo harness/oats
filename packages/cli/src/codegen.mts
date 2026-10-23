@@ -373,6 +373,8 @@ export function createTypeDeclaration(
 	};
 }
 
+export const EVENT_STREAM_MEDIA_TYPE = 'text/event-stream';
+
 export function getRequestResponseSchema(
 	schema: IRequestBodyObject | IReferenceObject | IResponseObject,
 ): IReferenceObject | ISchemaObject | undefined {
@@ -385,11 +387,42 @@ export function getRequestResponseSchema(
 			([mediaType, contentObj]) =>
 				mediaType.startsWith('*/*') ||
 				mediaType.startsWith('application/json') ||
+				mediaType.startsWith(EVENT_STREAM_MEDIA_TYPE) ||
 				(mediaType.startsWith('application/octet-stream') && contentObj.schema),
 		);
 
 		return content?.[1].schema;
 	}
+}
+
+/**
+ * Returns `true` when the given response (or request body) object declares
+ * a `text/event-stream` content type, i.e. it is a Server-Sent Events (SSE)
+ * response.
+ */
+export function isEventStreamResponse(
+	schema: IRequestBodyObject | IReferenceObject | IResponseObject,
+): boolean {
+	if (isReferenceObject(schema) || !schema.content) {
+		return false;
+	}
+
+	return Object.keys(schema.content).some((mediaType) =>
+		mediaType.startsWith(EVENT_STREAM_MEDIA_TYPE),
+	);
+}
+
+/**
+ * Returns `true` when any successful (2xx or `default`) response of an
+ * operation is a Server-Sent Events (SSE) stream, i.e. `text/event-stream`.
+ */
+export function isEventStreamOperation(responses: IResponsesObject = {}): boolean {
+	return Object.entries(responses).some(
+		([status, response]) =>
+			(status.startsWith('2') || status === 'default') &&
+			!!response &&
+			isEventStreamResponse(response),
+	);
 }
 
 export function createRequestBodyDefinitions(

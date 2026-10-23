@@ -1,6 +1,7 @@
 import { camelCase } from 'change-case';
-import { groupByParamType, ICodeOutput } from '@harnessio/oats-cli';
 import {
+	groupByParamType,
+	ICodeOutput,
 	getErrorResponses,
 	getOkResponses,
 	getReqResTypes,
@@ -20,8 +21,6 @@ import type { IConfig } from './config.mjs';
 const COMMON_TEMPLATE = liquid.parse(_readTemplate('reactQueryCommon.liquid'));
 const QUERY_TEMPLATE = liquid.parse(_readTemplate('useQueryHook.liquid'));
 const MUTATION_TEMPLATE = liquid.parse(_readTemplate('useMutationHook.liquid'));
-
-processOperation;
 
 export function processOperation(op: IOperation, config: IConfig): ICodeOutput {
 	const { operation, method, params, path } = op;

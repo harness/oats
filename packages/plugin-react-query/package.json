@@ -41,6 +41,7 @@
   "devDependencies": {
     "@harnessio/oats-cli": "workspace:^",
     "@tanstack/react-query": "^4.20.4",
+    "@types/react": "^18.0.26",
     "react": "^18.2.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.8.4"

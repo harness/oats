@@ -8,9 +8,9 @@ import { fetcher, FetcherOptions } from './fetcher';
 
 export type CreateUserRequestBody = User;
 
-export type CreateUserOkResponse = unknown;
+export type CreateUserOkResponse = User;
 
-export type CreateUserErrorResponse = User;
+export type CreateUserErrorResponse = unknown;
 
 export interface CreateUserProps
 	extends Omit<FetcherOptions<unknown, CreateUserRequestBody>, 'url'> {

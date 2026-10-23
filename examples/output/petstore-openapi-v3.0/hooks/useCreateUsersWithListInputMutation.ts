@@ -8,7 +8,7 @@ import { fetcher, FetcherOptions } from './fetcher';
 
 export type CreateUsersWithListInputRequestBody = User[];
 
-export type CreateUsersWithListInputOkResponse = User;
+export type CreateUsersWithListInputOkResponse = User | unknown;
 
 export type CreateUsersWithListInputErrorResponse = unknown;
 

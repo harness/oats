@@ -1,0 +1,172 @@
+export interface EventStreamOptions<THeaderParams = HeadersInit>
+	extends Omit<RequestInit, 'headers'> {
+	url: string;
+	headers?: THeaderParams;
+}
+
+export interface EventStreamMessage<TData = unknown> {
+	event?: string;
+	id?: string;
+	data: TData;
+}
+
+export interface EventStreamHandlers<TData = unknown, TError = unknown> {
+	onOpen?: () => void;
+	onMessage?: (message: EventStreamMessage<TData>) => void;
+	/**
+	 * Called with the parsed error body (matching the operation's declared
+	 * error response schema) when the server responds with a non-2xx status
+	 * before the stream opens, or with a generic `Error` for network/parsing
+	 * failures once the stream is already open.
+	 */
+	onError?: (error: TError | Error) => void;
+	onClose?: () => void;
+}
+
+/**
+ * Subscribes to a `text/event-stream` (Server-Sent Events) endpoint using
+ * `fetch` and a streamed `ReadableStream` reader.
+ *
+ * `EventSource` is intentionally not used here, since it does not support
+ * sending custom request headers (e.g. auth headers), which most APIs
+ * require.
+ *
+ * Returns an `unsubscribe` function which aborts the underlying request.
+ */
+export function subscribeToEventStream<
+	TData = unknown,
+	THeaderParams = HeadersInit,
+	TError = unknown,
+>(
+	options: EventStreamOptions<THeaderParams>,
+	handlers: EventStreamHandlers<TData, TError> = {},
+): () => void {
+	const { url, headers, signal, ...rest } = options;
+	const controller = new AbortController();
+
+	if (signal) {
+		if (signal.aborted) {
+			controller.abort();
+		} else {
+			signal.addEventListener('abort', () => controller.abort());
+		}
+	}
+
+	(async () => {
+		try {
+			const response = await fetch(url, {
+				...rest,
+				headers: {
+					Accept: 'text/event-stream',
+					...(headers as HeadersInit),
+				},
+				signal: controller.signal,
+			});
+
+			if (!response.ok || !response.body) {
+				handlers.onError?.(await parseEventStreamErrorResponse<TError>(response));
+				return;
+			}
+
+			handlers.onOpen?.();
+
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+
+			// eslint-disable-next-line no-constant-condition
+			while (true) {
+				const { value, done } = await reader.read();
+
+				if (done) {
+					break;
+				}
+
+				buffer += decoder.decode(value, { stream: true });
+
+				let boundary = buffer.search(/\r?\n\r?\n/);
+
+				// SSE events are separated by a blank line.
+				while (boundary !== -1) {
+					const rawEvent = buffer.slice(0, boundary);
+					buffer = buffer.slice(boundary).replace(/^(\r?\n)+/, '');
+
+					const message = parseEventStreamBlock<TData>(rawEvent);
+
+					if (message) {
+						handlers.onMessage?.(message);
+					}
+
+					boundary = buffer.search(/\r?\n\r?\n/);
+				}
+			}
+
+			handlers.onClose?.();
+		} catch (error) {
+			if (!controller.signal.aborted) {
+				handlers.onError?.(error instanceof Error ? error : new Error(String(error)));
+			}
+		}
+	})();
+
+	return () => controller.abort();
+}
+
+/**
+ * Builds the error value passed to `onError` for a non-2xx response.
+ *
+ * Attempts to `JSON.parse` the response body so it matches the operation's
+ * declared error response schema (`TError`). Falls back to a plain `Error`
+ * (with the raw response text as its message) when the body is not valid
+ * JSON, e.g. for a plain-text or HTML error page.
+ */
+async function parseEventStreamErrorResponse<TError>(response: Response): Promise<TError | Error> {
+	const text = await response.text().catch(() => '');
+
+	try {
+		return JSON.parse(text) as TError;
+	} catch {
+		return new Error(
+			text || response.statusText || `Request failed with status ${response.status}`,
+		);
+	}
+}
+
+function parseEventStreamBlock<TData>(block: string): EventStreamMessage<TData> | null {
+	let event: string | undefined;
+	let id: string | undefined;
+	const dataLines: string[] = [];
+
+	block.split(/\r?\n/).forEach((line) => {
+		if (!line || line.startsWith(':')) {
+			return;
+		}
+
+		const sepIndex = line.indexOf(':');
+		const field = sepIndex === -1 ? line : line.slice(0, sepIndex);
+		const value = sepIndex === -1 ? '' : line.slice(sepIndex + 1).replace(/^ /, '');
+
+		if (field === 'event') {
+			event = value;
+		} else if (field === 'id') {
+			id = value;
+		} else if (field === 'data') {
+			dataLines.push(value);
+		}
+	});
+
+	if (dataLines.length === 0) {
+		return null;
+	}
+
+	const raw = dataLines.join('\n');
+	let data: TData;
+
+	try {
+		data = JSON.parse(raw) as TData;
+	} catch {
+		data = raw as unknown as TData;
+	}
+
+	return { event, id, data };
+}

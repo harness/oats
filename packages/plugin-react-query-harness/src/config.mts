@@ -69,7 +69,7 @@ export const Config = z
 		/**
 		 * Config for logically grouping APIs together
 		 */
-		scopeGroups: z.record(z.string(), ScopeGroupingSchema),
+		scopeGroups: z.record(z.string(), ScopeGroupingSchema).optional(),
 	})
 	.optional();
 

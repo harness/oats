@@ -6,6 +6,8 @@ export {
 	getOkResponses,
 	getReqResTypes,
 	getRequestResponseSchema,
+	isEventStreamOperation,
+	isEventStreamResponse,
 	resolveValue,
 	COMMENTS_TEMPLATE,
 	CODE_WITH_IMPORTS_TEMPLATE,

@@ -10,6 +10,7 @@ export const liquid = new Liquid();
 
 liquid.registerFilter('path_to_template', pathToTemplate);
 liquid.registerFilter('property_accessor', propertyAccessor);
+liquid.registerFilter('optional_property_accessor', optionalPropertyAccessor);
 
 const VAR_NAME_REGEX = /^[a-zA-Z_$][a-zA-Z0-9$_]*$/g;
 
@@ -26,4 +27,11 @@ export function pathToTemplate(tpl: string): string {
 
 export function propertyAccessor(name: string): string {
 	return name.match(VAR_NAME_REGEX) ? `.${name}` : `['${name}']`;
+}
+
+// Same as `propertyAccessor`, but prefixed for optional chaining
+// (`?.name` / `?.['name']`), for accessing a property on a value that may
+// itself be `undefined` (e.g. an optional `queryParams`/`headers` object).
+export function optionalPropertyAccessor(name: string): string {
+	return name.match(VAR_NAME_REGEX) ? `?.${name}` : `?.['${name}']`;
 }

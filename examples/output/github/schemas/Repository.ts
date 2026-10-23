@@ -68,6 +68,13 @@ export interface Repository {
 	 */
 	clone_url: string;
 	/**
+	 * The status of the code search index for this repository
+	 */
+	code_search_index_status?: {
+		lexical_commit_sha?: string;
+		lexical_search_ok?: boolean;
+	};
+	/**
 	 * @example "http://api.github.com/repos/octocat/Hello-World/collaborators{/collaborator}"
 	 */
 	collaborators_url: string;
@@ -185,6 +192,12 @@ export interface Repository {
 	 * @example true
 	 */
 	has_projects: boolean;
+	/**
+	 * Whether pull requests are enabled.
+	 * @default true
+	 * @example true
+	 */
+	has_pull_requests?: boolean;
 	/**
 	 * Whether the wiki is enabled.
 	 * @default true
@@ -304,6 +317,11 @@ export interface Repository {
 	 * Whether the repository is private or public.
 	 */
 	private: boolean;
+	/**
+	 * The policy controlling who can create pull requests: all or collaborators_only.
+	 * @example "all"
+	 */
+	pull_request_creation_policy?: 'all' | 'collaborators_only';
 	/**
 	 * @example "http://api.github.com/repos/octocat/Hello-World/pulls{/number}"
 	 */
