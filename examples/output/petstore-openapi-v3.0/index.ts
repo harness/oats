@@ -112,6 +112,20 @@ export type {
 } from './hooks/usePlaceOrderMutation';
 export { placeOrder, usePlaceOrderMutation } from './hooks/usePlaceOrderMutation';
 export type {
+	StreamPetEventsErrorResponse,
+	StreamPetEventsEventStreamOptions,
+	StreamPetEventsEventStreamPathParams,
+	StreamPetEventsEventStreamQueryParams,
+	StreamPetEventsEventStreamState,
+	StreamPetEventsEventStreamStatus,
+	StreamPetEventsOkResponse,
+	StreamPetEventsProps,
+} from './hooks/useStreamPetEventsEventStream';
+export {
+	streamPetEvents,
+	useStreamPetEventsEventStream,
+} from './hooks/useStreamPetEventsEventStream';
+export type {
 	UpdatePetErrorResponse,
 	UpdatePetMutationProps,
 	UpdatePetOkResponse,

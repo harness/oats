@@ -10,6 +10,7 @@ import {
 	getNameForRequestBody,
 	getNameForOkResponse,
 	getNameForType,
+	isEventStreamOperation,
 	resolveValue,
 	CODE_WITH_IMPORTS_TEMPLATE,
 	COMMENTS_TEMPLATE,
@@ -24,6 +25,9 @@ const DEFAULT_FETCHER_TEMPLATE = liquid.parse(_readTemplate('defaultFetcher.liqu
 const COMMON_TEMPLATE = liquid.parse(_readTemplate('reactQueryCommon.liquid'));
 const QUERY_TEMPLATE = liquid.parse(_readTemplate('useQueryHook.liquid'));
 const MUTATION_TEMPLATE = liquid.parse(_readTemplate('useMutationHook.liquid'));
+const EVENT_STREAM_FETCHER_TEMPLATE = liquid.parse(_readTemplate('eventStreamFetcher.liquid'));
+const EVENT_STREAM_COMMON_TEMPLATE = liquid.parse(_readTemplate('eventStreamCommon.liquid'));
+const EVENT_STREAM_HOOK_TEMPLATE = liquid.parse(_readTemplate('useEventStreamHook.liquid'));
 const METHODS_WITH_BODY = ['post', 'put', 'patch'];
 
 export interface IParamsCode {
@@ -68,8 +72,12 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				return;
 			}
 
+			// Server-Sent Events (SSE): a successful response declared as
+			// `text/event-stream` gets a dedicated subscription hook instead
+			// of a `useQuery`/`useMutation` hook.
+			const isEventStream = isEventStreamOperation(operation.responses);
 			const useUseQuery = verb === 'get' || config?.overrides?.[operation.operationId]?.useQuery;
-			const suffix = useUseQuery ? 'Query' : 'Mutation';
+			const suffix = isEventStream ? 'EventStream' : useUseQuery ? 'Query' : 'Mutation';
 			const dependencies: string[] = [];
 			let imports = new Set<string>();
 			const typeName = getNameForType(operation.operationId);
@@ -91,7 +99,7 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 			errorResponseCode.imports.forEach((imp) => imports.add(imp));
 			dependencies.push(...okResponseCode.dependencies, ...errorResponseCode.dependencies);
 
-			if (METHODS_WITH_BODY.includes(verb) && operation.requestBody) {
+			if (!isEventStream && METHODS_WITH_BODY.includes(verb) && operation.requestBody) {
 				const bodyCode = getReqResTypes([['body', operation.requestBody]], '');
 
 				requestBodyCode = bodyCode.code;
@@ -138,14 +146,23 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				headerParamsName,
 				headerParamsCode,
 				pathParamsNamesList: params.path.map((p) => p.name),
+				queryParamsNamesList: params.query.map((p) => p.name),
+				headerParamsNamesList: params.header.map((p) => p.name),
 				description: liquid.renderSync(COMMENTS_TEMPLATE, { schema: operation }).trimEnd(),
 				typeName,
 			};
 
-			const code = [
-				liquid.renderSync(COMMON_TEMPLATE, templateProps).trim(),
-				liquid.renderSync(useUseQuery ? QUERY_TEMPLATE : MUTATION_TEMPLATE, templateProps).trim(),
-			].join('\n\n');
+			const code = isEventStream
+				? [
+						liquid.renderSync(EVENT_STREAM_COMMON_TEMPLATE, templateProps).trim(),
+						liquid.renderSync(EVENT_STREAM_HOOK_TEMPLATE, templateProps).trim(),
+					].join('\n\n')
+				: [
+						liquid.renderSync(COMMON_TEMPLATE, templateProps).trim(),
+						liquid
+							.renderSync(useUseQuery ? QUERY_TEMPLATE : MUTATION_TEMPLATE, templateProps)
+							.trim(),
+					].join('\n\n');
 
 			const typeExports = [fetcherPropsName, okResponseName, errorResponseName];
 			const jsExports = [hookName, fetcherName];
@@ -162,7 +179,19 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				typeExports.push(requestBodyName);
 			}
 
-			if (useUseQuery) {
+			if (isEventStream) {
+				typeExports.push(
+					`${typeName}EventStreamStatus`,
+					`${typeName}EventStreamState`,
+					`${typeName}EventStreamOptions`,
+				);
+				imports = new Set([
+					'import { useEffect, useRef, useState } from "react";',
+					'import { useQueryClient, QueryKey } from "@tanstack/react-query";',
+					'',
+					...imports,
+				]);
+			} else if (useUseQuery) {
 				imports = new Set([
 					'import { useQuery, UseQueryOptions } from "@tanstack/react-query";',
 					'',
@@ -177,20 +206,39 @@ export function generateReactQueryHooks(config?: IConfig): IPlugin['generate'] {
 				]);
 			}
 
-			if (!config?.customFetcher) {
-				files.push({
-					code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
-					filepath: 'hooks/fetcher.ts',
-					ref: '',
-					dependencies: [],
-					jsExports: [],
-					typeExports: [],
-				});
-			}
+			if (isEventStream) {
+				if (!config?.customEventStreamFetcher) {
+					files.push({
+						code: liquid.renderSync(EVENT_STREAM_FETCHER_TEMPLATE),
+						filepath: 'hooks/eventStreamFetcher.ts',
+						ref: '',
+						dependencies: [],
+						jsExports: [],
+						typeExports: [],
+					});
+				}
 
-			imports.add(
-				`import { fetcher, FetcherOptions } from "${config?.customFetcher || './fetcher'}";`,
-			);
+				imports.add(
+					`import { subscribeToEventStream, EventStreamOptions, EventStreamHandlers } from "${
+						config?.customEventStreamFetcher || './eventStreamFetcher'
+					}";`,
+				);
+			} else {
+				if (!config?.customFetcher) {
+					files.push({
+						code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
+						filepath: 'hooks/fetcher.ts',
+						ref: '',
+						dependencies: [],
+						jsExports: [],
+						typeExports: [],
+					});
+				}
+
+				imports.add(
+					`import { fetcher, FetcherOptions } from "${config?.customFetcher || './fetcher'}";`,
+				);
+			}
 
 			files.push({
 				code: liquid.renderSync(CODE_WITH_IMPORTS_TEMPLATE, {

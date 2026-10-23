@@ -1,0 +1,50 @@
+{% if pathParamsCode %}
+export interface {{pathParamsName}} {{pathParamsCode}}
+{% endif %}
+
+{% if queryParamsCode %}
+export interface {{queryParamsName}} {{queryParamsCode}}
+{% endif %}
+
+{% if headerParamsCode %}
+export interface {{headerParamsName}} {{headerParamsCode}}
+{% endif %}
+
+export type {{okResponseName}} = {{okResponseCode}};
+
+export type {{errorResponseName}} = {{errorResponseCode}};
+
+export interface {{fetcherPropsName}} extends
+{% if pathParamsCode %}
+  {{pathParamsName}},
+{% endif %}
+Omit<EventStreamOptions<
+  {% if headerParamsCode -%}{{headerParamsName}}{% else %}HeadersInit{%- endif %}
+>, 'url'> {
+  {% if queryParamsCode -%}
+  queryParams?: {{queryParamsName}};
+  {%- endif %}
+}
+
+export function {{fetcherName}}(
+  props: {{fetcherPropsName}},
+  handlers?: EventStreamHandlers<{{okResponseName}}, {{errorResponseName}}>
+): () => void {
+  {% if queryParamsCode -%}
+  const { queryParams, ...rest } = props;
+  {%- else -%}
+  const rest = props;
+  {%- endif %}
+
+  return subscribeToEventStream<
+    {{okResponseName}},
+    {% if headerParamsCode -%}{{headerParamsName}}{%- else -%}HeadersInit{%- endif %},
+    {{errorResponseName}}
+  >(
+    {
+      url: `{{route | path_to_template}}`,
+      ...rest
+    },
+    handlers
+  );
+}

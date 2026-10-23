@@ -30,6 +30,21 @@ export const Config = z
 		 */
 		customFetcher: z.string().optional(),
 		/**
+		 * Path pointing to the file where a custom Server-Sent Events (SSE)
+		 * subscriber resides.
+		 *
+		 * Used for any operation whose successful response is declared as
+		 * `text/event-stream` in the OpenAPI spec. This path will be used as
+		 * is, while generating the hooks.
+		 *
+		 * This path must be a relative path which can be resolved with
+		 * respect to a file within the hooks folder.
+		 *
+		 * When omitted, a default `fetch` + `ReadableStream` based subscriber
+		 * is generated for you (see `hooks/eventStreamFetcher.ts`).
+		 */
+		customEventStreamFetcher: z.string().optional(),
+		/**
 		 * This can be used to customize the generation
 		 * of hooks at individual operation ID level.
 		 *

@@ -141,3 +141,38 @@ You can add additional properties to `FetcherOptions` as per your requirements,
 as these additional properties will be passed through from the hook to the fetcher.
 
 You can take a look at the [default fetcher generated here](../../examples/output/petstore-openapi-v3.0/hooks/fetcher.ts)
+
+## Server-Sent Events (SSE)
+
+This plugin does **not** generate hooks for operations whose successful
+response is declared with a `text/event-stream` content type - those
+operations are silently skipped. This is intentional: SSE doesn't fit this
+plugin's Harness-specific `scopeGroups` model, and duplicating that codegen
+here just to keep it in sync with the generic plugin isn't worth it.
+
+If your spec has SSE operations, add
+[`@harnessio/oats-plugin-react-query`](../plugin-react-query/README.md#server-sent-events-sse)
+alongside this plugin in the same service, scoping each with
+`allowedOperationIds` so they don't overlap:
+
+```ts
+export default defineConfig({
+  services: {
+    myService: {
+      // ...
+      plugins: [
+        reactQueryHarnessPlugin({
+          // scopeGroups, regular query/mutation ops, etc.
+        }),
+        reactQueryPlugin({
+          // only the SSE operation(s) - everything else is handled above
+          allowedOperationIds: ['streamSomeEvents'],
+        }),
+      ],
+    },
+  },
+});
+```
+
+Both plugins write into the same `hooks/` output folder, so the generated
+files (and the barrel `index.ts`) end up merged together.

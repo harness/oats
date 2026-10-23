@@ -14,7 +14,7 @@ export interface ValidationError {
 		index?: number;
 		message?: string;
 		resource?: string;
-		value?: string | (null & number) | (null & string[]) | null;
+		value?: string | null | number | null | string[] | null;
 	}>;
 	message: string;
 }

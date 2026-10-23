@@ -317,6 +317,49 @@ paths:
             schema:
               type: string
               format: binary
+  '/pet/{petId}/events':
+    get:
+      tags:
+        - pet
+      summary: Streams status updates for a pet
+      description: A Server-Sent Events (SSE) stream of pet status updates.
+      operationId: streamPetEvents
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to stream events for
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: sinceEventId
+          in: query
+          description: Only replay events after this event id
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: Bearer token used to authenticate the stream
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An event stream of Pet status updates.
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+        - petstore_auth:
+            - 'read:pets'
   /store/inventory:
     get:
       tags:

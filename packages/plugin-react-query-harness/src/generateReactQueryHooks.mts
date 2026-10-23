@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import type { ICodeOutput, IPlugin, IPluginReturn } from '@harnessio/oats-cli';
-import { isReferenceObject } from '@harnessio/oats-cli';
+import { isReferenceObject, isEventStreamOperation } from '@harnessio/oats-cli';
 
 import type { IConfig, IScopeGroupingSchema } from './config.mjs';
 import { Config } from './config.mjs';
@@ -30,17 +30,6 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 			},
 		];
 
-		if (!config?.customFetcher) {
-			files.push({
-				code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
-				filepath: 'hooks/fetcher.ts',
-				ref: '',
-				dependencies: [],
-				jsExports: [],
-				typeExports: [],
-			});
-		}
-
 		const operationIdMap: IOperationMap = Object.entries(spec.paths).reduce(
 			(accumulator, [route, routeObj]) => {
 				if (routeObj) {
@@ -54,6 +43,16 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 							throw new Error(
 								`Every path must have a operationId - No operationId set for ${verb} ${route}`,
 							);
+						}
+
+						// Server-Sent Events (SSE): this plugin doesn't generate
+						// subscription hooks for `text/event-stream` operations.
+						// Use `@harnessio/oats-plugin-react-query` alongside this
+						// plugin (scoped via `allowedOperationIds` on each) to
+						// generate hooks for those operations - see the "Server-Sent
+						// Events (SSE)" section in the README.
+						if (isEventStreamOperation(operation.responses)) {
+							return accumulator;
 						}
 
 						// check if operationId is already used
@@ -98,6 +97,32 @@ export function generateReactQueryHooks(unsafeConfig?: IConfig): IPlugin['genera
 			},
 			new Map() as IOperationMap,
 		);
+
+		// Only consider the operations that will actually be generated (i.e.
+		// respecting `allowedOperationIds`, when set) when deciding whether
+		// the default `fetcher.ts` file is needed, so we don't emit (and
+		// force consumers to typecheck) an unused file.
+		const relevantOperations =
+			config && Array.isArray(config.allowedOperationIds)
+				? config.allowedOperationIds
+						.map((opId) => operationIdMap.get(opId))
+						.filter((op): op is IOperation => !!op)
+				: [...operationIdMap.values()];
+
+		// Scoped groups (`config.scopeGroups`) always rely on the regular
+		// fetcher, regardless of `allowedOperationIds`.
+		const hasRegularOperation = !!config?.scopeGroups || relevantOperations.length > 0;
+
+		if (hasRegularOperation && !config?.customFetcher) {
+			files.push({
+				code: liquid.renderSync(DEFAULT_FETCHER_TEMPLATE),
+				filepath: 'hooks/fetcher.ts',
+				ref: '',
+				dependencies: [],
+				jsExports: [],
+				typeExports: [],
+			});
+		}
 
 		// Generate code for scoped groups
 		if (config?.scopeGroups) {
